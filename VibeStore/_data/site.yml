@@ -1,8 +1,14 @@
 # Site-wide data for VibeStore
-version: "3.33"
+version: "3.34"
 last_updated: "2025-01-27"
-cache_bust: "20250127-040-v333"
+cache_bust: "20250127-050-v334"
 features:
+  - "Version 3.34 - Fixed Firebase Storage CORS Issues"
+  - "Added Firebase Storage security rules for authenticated uploads"
+  - "Created CORS configuration for web app file uploads"
+  - "Fixed filename sanitization to avoid special characters"
+  - "Added deployment scripts for storage setup"
+  - "Enhanced upload function with better error handling"
   - "Version 3.33 - Fixed Blog System Issues"
   - "Updated blog categories to focus on vibe coding topics"
   - "Created custom SVG images for blog posts"
