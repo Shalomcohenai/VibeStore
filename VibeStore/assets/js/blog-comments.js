@@ -162,6 +162,11 @@ class VibeStoreComments {
 
     // Check if user is authenticated
     if (!this.isUserAuthenticated()) {
+      console.log('User not authenticated. Firebase auth state:', {
+        firebase: !!window.firebase,
+        auth: !!(window.firebase && window.firebase.auth),
+        currentUser: window.firebase && window.firebase.auth ? window.firebase.auth().currentUser : null
+      });
       this.showError('Please sign in to post a comment.');
       return;
     }
@@ -230,23 +235,38 @@ class VibeStoreComments {
   }
 
   isUserAuthenticated() {
-    // Check if user is logged in (this would integrate with your auth system)
-    return window.firebase && window.firebase.auth && window.firebase.auth().currentUser;
+    // Check if user is logged in
+    try {
+      return window.firebase && 
+             window.firebase.auth && 
+             window.firebase.auth().currentUser !== null;
+    } catch (error) {
+      console.error('Error checking authentication:', error);
+      return false;
+    }
   }
 
   getCurrentUserId() {
     // Get current user ID from Firebase auth
-    if (window.firebase && window.firebase.auth && window.firebase.auth().currentUser) {
-      return window.firebase.auth().currentUser.uid;
+    try {
+      if (window.firebase && window.firebase.auth && window.firebase.auth().currentUser) {
+        return window.firebase.auth().currentUser.uid;
+      }
+    } catch (error) {
+      console.error('Error getting user ID:', error);
     }
     return 'anonymous';
   }
 
   getCurrentUserName() {
     // Get current user name from Firebase auth
-    if (window.firebase && window.firebase.auth && window.firebase.auth().currentUser) {
-      const user = window.firebase.auth().currentUser;
-      return user.displayName || user.email || 'Anonymous User';
+    try {
+      if (window.firebase && window.firebase.auth && window.firebase.auth().currentUser) {
+        const user = window.firebase.auth().currentUser;
+        return user.displayName || user.email || 'Anonymous User';
+      }
+    } catch (error) {
+      console.error('Error getting user name:', error);
     }
     return 'Anonymous User';
   }

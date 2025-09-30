@@ -1,8 +1,14 @@
 # Site-wide data for VibeStore
-version: "3.37"
+version: "3.38"
 last_updated: "2025-01-27"
-cache_bust: "20250127-080-v337"
+cache_bust: "20250127-090-v338"
 features:
+  - "Version 3.38 - Fixed Blog Comments Issues"
+  - "Fixed duplicate Share and Comments sections"
+  - "Removed duplicate includes from blog posts"
+  - "Enhanced authentication debugging for comments"
+  - "Improved error handling in comment system"
+  - "Added detailed logging for authentication issues"
   - "Version 3.37 - Blog System Fully Integrated with Firebase"
   - "Complete blog system with Firestore integration"
   - "Real-time comments system with user authentication"

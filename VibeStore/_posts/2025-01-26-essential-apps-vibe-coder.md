@@ -167,6 +167,3 @@ Remember, these apps are tools to support your vibe coding journey, not replace 
 ---
 
 *What apps are essential to your vibe coding toolkit? Share your favorites in the comments!*
-
-{% include blog-share.html %}
-{% include blog-comments.html %}

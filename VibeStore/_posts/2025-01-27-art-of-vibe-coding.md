@@ -148,6 +148,3 @@ Remember, vibe coding isn't about being perfect—it's about being present, posi
 ---
 
 *What's your experience with vibe coding? Share your tips and stories in the comments below!*
-
-{% include blog-share.html %}
-{% include blog-comments.html %}

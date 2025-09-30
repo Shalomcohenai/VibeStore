@@ -235,6 +235,3 @@ Remember, culture change takes time, but the investment in creating a positive d
 ---
 
 *What's one thing you'd like to improve about your team's culture? Share your thoughts and experiences in the comments!*
-
-{% include blog-share.html %}
-{% include blog-comments.html %}
