@@ -1,0 +1,99 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- Dynamic SEO meta tags -->
+<title>
+  {%- if page.app_title -%}
+    {{ page.app_title }} - {{ site.title }}
+  {%- elsif page.title -%}
+    {{ page.title }} | {{ site.title }}
+  {%- else -%}
+    {{ site.title }} - {{ site.tagline }}
+  {%- endif -%}
+</title>
+
+<meta name="description" content="
+  {%- if page.app_description -%}
+    {{ page.app_description | strip_html | truncate: 160 }}
+  {%- elsif page.description -%}
+    {{ page.description | strip_html | truncate: 160 }}
+  {%- elsif page.excerpt -%}
+    {{ page.excerpt | strip_html | truncate: 160 }}
+  {%- else -%}
+    {{ site.description }}
+  {%- endif -%}
+">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:title" content="
+  {%- if page.app_title -%}
+    {{ page.app_title }} - {{ site.title }}
+  {%- elsif page.title -%}
+    {{ page.title }} | {{ site.title }}
+  {%- else -%}
+    {{ site.title }} - {{ site.tagline }}
+  {%- endif -%}
+">
+<meta property="og:description" content="
+  {%- if page.app_description -%}
+    {{ page.app_description | strip_html | truncate: 160 }}
+  {%- elsif page.description -%}
+    {{ page.description | strip_html | truncate: 160 }}
+  {%- elsif page.excerpt -%}
+    {{ page.excerpt | strip_html | truncate: 160 }}
+  {%- else -%}
+    {{ site.description }}
+  {%- endif -%}
+">
+<meta property="og:image" content="
+  {%- if page.app_image -%}
+    {{ page.app_image }}
+  {%- else -%}
+    {{ '/img/placeholder.svg' | absolute_url }}
+  {%- endif -%}
+">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="{{ page.url | absolute_url }}">
+<meta property="twitter:title" content="
+  {%- if page.app_title -%}
+    {{ page.app_title }} - {{ site.title }}
+  {%- elsif page.title -%}
+    {{ page.title }} | {{ site.title }}
+  {%- else -%}
+    {{ site.title }} - {{ site.tagline }}
+  {%- endif -%}
+">
+<meta property="twitter:description" content="
+  {%- if page.app_description -%}
+    {{ page.app_description | strip_html | truncate: 160 }}
+  {%- elsif page.description -%}
+    {{ page.description | strip_html | truncate: 160 }}
+  {%- elsif page.excerpt -%}
+    {{ page.excerpt | strip_html | truncate: 160 }}
+  {%- else -%}
+    {{ site.description }}
+  {%- endif -%}
+">
+<meta property="twitter:image" content="
+  {%- if page.app_image -%}
+    {{ page.app_image }}
+  {%- else -%}
+    {{ '/img/placeholder.svg' | absolute_url }}
+  {%- endif -%}
+">
+
+<!-- Additional SEO -->
+<meta name="robots" content="index, follow">
+<meta name="author" content="{{ site.title }}">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<link rel="icon" href="{{ '/img/favicon.svg' | relative_url }}?v={{ site.data.site.cache_bust }}" type="image/svg+xml">
+<link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}?v={{ site.data.site.cache_bust }}">

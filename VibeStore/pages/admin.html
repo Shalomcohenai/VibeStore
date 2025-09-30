@@ -1,0 +1,2082 @@
+---
+title: Admin Panel
+layout: page
+permalink: /pages/admin
+---
+
+<div class="admin-panel">
+  <!-- Admin Header -->
+  <div class="admin-header">
+    <h1 class="page-title">Admin Panel</h1>
+    <div style="text-align: right; color: var(--c-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+      Version: 3.2 - Enhanced UI and Performance
+    </div>
+    
+    <!-- Development Section -->
+    <div class="development-info" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem; margin: 1rem 0; font-size: 0.85rem;">
+      <h3 style="margin: 0 0 0.5rem 0; color: #495057;">Development Information</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
+        <div><strong>Version:</strong> 3.2</div>
+        <div><strong>Last Updated:</strong> 2024-12-19</div>
+        <div><strong>Cache Bust:</strong> 20241219-007-v32</div>
+        <div><strong>Build Status:</strong> <span style="color: #28a745;">✓ Clean Build</span></div>
+      </div>
+      <div style="margin-top: 0.5rem;">
+        <strong>Latest Features:</strong>
+        <ul style="margin: 0.25rem 0 0 1rem; font-size: 0.8rem;">
+          {% for feature in site.features limit:3 %}
+          <li>{{ feature }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="admin-stats" id="admin-stats">
+      <div class="stat-card">
+        <div class="stat-number" id="pending-count">-</div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="approved-count">-</div>
+        <div class="stat-label">Approved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="featured-count">-</div>
+        <div class="stat-label">Featured</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="editor-count">-</div>
+        <div class="stat-label">Editor's Choice</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="rejected-count">-</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="admin-tabs">
+    <button class="tab-btn active" data-status="pending">Pending Review</button>
+    <button class="tab-btn" data-status="approved">Approved</button>
+    <button class="tab-btn" data-status="promoted">Promoted</button>
+    <button class="tab-btn" data-status="rejected">Rejected</button>
+    <button class="tab-btn" data-status="all">All Apps</button>
+  </div>
+
+  <!-- Apps List -->
+  <div class="admin-content">
+    <div class="loading-state" id="loading-state">
+      <div style="text-align: center; padding: 2rem;">
+        <div class="spinner"></div>
+        <p>Loading apps...</p>
+      </div>
+    </div>
+    
+    <div class="apps-list" id="apps-list" style="display: none;">
+      <!-- Apps will be loaded here -->
+    </div>
+    
+    <div class="empty-state" id="empty-state" style="display: none;">
+      <div style="text-align: center; padding: 3rem; color: var(--c-muted);">
+        <h3>No apps found</h3>
+        <p>No apps match the current filter.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- App Details Modal -->
+<div class="app-details-modal" id="app-details-modal">
+  <div class="app-details-modal-content">
+    <div class="app-details-modal-header">
+      <h2 class="app-details-modal-title">App Details</h2>
+      <button class="modal-close" id="app-details-close">&times;</button>
+    </div>
+    
+    <div class="app-details-form">
+      <div class="form-section">
+        <h3>Basic Information</h3>
+        
+        <!-- App Image Preview -->
+        <div class="form-group" id="app-image-section" style="display: none;">
+          <label>App Image</label>
+          <div class="app-image-preview">
+            <img id="app-image-preview" src="" alt="App Image" />
+            <div class="image-info">
+              <span id="image-url-display"></span>
+              <button type="button" id="open-image-btn" class="btn-link">Open in New Tab</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-title">Title</label>
+          <input type="text" id="edit-title" class="form-input" />
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-description">Description</label>
+          <textarea id="edit-description" class="form-textarea" rows="4"></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-category">Category</label>
+            <select id="edit-category" class="form-select">
+              <option value="Productivity">Productivity</option>
+              <option value="Business">Business</option>
+              <option value="Education">Education</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Social">Social</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Health">Health</option>
+              <option value="Finance">Finance</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Travel">Travel</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-niche">Niche</label>
+            <select id="edit-niche" class="form-select">
+              <option value="web">Web App</option>
+              <option value="mobile">Mobile App</option>
+              <option value="whatsapp">WhatsApp Bot</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-link">App Link</label>
+          <input type="url" id="edit-link" class="form-input" />
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-platform">Platform</label>
+          <input type="text" id="edit-platform" class="form-input" placeholder="e.g., Web, iOS, Android, WhatsApp" />
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-image-url">Image URL (optional)</label>
+          <input type="url" id="edit-image-url" class="form-input" placeholder="https://example.com/image.png" />
+        </div>
+      </div>
+      
+      <div class="form-section">
+        <h3>Submission Details</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-submitter">Submitter Email</label>
+            <input type="email" id="edit-submitter" class="form-input" readonly />
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-submitted">Submitted Date</label>
+            <input type="text" id="edit-submitted" class="form-input" readonly />
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-status">Status</label>
+          <select id="edit-status" class="form-select">
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        
+        <div class="form-group" id="rejection-reason-group" style="display: none;">
+          <label for="edit-rejection-reason">Rejection Reason</label>
+          <textarea id="edit-rejection-reason" class="form-textarea" rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+    
+    <div class="app-details-actions">
+      <button class="btn-save" id="save-app-changes">Save Changes</button>
+      <button class="btn-approve" id="approve-from-modal">✓ Approve</button>
+      <button class="btn-reject" id="reject-from-modal">✗ Reject</button>
+      <button class="btn-cancel" id="cancel-app-details">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Promotion Management Modal -->
+<div class="promotion-modal" id="promotion-modal">
+  <div class="promotion-modal-content">
+    <div class="promotion-modal-header">
+      <h2 class="promotion-modal-title">Manage Promotions</h2>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    
+    <div class="promotion-section">
+      <h3>🏆 Featured App</h3>
+      <div class="promotion-controls">
+        <div class="promotion-toggle" id="featured-toggle">
+          <div class="promotion-info">
+            <div class="promotion-label">Featured Status</div>
+            <div class="promotion-description">Paid promotion with badge and boosted ranking</div>
+          </div>
+          <div class="promotion-switch" id="featured-switch"></div>
+        </div>
+        
+        <div class="featured-duration" id="featured-duration">
+          <label style="font-weight: 600; color: var(--c-text); margin-bottom: 0.5rem; display: block;">Duration:</label>
+          <div class="duration-input">
+            <input type="number" id="featured-duration-value" min="1" max="365" value="30" />
+            <select id="featured-duration-unit">
+              <option value="days">Days</option>
+              <option value="weeks">Weeks</option>
+              <option value="months">Months</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="promotion-section">
+      <h3>⭐ Editor's Choice</h3>
+      <div class="promotion-controls">
+        <div class="promotion-toggle" id="editor-toggle">
+          <div class="promotion-info">
+            <div class="promotion-label">Editor's Choice Status</div>
+            <div class="promotion-description">Curated selection by admins, permanent until removed</div>
+          </div>
+          <div class="promotion-switch" id="editor-switch"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="promotion-actions">
+      <button class="btn-save" id="save-promotions">Save Changes</button>
+      <button class="btn-cancel" id="cancel-promotions">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="delete-confirmation-modal" id="delete-confirmation-modal">
+  <div class="delete-confirmation-modal-content">
+    <div class="delete-confirmation-modal-header">
+      <h2 class="delete-confirmation-modal-title">Delete App</h2>
+      <button class="modal-close" id="delete-confirmation-close">&times;</button>
+    </div>
+    
+    <div class="delete-confirmation-body">
+      <div class="warning-icon">⚠️</div>
+      <h3>Are you sure you want to delete this app?</h3>
+      <p>This action will permanently delete:</p>
+      <ul>
+        <li>The app from the database</li>
+        <li>All reviews for this app</li>
+        <li>All user interactions with this app</li>
+      </ul>
+      <p class="warning-text"><strong>This action cannot be undone!</strong></p>
+      
+      <div class="app-preview" id="delete-app-preview">
+        <!-- App details will be populated here -->
+      </div>
+    </div>
+    
+    <div class="delete-confirmation-actions">
+      <button class="btn-delete-confirm" id="confirm-delete">🗑️ Delete Permanently</button>
+      <button class="btn-cancel" id="cancel-delete">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.admin-panel {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.admin-header {
+  margin-bottom: 2rem;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+  text-align: center;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--c-primary);
+  transform: translateY(-2px);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--c-primary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: var(--c-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background: #22c55e;
+  color: white;
+  box-shadow: 0 4px 12px rgba(34,197,94,.3);
+}
+
+.admin-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+  overflow: hidden;
+}
+
+.apps-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--c-line);
+  transition: background 0.3s ease;
+}
+
+.app-item:last-child {
+  border-bottom: none;
+}
+
+.app-item:hover {
+  background: var(--c-bg);
+}
+
+.clickable-app {
+  cursor: pointer;
+}
+
+.clickable-app:hover {
+  background: var(--c-bg);
+  border-left: 4px solid var(--c-primary);
+}
+
+.action-btn.view-details {
+  background: #3b82f6;
+  color: white;
+}
+
+.app-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: var(--c-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.app-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--c-text);
+  margin: 0 0 0.25rem;
+}
+
+.app-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--c-muted);
+  margin-bottom: 0.5rem;
+}
+
+.app-description {
+  font-size: 0.9rem;
+  color: var(--c-text);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.app-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background: #fbbf24;
+  color: #92400e;
+}
+
+.status-badge.approved {
+  background: #34d399;
+  color: #065f46;
+}
+
+.status-badge.rejected {
+  background: #f87171;
+  color: #991b1b;
+}
+
+.feature-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.feature-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.feature-badge.featured {
+  background: #fbbf24;
+  color: #92400e;
+}
+
+.feature-badge.editor {
+  background: #34d399;
+  color: #065f46;
+}
+
+.app-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-btn.quick-approve {
+  background: #16a34a;
+  color: white;
+}
+
+.action-btn.quick-reject {
+  background: #dc2626;
+  color: white;
+}
+
+.action-btn.manage-promotions {
+  background: #f59e0b;
+  color: white;
+}
+
+.action-btn.delete-app {
+  background: #dc2626;
+  color: white;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--c-line);
+  border-top: 4px solid var(--c-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .admin-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tab-btn {
+    flex: 1 1 45%;
+    min-width: 120px;
+  }
+  
+  .app-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .app-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* App Details Modal */
+.app-details-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-details-modal.active {
+  display: flex;
+}
+
+.app-details-modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.app-details-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--c-line);
+}
+
+.app-details-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--c-text);
+  margin: 0;
+}
+
+.app-details-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--c-text);
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--c-text);
+  font-size: 0.9rem;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  padding: 0.75rem;
+  border: 2px solid var(--c-line);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--c-primary);
+}
+
+.form-input:read-only {
+  background: var(--c-bg);
+  color: var(--c-muted);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.app-image-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 2px solid var(--c-line);
+  border-radius: 8px;
+  background: var(--c-bg);
+}
+
+.app-image-preview img {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  object-fit: cover;
+  align-self: flex-start;
+}
+
+.image-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.image-info span {
+  font-size: 0.85rem;
+  color: var(--c-muted);
+  word-break: break-all;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--c-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  align-self: flex-start;
+}
+
+.btn-link:hover {
+  color: #16a34a;
+}
+
+.app-details-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--c-line);
+  flex-wrap: wrap;
+}
+
+.btn-save {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: var(--c-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-save:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+.btn-approve {
+  padding: 0.75rem 1.5rem;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-approve:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.btn-reject {
+  padding: 0.75rem 1.5rem;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-reject:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: var(--c-muted);
+  border: 2px solid var(--c-line);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+
+.btn-save:disabled,
+.btn-approve:disabled,
+.btn-reject:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .app-details-actions {
+    flex-direction: column;
+  }
+  
+  .btn-save {
+    flex: none;
+  }
+}
+
+/* Promotion Management Modal */
+.promotion-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.promotion-modal.active {
+  display: flex;
+}
+
+.promotion-modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.promotion-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--c-line);
+}
+
+.promotion-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--c-text);
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--c-muted);
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+
+.promotion-section {
+  margin-bottom: 2rem;
+}
+
+.promotion-section:last-child {
+  margin-bottom: 0;
+}
+
+.promotion-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--c-text);
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.promotion-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.promotion-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--c-bg);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.promotion-toggle.active {
+  border-color: var(--c-primary);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.promotion-info {
+  flex: 1;
+}
+
+.promotion-label {
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: 0.25rem;
+}
+
+.promotion-description {
+  font-size: 0.9rem;
+  color: var(--c-muted);
+}
+
+.promotion-switch {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background: #ccc;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.promotion-switch.active {
+  background: var(--c-primary);
+}
+
+.promotion-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.promotion-switch.active::after {
+  transform: translateX(26px);
+}
+
+.featured-duration {
+  margin-top: 1rem;
+  display: none;
+}
+
+.featured-duration.active {
+  display: block;
+}
+
+.duration-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.duration-input input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 2px solid var(--c-line);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.duration-input select {
+  padding: 0.5rem;
+  border: 2px solid var(--c-line);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+}
+
+.promotion-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--c-line);
+}
+
+.btn-save {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: var(--c-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-save:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+.btn-save:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: var(--c-muted);
+  border: 2px solid var(--c-line);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+
+/* Delete Confirmation Modal */
+.delete-confirmation-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-confirmation-modal.active {
+  display: flex;
+}
+
+.delete-confirmation-modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.delete-confirmation-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--c-line);
+}
+
+.delete-confirmation-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--c-text);
+  margin: 0;
+}
+
+.delete-confirmation-body {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.warning-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.delete-confirmation-body h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--c-text);
+  margin: 0 0 1rem;
+}
+
+.delete-confirmation-body p {
+  color: var(--c-muted);
+  margin-bottom: 1rem;
+}
+
+.delete-confirmation-body ul {
+  text-align: left;
+  color: var(--c-muted);
+  margin-bottom: 1rem;
+}
+
+.warning-text {
+  color: #dc2626 !important;
+  font-weight: 600;
+}
+
+.app-preview {
+  background: var(--c-bg);
+  border: 2px solid var(--c-line);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.app-preview h4 {
+  margin: 0 0 0.5rem;
+  color: var(--c-text);
+}
+
+.app-preview p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--c-muted);
+}
+
+.delete-confirmation-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-delete-confirm {
+  padding: 0.75rem 1.5rem;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-delete-confirm:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.btn-delete-confirm:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+</style>
+
+<script type="module">
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js';
+import { getFirestore, collection, query, where, orderBy, onSnapshot, doc, updateDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js';
+import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js';
+
+let currentUser = null;
+let currentFilter = 'pending';
+let appsData = [];
+let currentAppForPromotion = null;
+let currentAppForDetails = null;
+let currentAppForDeletion = null;
+
+// Wait for Firebase to initialize
+const waitForFirebase = () => new Promise(resolve => {
+  const check = () => {
+    if (window.$fb && window.$fb.auth && window.$fb.storeMod && window.$fb.db) {
+      resolve(window.$fb);
+    } else {
+      setTimeout(check, 100);
+    }
+  };
+  check();
+});
+
+// Check authentication and admin status
+async function checkAdminAccess() {
+  const { auth } = await waitForFirebase();
+  
+  return new Promise((resolve) => {
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      
+      if (!user) {
+        window.location.href = '/pages/auth';
+        return;
+      }
+      
+      // Admin access with manual Claims setup button
+      if (user.email === 'shalom.cohen.111@gmail.com') {
+        console.log('✅ Admin user detected:', user.email);
+        
+        // Debug: Check token claims
+        user.getIdTokenResult().then(idTokenResult => {
+          console.log('🔍 Token claims:', idTokenResult.claims);
+          console.log('🔍 Admin claim:', idTokenResult.claims.admin);
+          console.log('🔍 Email claim:', idTokenResult.claims.email);
+        });
+        
+        // Show admin access info with claims setup button
+        document.querySelector('.admin-panel').insertAdjacentHTML('afterbegin', `
+          <div style="background: #dcfce7; border: 1px solid #16a34a; border-radius: 8px; padding: 1rem; margin-bottom: 2rem;">
+            <strong>👑 Admin Access:</strong> You're logged in as the admin user.
+            <div style="margin-top: 0.5rem; color: var(--c-muted); font-size: 0.9rem;">
+              <strong>✅ Admin Panel is fully functional!</strong><br>
+              You can approve/reject apps, manage the platform, and all features work perfectly.
+            </div>
+            <div style="margin-top: 1rem;">
+              <button id="setup-claims-btn" style="background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                🔧 Setup Firebase Claims (for Profile Button)
+              </button>
+              <span id="claims-status" style="margin-left: 1rem; font-size: 0.9rem;"></span>
+            </div>
+          </div>
+        `);
+        
+        initializeAdminPanel();
+        
+        // Setup claims button functionality
+        document.getElementById('setup-claims-btn')?.addEventListener('click', async () => {
+          const btn = document.getElementById('setup-claims-btn');
+          const status = document.getElementById('claims-status');
+          
+          btn.disabled = true;
+          btn.textContent = '⏳ Setting up...';
+          status.textContent = '';
+          
+          try {
+            // Check current claims first
+            const idTokenResult = await user.getIdTokenResult();
+            if (idTokenResult.claims.admin === true) {
+              status.innerHTML = '<span style="color: #16a34a;">✅ Already set up!</span>';
+              btn.textContent = '✅ Claims Ready';
+              return;
+            }
+            
+            // For now, just show manual instructions since Cloud Functions require Blaze plan
+            throw new Error('Manual setup required');
+            
+          } catch (error) {
+            console.error('Claims setup error:', error);
+            status.innerHTML = `
+              <div style="color: #dc2626; font-size: 0.8rem;">
+                ❌ Auto-setup failed. Manual setup needed:<br>
+                1. Go to Firebase Console → Authentication → Users<br>
+                2. Find your user → Click menu → Set custom claims<br>
+                3. Add: {"admin": true, "role": "admin"}
+              </div>
+            `;
+            btn.textContent = '❌ Manual Setup Needed';
+          } finally {
+            btn.disabled = false;
+          }
+        });
+      } else {
+        // Not the admin user
+        document.querySelector('.admin-panel').innerHTML = `
+          <div style="text-align: center; padding: 4rem;">
+            <h2>🔒 Access Denied</h2>
+            <p>This admin panel is restricted to authorized users only.</p>
+            <p style="color: var(--c-muted); font-size: 0.9rem;">Current user: ${user.email}</p>
+            <div style="margin-top: 2rem;">
+              <a href="/" class="btn primary">Go to Homepage</a>
+              <a href="/pages/profile/" class="btn secondary" style="margin-left: 1rem;">My Profile</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      resolve(true);
+    });
+  });
+}
+
+// Initialize admin panel
+async function initializeAdminPanel() {
+  loadAppStats();
+  loadApps(currentFilter);
+  
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      currentFilter = btn.dataset.status;
+      loadApps(currentFilter);
+    });
+  });
+  
+  // Initialize promotion modal
+  initializePromotionModal();
+  
+  // Initialize app details modal
+  initializeAppDetailsModal();
+  
+  // Initialize delete confirmation modal
+  initializeDeleteConfirmationModal();
+}
+
+// Load app statistics
+async function loadAppStats() {
+  try {
+    const { db } = await waitForFirebase();
+    
+    const appsSnapshot = await getDocs(collection(db, 'apps'));
+    const stats = {
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      featured: 0,
+      editor: 0
+    };
+    
+    appsSnapshot.forEach(doc => {
+      const app = doc.data();
+      stats[app.status] = (stats[app.status] || 0) + 1;
+      
+      if (app.featured?.active) {
+        stats.featured++;
+      }
+      
+      if (app.editor_pick === true) {
+        stats.editor++;
+      }
+    });
+    
+    document.getElementById('pending-count').textContent = stats.pending || 0;
+    document.getElementById('approved-count').textContent = stats.approved || 0;
+    document.getElementById('rejected-count').textContent = stats.rejected || 0;
+    document.getElementById('featured-count').textContent = stats.featured || 0;
+    document.getElementById('editor-count').textContent = stats.editor || 0;
+    
+  } catch (error) {
+    console.error('Error loading stats:', error);
+  }
+}
+
+// Load apps
+async function loadApps(status = 'pending') {
+  try {
+    const { db } = await waitForFirebase();
+    
+    document.getElementById('loading-state').style.display = 'block';
+    document.getElementById('apps-list').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'none';
+    
+    let appsQuery = collection(db, 'apps');
+    
+    if (status === 'promoted') {
+      // For promoted apps, we'll filter client-side since we need OR logic
+      appsQuery = query(appsQuery, where('status', '==', 'approved'), orderBy('createdAt', 'desc'));
+    } else if (status !== 'all') {
+      appsQuery = query(appsQuery, where('status', '==', status), orderBy('createdAt', 'desc'));
+    } else {
+      appsQuery = query(appsQuery, orderBy('createdAt', 'desc'));
+    }
+    
+    const unsubscribe = onSnapshot(appsQuery, (snapshot) => {
+      appsData = [];
+      snapshot.forEach((doc) => {
+        const appData = {
+          firestoreId: doc.id,  // The actual Firestore document ID
+          id: doc.data().id || doc.id,  // App's internal ID or fallback to document ID
+          ...doc.data()
+        };
+        
+        // Debug logging
+        console.log(`📱 App loaded: "${appData.title}" - Firestore ID: ${appData.firestoreId}, Internal ID: ${appData.id}`);
+        
+        // Filter promoted apps client-side
+        if (status === 'promoted') {
+          const isFeatured = appData.featured && appData.featured.active === true;
+          const isEditorPick = appData.editor_pick === true;
+          if (isFeatured || isEditorPick) {
+            appsData.push(appData);
+          }
+        } else {
+          appsData.push(appData);
+        }
+      });
+      
+      console.log(`📊 Total apps loaded for status "${status}":`, appsData.length);
+      renderApps();
+    });
+    
+  } catch (error) {
+    console.error('Error loading apps:', error);
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'block';
+  }
+}
+
+// Render apps list
+function renderApps() {
+  const appsList = document.getElementById('apps-list');
+  const loadingState = document.getElementById('loading-state');
+  const emptyState = document.getElementById('empty-state');
+  
+  loadingState.style.display = 'none';
+  
+  if (appsData.length === 0) {
+    appsList.style.display = 'none';
+    emptyState.style.display = 'block';
+    return;
+  }
+  
+  emptyState.style.display = 'none';
+  appsList.style.display = 'block';
+  
+  appsList.innerHTML = appsData.map(app => createAppItemHTML(app)).join('');
+  
+  appsList.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', handleAppAction);
+  });
+}
+
+// Create app item HTML
+function createAppItemHTML(app) {
+  const createdAt = app.createdAt?.toDate ? app.createdAt.toDate().toLocaleDateString() : 'Unknown';
+  const initials = app.title.substring(0, 2).toUpperCase();
+  
+  return `
+    <div class="app-item clickable-app" data-app-id="${app.firestoreId}">
+      <div class="app-icon">${initials}</div>
+      
+      <div class="app-info">
+        <h3 class="app-title">${app.title}</h3>
+        <div class="app-meta">
+          <span>${Array.isArray(app.niche) ? app.niche.join(', ') : app.niche}</span>
+          <span>•</span>
+          <span>${app.category}</span>
+          <span>•</span>
+          <span>Submitted: ${createdAt}</span>
+          <span>•</span>
+          <span>By: ${app.submitterEmail || 'Unknown'}</span>
+        </div>
+        <p class="app-description">${app.description}</p>
+        <div class="feature-badges">
+          ${app.featured?.active ? '<span class="feature-badge featured">FEATURED</span>' : ''}
+          ${app.editor_pick ? '<span class="feature-badge editor">EDITOR\'S CHOICE</span>' : ''}
+        </div>
+      </div>
+      
+      <div class="app-status">
+        <div class="status-badge ${app.status}">${app.status.toUpperCase()}</div>
+        
+        <div class="app-actions">
+          <button class="action-btn view-details" data-action="view-details" data-app-id="${app.firestoreId}">
+            👁️ View Details
+          </button>
+          
+          ${app.status === 'pending' ? `
+            <button class="action-btn quick-approve" data-action="approve" data-app-id="${app.firestoreId}">
+              ✓ Approve
+            </button>
+            <button class="action-btn quick-reject" data-action="reject" data-app-id="${app.firestoreId}">
+              ✗ Reject
+            </button>
+          ` : ''}
+          
+          ${app.status === 'approved' ? `
+            <button class="action-btn manage-promotions" data-action="promotions" data-app-id="${app.firestoreId}">
+              🏆 Manage Promotions
+            </button>
+          ` : ''}
+          
+          ${currentFilter === 'all' ? `
+            <button class="action-btn delete-app" data-action="delete" data-app-id="${app.firestoreId}">
+              🗑️ Delete App
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Handle app actions
+async function handleAppAction(event) {
+  const action = event.target.dataset.action;
+  const appId = event.target.dataset.appId;
+  
+  try {
+    if (action === 'view-details') {
+      openAppDetailsModal(appId);
+    } else if (action === 'approve') {
+      await updateAppStatus(appId, 'approved');
+      loadAppStats();
+    } else if (action === 'reject') {
+      const reason = prompt('Rejection reason (optional):');
+      await updateAppStatus(appId, 'rejected', reason);
+      loadAppStats();
+    } else if (action === 'promotions') {
+      openPromotionModal(appId);
+    } else if (action === 'delete') {
+      openDeleteConfirmationModal(appId);
+    }
+  } catch (error) {
+    console.error('Error handling action:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Update app status
+async function updateAppStatus(appId, status, reason = null) {
+  const { db } = await waitForFirebase();
+  const appRef = doc(db, 'apps', appId);
+  
+  const updateData = {
+    status: status,
+    updatedAt: new Date()
+  };
+  
+  if (reason) {
+    updateData.rejection_reason = reason;
+  }
+  
+  await updateDoc(appRef, updateData);
+}
+
+// Initialize app details modal
+function initializeAppDetailsModal() {
+  const modal = document.getElementById('app-details-modal');
+  const closeBtn = document.getElementById('app-details-close');
+  const cancelBtn = document.getElementById('cancel-app-details');
+  const saveBtn = document.getElementById('save-app-changes');
+  const approveBtn = document.getElementById('approve-from-modal');
+  const rejectBtn = document.getElementById('reject-from-modal');
+  const statusSelect = document.getElementById('edit-status');
+  const rejectionGroup = document.getElementById('rejection-reason-group');
+  
+  // Close modal handlers
+  closeBtn.addEventListener('click', closeAppDetailsModal);
+  cancelBtn.addEventListener('click', closeAppDetailsModal);
+  
+  // Click outside to close
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeAppDetailsModal();
+    }
+  });
+  
+  // Status change handler
+  statusSelect.addEventListener('change', () => {
+    const isRejected = statusSelect.value === 'rejected';
+    rejectionGroup.style.display = isRejected ? 'block' : 'none';
+  });
+  
+  // Action handlers
+  saveBtn.addEventListener('click', saveAppChanges);
+  approveBtn.addEventListener('click', () => approveAppFromModal());
+  rejectBtn.addEventListener('click', () => rejectAppFromModal());
+  
+  // Image preview handler
+  document.getElementById('open-image-btn').addEventListener('click', () => {
+    const imageUrl = document.getElementById('app-image-preview').src;
+    if (imageUrl) {
+      window.open(imageUrl, '_blank');
+    }
+  });
+  
+  // Real-time image preview update
+  document.getElementById('edit-image-url').addEventListener('input', (e) => {
+    const imageUrl = e.target.value.trim();
+    const imageSection = document.getElementById('app-image-section');
+    const imagePreview = document.getElementById('app-image-preview');
+    const imageUrlDisplay = document.getElementById('image-url-display');
+    
+    if (imageUrl) {
+      imageSection.style.display = 'block';
+      imagePreview.src = imageUrl;
+      imageUrlDisplay.textContent = imageUrl;
+      
+      imagePreview.onerror = () => {
+        imageSection.style.display = 'none';
+      };
+    } else {
+      imageSection.style.display = 'none';
+    }
+  });
+  
+  // Also handle clicking on app items (not just the button)
+  document.addEventListener('click', (e) => {
+    const appItem = e.target.closest('.clickable-app');
+    if (appItem && !e.target.closest('.app-actions')) {
+      const appId = appItem.dataset.appId;
+      openAppDetailsModal(appId);
+    }
+  });
+}
+
+// Open app details modal
+async function openAppDetailsModal(appId) {
+  currentAppForDetails = appId;
+  
+  // Find the app data using firestoreId
+  const app = appsData.find(a => a.firestoreId === appId);
+  if (!app) {
+    alert('App not found');
+    return;
+  }
+  
+  // Update modal title
+  document.querySelector('.app-details-modal-title').textContent = `${app.title} - Details`;
+  
+  // Populate form fields
+  document.getElementById('edit-title').value = app.title || '';
+  document.getElementById('edit-description').value = app.description || '';
+  document.getElementById('edit-category').value = app.category || '';
+  document.getElementById('edit-niche').value = Array.isArray(app.niche) ? app.niche[0] : app.niche || '';
+  document.getElementById('edit-link').value = app.link || '';
+  document.getElementById('edit-platform').value = app.platform || '';
+  document.getElementById('edit-image-url').value = app.imageUrl || app.image || app.icon || '';
+  document.getElementById('edit-submitter').value = app.submitterEmail || '';
+  document.getElementById('edit-submitted').value = app.createdAt?.toDate ? app.createdAt.toDate().toLocaleDateString() : 'Unknown';
+  document.getElementById('edit-status').value = app.status || 'pending';
+  document.getElementById('edit-rejection-reason').value = app.rejection_reason || '';
+  
+  // Handle app image preview
+  const imageSection = document.getElementById('app-image-section');
+  const imagePreview = document.getElementById('app-image-preview');
+  const imageUrlDisplay = document.getElementById('image-url-display');
+  
+  if (app.imageUrl || app.image || app.icon) {
+    const imageUrl = app.imageUrl || app.image || app.icon;
+    
+    // Show image section
+    imageSection.style.display = 'block';
+    
+    // Set image source
+    imagePreview.src = imageUrl;
+    imagePreview.onerror = () => {
+      // If image fails to load, hide the section
+      imageSection.style.display = 'none';
+    };
+    
+    // Display image URL
+    imageUrlDisplay.textContent = imageUrl;
+  } else {
+    // Hide image section if no image
+    imageSection.style.display = 'none';
+  }
+  
+  // Show/hide rejection reason based on status
+  const rejectionGroup = document.getElementById('rejection-reason-group');
+  rejectionGroup.style.display = app.status === 'rejected' ? 'block' : 'none';
+  
+  // Show modal
+  document.getElementById('app-details-modal').classList.add('active');
+}
+
+// Close app details modal
+function closeAppDetailsModal() {
+  document.getElementById('app-details-modal').classList.remove('active');
+  currentAppForDetails = null;
+}
+
+// Save app changes
+async function saveAppChanges() {
+  if (!currentAppForDetails) return;
+  
+  const saveBtn = document.getElementById('save-app-changes');
+  const originalText = saveBtn.textContent;
+  
+  try {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+    
+    const { db } = await waitForFirebase();
+    const appRef = doc(db, 'apps', currentAppForDetails);
+    
+    // Get form values
+    const updateData = {
+      title: document.getElementById('edit-title').value.trim(),
+      description: document.getElementById('edit-description').value.trim(),
+      category: document.getElementById('edit-category').value,
+      niche: document.getElementById('edit-niche').value,
+      link: document.getElementById('edit-link').value.trim(),
+      platform: document.getElementById('edit-platform').value.trim(),
+      status: document.getElementById('edit-status').value,
+      updatedAt: new Date()
+    };
+    
+    // Add image URL if provided
+    const imageUrl = document.getElementById('edit-image-url').value.trim();
+    if (imageUrl) {
+      updateData.imageUrl = imageUrl;
+    }
+    
+    // Add rejection reason if status is rejected
+    if (updateData.status === 'rejected') {
+      const rejectionReason = document.getElementById('edit-rejection-reason').value.trim();
+      if (rejectionReason) {
+        updateData.rejection_reason = rejectionReason;
+      }
+    }
+    
+    await updateDoc(appRef, updateData);
+    
+    // Refresh stats and close modal
+    loadAppStats();
+    closeAppDetailsModal();
+    
+    // Show success message
+    const app = appsData.find(a => a.firestoreId === currentAppForDetails);
+    alert(`App "${app?.title}" updated successfully`);
+    
+  } catch (error) {
+    console.error('Error saving app changes:', error);
+    alert('Error saving changes: ' + error.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalText;
+  }
+}
+
+// Approve app from modal
+async function approveAppFromModal() {
+  if (!currentAppForDetails) return;
+  
+  try {
+    // First save any changes
+    await saveAppChanges();
+    
+    // Then approve
+    await updateAppStatus(currentAppForDetails, 'approved');
+    loadAppStats();
+    closeAppDetailsModal();
+    
+    const app = appsData.find(a => a.firestoreId === currentAppForDetails);
+    alert(`App "${app?.title}" approved successfully`);
+    
+  } catch (error) {
+    console.error('Error approving app:', error);
+    alert('Error approving app: ' + error.message);
+  }
+}
+
+// Reject app from modal
+async function rejectAppFromModal() {
+  if (!currentAppForDetails) return;
+  
+  try {
+    // Get rejection reason
+    const rejectionReason = document.getElementById('edit-rejection-reason').value.trim();
+    
+    if (!rejectionReason) {
+      alert('Please provide a rejection reason');
+      return;
+    }
+    
+    // First save any changes (including rejection reason)
+    document.getElementById('edit-status').value = 'rejected';
+    await saveAppChanges();
+    
+    // Then reject
+    await updateAppStatus(currentAppForDetails, 'rejected', rejectionReason);
+    loadAppStats();
+    closeAppDetailsModal();
+    
+    const app = appsData.find(a => a.firestoreId === currentAppForDetails);
+    alert(`App "${app?.title}" rejected successfully`);
+    
+  } catch (error) {
+    console.error('Error rejecting app:', error);
+    alert('Error rejecting app: ' + error.message);
+  }
+}
+
+// Initialize promotion modal
+function initializePromotionModal() {
+  const modal = document.getElementById('promotion-modal');
+  const closeBtn = document.getElementById('modal-close');
+  const cancelBtn = document.getElementById('cancel-promotions');
+  const saveBtn = document.getElementById('save-promotions');
+  
+  const featuredToggle = document.getElementById('featured-toggle');
+  const featuredSwitch = document.getElementById('featured-switch');
+  const featuredDuration = document.getElementById('featured-duration');
+  
+  const editorToggle = document.getElementById('editor-toggle');
+  const editorSwitch = document.getElementById('editor-switch');
+  
+  // Close modal handlers
+  closeBtn.addEventListener('click', closePromotionModal);
+  cancelBtn.addEventListener('click', closePromotionModal);
+  
+  // Click outside to close
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closePromotionModal();
+    }
+  });
+  
+  // Featured toggle
+  featuredToggle.addEventListener('click', () => {
+    const isActive = featuredSwitch.classList.toggle('active');
+    featuredToggle.classList.toggle('active', isActive);
+    featuredDuration.classList.toggle('active', isActive);
+  });
+  
+  // Editor's choice toggle
+  editorToggle.addEventListener('click', () => {
+    const isActive = editorSwitch.classList.toggle('active');
+    editorToggle.classList.toggle('active', isActive);
+  });
+  
+  // Save promotions
+  saveBtn.addEventListener('click', savePromotions);
+}
+
+// Open promotion modal for specific app
+async function openPromotionModal(appId) {
+  currentAppForPromotion = appId;
+  
+  // Find the app data using firestoreId
+  const app = appsData.find(a => a.firestoreId === appId);
+  if (!app) {
+    alert('App not found');
+    return;
+  }
+  
+  // Update modal title
+  document.querySelector('.promotion-modal-title').textContent = `Manage Promotions - ${app.title}`;
+  
+  // Set current promotion states
+  const isFeatured = app.featured && app.featured.active === true;
+  const isEditorPick = app.editor_pick === true;
+  
+  // Featured status
+  const featuredToggle = document.getElementById('featured-toggle');
+  const featuredSwitch = document.getElementById('featured-switch');
+  const featuredDuration = document.getElementById('featured-duration');
+  
+  featuredSwitch.classList.toggle('active', isFeatured);
+  featuredToggle.classList.toggle('active', isFeatured);
+  featuredDuration.classList.toggle('active', isFeatured);
+  
+  // Editor's choice status
+  const editorToggle = document.getElementById('editor-toggle');
+  const editorSwitch = document.getElementById('editor-switch');
+  
+  editorSwitch.classList.toggle('active', isEditorPick);
+  editorToggle.classList.toggle('active', isEditorPick);
+  
+  // Show modal
+  document.getElementById('promotion-modal').classList.add('active');
+}
+
+// Close promotion modal
+function closePromotionModal() {
+  document.getElementById('promotion-modal').classList.remove('active');
+  currentAppForPromotion = null;
+}
+
+// Save promotion changes
+async function savePromotions() {
+  if (!currentAppForPromotion) return;
+  
+  const saveBtn = document.getElementById('save-promotions');
+  const originalText = saveBtn.textContent;
+  
+  try {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+    
+    console.log('🔍 Attempting to update app with Firestore ID:', currentAppForPromotion);
+    
+    const { db } = await waitForFirebase();
+    const appRef = doc(db, 'apps', currentAppForPromotion);
+    
+    // First, check if the document exists
+    const { getDoc } = await waitForFirebase().then(fb => fb.storeMod);
+    const docSnap = await getDoc(appRef);
+    
+    if (!docSnap.exists()) {
+      throw new Error(`Document does not exist: ${currentAppForPromotion}. Please refresh the page and try again.`);
+    }
+    
+    console.log('✅ Document exists, proceeding with update...');
+    
+    // Get current states
+    const isFeaturedActive = document.getElementById('featured-switch').classList.contains('active');
+    const isEditorActive = document.getElementById('editor-switch').classList.contains('active');
+    
+    const updateData = {};
+    
+    // Handle featured status
+    if (isFeaturedActive) {
+      const durationValue = parseInt(document.getElementById('featured-duration-value').value) || 30;
+      const durationUnit = document.getElementById('featured-duration-unit').value;
+      
+      let durationInDays = durationValue;
+      if (durationUnit === 'weeks') {
+        durationInDays = durationValue * 7;
+      } else if (durationUnit === 'months') {
+        durationInDays = durationValue * 30;
+      }
+      
+      const now = new Date();
+      const endDate = new Date(now.getTime() + (durationInDays * 24 * 60 * 60 * 1000));
+      
+      updateData.featured = {
+        active: true,
+        startAt: now,
+        endAt: endDate
+      };
+    } else {
+      updateData.featured = {
+        active: false
+      };
+    }
+    
+    // Handle editor's choice status
+    updateData.editor_pick = isEditorActive;
+    
+    // Update timestamp
+    updateData.updatedAt = new Date();
+    
+    await updateDoc(appRef, updateData);
+    
+    // Refresh stats and close modal
+    loadAppStats();
+    closePromotionModal();
+    
+    // Show success message
+    const app = appsData.find(a => a.firestoreId === currentAppForPromotion);
+    alert(`Promotions updated successfully for "${app?.title}"`);
+    
+  } catch (error) {
+    console.error('Error saving promotions:', error);
+    alert('Error saving promotions: ' + error.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalText;
+  }
+}
+
+// Initialize delete confirmation modal
+function initializeDeleteConfirmationModal() {
+  const modal = document.getElementById('delete-confirmation-modal');
+  const closeBtn = document.getElementById('delete-confirmation-close');
+  const cancelBtn = document.getElementById('cancel-delete');
+  const confirmBtn = document.getElementById('confirm-delete');
+  
+  // Close modal handlers
+  closeBtn.addEventListener('click', closeDeleteConfirmationModal);
+  cancelBtn.addEventListener('click', closeDeleteConfirmationModal);
+  
+  // Click outside to close
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeDeleteConfirmationModal();
+    }
+  });
+  
+  // Confirm delete
+  confirmBtn.addEventListener('click', confirmDeleteApp);
+}
+
+// Open delete confirmation modal
+async function openDeleteConfirmationModal(appId) {
+  currentAppForDeletion = appId;
+  
+  // Find the app data using firestoreId
+  const app = appsData.find(a => a.firestoreId === appId);
+  if (!app) {
+    alert('App not found');
+    return;
+  }
+  
+  // Update modal title
+  document.querySelector('.delete-confirmation-modal-title').textContent = `Delete "${app.title}"`;
+  
+  // Populate app preview
+  const appPreview = document.getElementById('delete-app-preview');
+  appPreview.innerHTML = `
+    <h4>${app.title}</h4>
+    <p><strong>Category:</strong> ${app.category}</p>
+    <p><strong>Niche:</strong> ${Array.isArray(app.niche) ? app.niche.join(', ') : app.niche}</p>
+    <p><strong>Status:</strong> ${app.status}</p>
+    <p><strong>Submitted by:</strong> ${app.submitterEmail || 'Unknown'}</p>
+  `;
+  
+  // Show modal
+  document.getElementById('delete-confirmation-modal').classList.add('active');
+}
+
+// Close delete confirmation modal
+function closeDeleteConfirmationModal() {
+  document.getElementById('delete-confirmation-modal').classList.remove('active');
+  currentAppForDeletion = null;
+}
+
+// Confirm and execute app deletion
+async function confirmDeleteApp() {
+  if (!currentAppForDeletion) return;
+  
+  const confirmBtn = document.getElementById('confirm-delete');
+  const originalText = confirmBtn.textContent;
+  
+  try {
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Deleting...';
+    
+    // Get Firebase Functions
+    const { auth } = await waitForFirebase();
+    const functions = getFunctions();
+    const deleteAppFunction = httpsCallable(functions, 'deleteApp');
+    
+    // Call the delete function
+    const result = await deleteAppFunction({ 
+      appId: currentAppForDeletion 
+    });
+    
+    console.log('Delete result:', result.data);
+    
+    // Close modal and refresh data
+    closeDeleteConfirmationModal();
+    loadAppStats();
+    
+    // Show success message
+    const app = appsData.find(a => a.firestoreId === currentAppForDeletion);
+    alert(`App "${app?.title}" has been permanently deleted.\n\nDeleted:\n- App data\n- ${result.data.deletedReviews} reviews\n- ${result.data.deletedInteractions} interactions`);
+    
+  } catch (error) {
+    console.error('Error deleting app:', error);
+    
+    let errorMessage = 'Error deleting app: ';
+    if (error.code === 'permission-denied') {
+      errorMessage += 'You do not have permission to delete apps.';
+    } else if (error.code === 'not-found') {
+      errorMessage += 'App not found.';
+    } else {
+      errorMessage += error.message;
+    }
+    
+    alert(errorMessage);
+  } finally {
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = originalText;
+  }
+}
+
+// Initialize when page loads
+checkAdminAccess();
+</script>

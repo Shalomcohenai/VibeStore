@@ -1,0 +1,19 @@
+title: VibeStore
+tagline: Find a ready-made app for your problem
+description: Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.
+baseurl: ""
+url: ""
+theme: minima
+markdown: kramdown
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: page
+collections:
+  # Reserved for future content types if needed
+  # guides:
+  #   output: true

@@ -1,0 +1,23 @@
+{
+  "name": "vibestore-functions",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "echo \"No build step\"",
+    "serve": "firebase emulators:start --only functions,hosting,firestore,auth",
+    "deploy": "firebase deploy --only functions",
+    "test": "node --version"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.5.0",
+    "firebase-functions": "^4.6.0",
+    "stripe": "^16.0.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}

@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthed() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthed() && (request.auth.token.admin == true || request.auth.token.email == 'shalom.cohen.111@gmail.com');
+    }
+
+    // Allow reading apps collection for listing (filtered by individual document rules)
+    match /apps {
+      allow read: if true; // Individual document permissions still apply
+    }
+
+    // Allow reading approved/published/active apps to everyone, all apps to admin
+    match /apps/{appId} {
+      allow read: if true; // Allow reading all apps for now
+
+      // Create new app as 'pending' by registered users only
+      // DEV MODE: Relaxed validation - only title required
+      allow create: if isAuthed()
+        && request.resource.data.status == 'pending'
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0;
+
+      // Only admin can update/delete apps, but allow users to update likes counter and rating aggregates
+      allow update: if isAdmin() || 
+        (isAuthed() && 
+         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes_count', 'updatedAt']) &&
+          request.resource.data.likes_count is int &&
+          request.resource.data.likes_count >= 0) ||
+         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating_count', 'rating_sum', 'rating_avg', 'updatedAt']) &&
+          request.resource.data.rating_count is int &&
+          request.resource.data.rating_count >= 0 &&
+          request.resource.data.rating_sum is int &&
+          request.resource.data.rating_sum >= 0 &&
+          request.resource.data.rating_avg is number &&
+          request.resource.data.rating_avg >= 0 &&
+          request.resource.data.rating_avg <= 5));
+      allow delete: if isAdmin();
+    }
+
+    // Reviews: allow creation only if user has verified interaction (clicked on app)
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthed()
+        && request.resource.data.appId is string
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.stars >= 1 && request.resource.data.stars <= 5
+        && request.resource.data.text is string
+        && request.resource.data.createdAt is timestamp
+        && exists(/databases/$(database)/documents/interactions/$(request.auth.uid + '_' + request.resource.data.appId));
+      allow update, delete: if isAdmin() || (isAuthed() && request.resource.data.userId == request.auth.uid);
+    }
+
+    // Interactions: allow users to read their own interactions, write by service account
+    match /interactions/{id} {
+      allow read: if isAuthed() && request.auth.uid == id.split('_')[0]; // Allow users to read their own interactions
+      allow write: if isAuthed(); // Allow authenticated users to write interactions (for Open button clicks)
+    }
+
+    // User documents (private data including favorites and lists)
+    match /users/{uid} {
+      allow read, write: if isAuthed() && request.auth.uid == uid;
+      
+      // Allow creating user document with proper structure
+      allow create: if isAuthed() 
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.email is string
+        && request.resource.data.favorites is list
+        && request.resource.data.lists is list
+        && request.resource.data.createdAt is timestamp;
+        
+      // Allow updating user data with proper validation
+      allow update: if isAuthed() 
+        && request.auth.uid == uid
+        && (request.resource.data.favorites is list || !('favorites' in request.resource.data.diff(resource.data).affectedKeys()))
+        && (request.resource.data.lists is list || !('lists' in request.resource.data.diff(resource.data).affectedKeys()))
+        && (request.resource.data.updatedAt is timestamp || !('updatedAt' in request.resource.data.diff(resource.data).affectedKeys()));
+    }
+
+    // Promotions (Stripe webhook writes)
+    match /promotions/{promoId} {
+      allow read: if true;
+      allow write: if isAdmin(); // Or restrict to webhook via callable/admin flow
+    }
+  }
+}

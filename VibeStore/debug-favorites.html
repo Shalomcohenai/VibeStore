@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Favorites - VibeStore</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .debug-section {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #007acc;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #ffeaea;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #eafaf1;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 VibeStore Favorites Debug</h1>
+    
+    <div class="debug-section">
+        <h3>Firebase Connection Status</h3>
+        <div id="firebase-status">Checking...</div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Authentication Status</h3>
+        <div id="auth-status">Checking...</div>
+        <button onclick="signInWithGoogle()">Sign In with Google</button>
+        <button onclick="signOut()">Sign Out</button>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Favorites System Test</h3>
+        <button onclick="testCreateUser()">Create/Get User Data</button>
+        <button onclick="testAddFavorite()">Add Test Favorite</button>
+        <button onclick="testRemoveFavorite()">Remove Test Favorite</button>
+        <button onclick="testLoadFavorites()">Load Favorites</button>
+        <div id="favorites-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>Console Log</h3>
+        <button onclick="clearLog()">Clear Log</button>
+        <div id="console-log" class="log"></div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script type="module" src="/assets/js/firebaseConfig.js"></script>
+    <script type="module" src="/assets/js/favorites.js"></script>
+    
+    <script type="module">
+        // Capture console.log
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logDiv = document.getElementById('console-log');
+        
+        function addToLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : '✅';
+            logDiv.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToLog(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToLog(args.join(' '), 'error');
+        };
+        
+        // Check Firebase status
+        async function checkFirebaseStatus() {
+            const statusDiv = document.getElementById('firebase-status');
+            
+            if (window.$fb && window.$fb.auth && window.$fb.db) {
+                statusDiv.innerHTML = '<span style="color: green;">✅ Firebase Connected</span>';
+                statusDiv.className = 'debug-section success';
+            } else {
+                statusDiv.innerHTML = '<span style="color: red;">❌ Firebase Not Connected</span>';
+                statusDiv.className = 'debug-section error';
+            }
+        }
+        
+        // Check auth status
+        async function checkAuthStatus() {
+            const statusDiv = document.getElementById('auth-status');
+            
+            if (window.$fb && window.$fb.auth) {
+                const user = window.$fb.auth.currentUser;
+                if (user) {
+                    statusDiv.innerHTML = `<span style="color: green;">✅ Signed in as ${user.email}</span>`;
+                    statusDiv.className = 'debug-section success';
+                } else {
+                    statusDiv.innerHTML = '<span style="color: orange;">⚠️ Not signed in</span>';
+                    statusDiv.className = 'debug-section';
+                }
+            } else {
+                statusDiv.innerHTML = '<span style="color: red;">❌ Firebase Auth not available</span>';
+                statusDiv.className = 'debug-section error';
+            }
+        }
+        
+        // Test functions
+        window.signInWithGoogle = async function() {
+            try {
+                const { auth, authMod, provider } = window.$fb;
+                await authMod.signInWithPopup(auth, provider);
+                console.log('Signed in successfully');
+                await checkAuthStatus();
+            } catch (error) {
+                console.error('Sign in error:', error);
+            }
+        };
+        
+        window.signOut = async function() {
+            try {
+                const { auth, authMod } = window.$fb;
+                await authMod.signOut(auth);
+                console.log('Signed out successfully');
+                await checkAuthStatus();
+            } catch (error) {
+                console.error('Sign out error:', error);
+            }
+        };
+        
+        window.testCreateUser = async function() {
+            try {
+                if (!window.VibeStoreFavorites) {
+                    console.error('VibeStoreFavorites not available');
+                    return;
+                }
+                
+                const user = window.$fb.auth.currentUser;
+                if (!user) {
+                    console.error('No user signed in');
+                    return;
+                }
+                
+                const userData = await window.VibeStoreFavorites.getUserData(user.uid);
+                console.log('User data:', userData);
+                document.getElementById('favorites-result').innerHTML = 
+                    `<pre>${JSON.stringify(userData, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('Test create user error:', error);
+            }
+        };
+        
+        window.testAddFavorite = async function() {
+            try {
+                if (!window.VibeStoreFavorites) {
+                    console.error('VibeStoreFavorites not available');
+                    return;
+                }
+                
+                const testAppId = 'test-app-123';
+                const success = await window.VibeStoreFavorites.addToFavorites(testAppId);
+                console.log('Add favorite result:', success);
+                document.getElementById('favorites-result').innerHTML = 
+                    `Add favorite result: ${success}`;
+            } catch (error) {
+                console.error('Test add favorite error:', error);
+            }
+        };
+        
+        window.testRemoveFavorite = async function() {
+            try {
+                if (!window.VibeStoreFavorites) {
+                    console.error('VibeStoreFavorites not available');
+                    return;
+                }
+                
+                const testAppId = 'test-app-123';
+                const success = await window.VibeStoreFavorites.removeFromFavorites(testAppId);
+                console.log('Remove favorite result:', success);
+                document.getElementById('favorites-result').innerHTML = 
+                    `Remove favorite result: ${success}`;
+            } catch (error) {
+                console.error('Test remove favorite error:', error);
+            }
+        };
+        
+        window.testLoadFavorites = async function() {
+            try {
+                if (!window.VibeStoreFavorites) {
+                    console.error('VibeStoreFavorites not available');
+                    return;
+                }
+                
+                const user = window.$fb.auth.currentUser;
+                if (!user) {
+                    console.error('No user signed in');
+                    return;
+                }
+                
+                const userData = await window.VibeStoreFavorites.getUserData(user.uid);
+                const favorites = userData?.favorites || [];
+                console.log('Current favorites:', favorites);
+                document.getElementById('favorites-result').innerHTML = 
+                    `Current favorites: ${JSON.stringify(favorites)}`;
+            } catch (error) {
+                console.error('Test load favorites error:', error);
+            }
+        };
+        
+        window.clearLog = function() {
+            document.getElementById('console-log').textContent = '';
+        };
+        
+        // Initialize
+        const waitForFirebase = () => new Promise(resolve => {
+            const check = () => {
+                if (window.$fb && window.$fb.auth && window.$fb.db) {
+                    resolve(window.$fb);
+                } else {
+                    setTimeout(check, 100);
+                }
+            };
+            check();
+        });
+        
+        async function initialize() {
+            console.log('Initializing debug page...');
+            
+            await waitForFirebase();
+            console.log('Firebase ready');
+            
+            await checkFirebaseStatus();
+            await checkAuthStatus();
+            
+            // Listen for auth state changes
+            window.$fb.authMod.onAuthStateChanged(window.$fb.auth, (user) => {
+                checkAuthStatus();
+            });
+            
+            console.log('Debug page initialized');
+        }
+        
+        // Start initialization
+        initialize();
+    </script>
+</body>
+</html>

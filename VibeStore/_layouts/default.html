@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% include head.html %}
+    {% seo %}
+  </head>
+  <body class="body">
+    <!-- Dynamic background -->
+    <div class="dynamic-bg" aria-hidden="true">
+      <div class="floating-shape"></div>
+      <div class="floating-shape"></div>
+      <div class="floating-shape"></div>
+    </div>
+    
+    {% include header.html %}
+    <main class="container">
+      {{ content }}
+    </main>
+    {% include footer.html %}
+        {% include analytics.html %}
+        <!-- Firebase config must load first -->
+        <script type="module" src="{{ '/assets/js/firebaseConfig.js' | relative_url }}?v={{ site.data.site.cache_bust }}"></script>
+        <!-- Other scripts load after Firebase is ready -->
+        <script src="{{ '/assets/js/firestore-apps.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/favorites.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% if page.url == '/pages/my-tools' or page.url == '/pages/app' or page.url == '/pages/profile' or page.url == '/pages/profile/' or page.url == '/' or page.url == '/pages/results' %}
+        <script src="{{ '/assets/js/lists.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% endif %}
+        {% if page.url == '/pages/my-tools' %}
+        <script src="{{ '/assets/js/firestore-test.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% endif %}
+        <script src="{{ '/assets/js/app.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+    </body>
+</html>

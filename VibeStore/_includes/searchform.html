@@ -1,0 +1,8 @@
+<form class="search" action="{{ '/pages/results' | relative_url }}" method="get">
+  <div class="search-container" style="position: relative;">
+    <input class="input" type="text" name="q" placeholder="What problem do you need a solution for?" aria-label="Search apps" id="search-input" />
+    <button type="submit" class="search-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 0.8rem 1.8rem; border-radius: 25px; border: none; background: var(--c-primary); color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+      {% include icon.html name="magnifying-glass" class="search-icon w-5 h-5" %}
+    </button>
+  </div>
+</form>

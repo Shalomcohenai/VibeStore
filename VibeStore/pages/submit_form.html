@@ -1,0 +1,1076 @@
+---
+title: Submit an App
+layout: page
+permalink: /pages/submit-form
+---
+
+<div class="container">
+  <div class="page-content" style="max-width: 800px; margin: 0 auto;">
+    <h1 class="page-title center">Submit Your App</h1>
+    <div class="dev-notice" style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem; margin-bottom: 2rem; text-align: center;">
+      <strong>🚧 Development Mode</strong><br>
+      <span style="font-size: 0.9rem; color: #92400e;">Only app title is required for testing. All other fields are optional.</span>
+    </div>
+    <p class="help center" style="margin-bottom: 2rem; font-size: 1.1rem;">
+      Share your amazing app with the VibeStore community. All submissions are reviewed by our team.
+    </p>
+
+    <form id="submitAppForm" class="submit-form">
+      <!-- Basic Information -->
+      <div class="form-section">
+        <h3 class="section-title">Basic Information</h3>
+        
+        <div class="form-group">
+          <label for="title" class="form-label">App Title *</label>
+          <input 
+            id="title"
+            class="input" 
+            name="title" 
+            placeholder="Enter your app's name" 
+            required 
+            maxlength="60"
+          />
+          <div class="field-help">Choose a clear, descriptive name (max 60 characters)</div>
+        </div>
+
+        <div class="form-group">
+          <label for="shortTitle" class="form-label">Short Title for SEO <span class="dev-optional">(Optional in dev mode)</span></label>
+          <input 
+            id="shortTitle"
+            class="input" 
+            name="shortTitle" 
+            placeholder="Brief title for search engines and meta description" 
+            maxlength="90"
+          />
+          <div class="field-help">
+            <span id="short-title-count">0</span>/90 characters. Used for SEO and meta descriptions.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description" class="form-label">Short Description <span class="dev-optional">(Optional in dev mode)</span></label>
+          <textarea 
+            id="description"
+            class="input description-textarea" 
+            name="description" 
+            placeholder="Briefly describe what your app does and its main benefits" 
+            maxlength="300"
+            rows="4"
+          ></textarea>
+          <div class="field-help">
+            <span id="char-count">0</span>/300 characters. Focus on key features and benefits.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="longDescription" class="form-label">Detailed Description <span class="optional">(Optional)</span></label>
+          <textarea 
+            id="longDescription"
+            class="input long-description-textarea" 
+            name="longDescription" 
+            placeholder="Provide a comprehensive description of your app, its features, benefits, and use cases. This will help users understand your app better." 
+            maxlength="2000" 
+            rows="8"
+          ></textarea>
+          <div class="field-help">
+            <span id="long-char-count">0</span>/2000 characters. Detailed information about your app.
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">App Type <span class="dev-optional">(Optional in dev mode)</span></label>
+            <div class="checkbox-group" id="appTypeGroup">
+              <label class="checkbox-item">
+                <input type="checkbox" name="niche" value="web" id="niche-web">
+                <span class="checkbox-custom"></span>
+                <span class="checkbox-label">
+                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" style="display: inline-block; margin-right: 0.5rem; vertical-align: middle;">
+                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM6.262 6.072a8.25 8.25 0 1 0 10.562-.766 4.5 4.5 0 0 1-1.318 1.357L14.25 7.5l.165.33a.75.75 0 0 1-1.224.87l-.604-.302a1.5 1.5 0 0 0-1.122 0l-.604.302a.75.75 0 0 1-1.224-.87l.165-.33-1.156-.578a4.5 4.5 0 0 1-1.318-1.357Z" clip-rule="evenodd" />
+                  </svg>
+                  Web App
+                </span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="niche" value="mobile" id="niche-mobile">
+                <span class="checkbox-custom"></span>
+                <span class="checkbox-label">
+                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" style="display: inline-block; margin-right: 0.5rem; vertical-align: middle;">
+                    <path d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                  </svg>
+                  Mobile App
+                </span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="niche" value="whatsapp" id="niche-whatsapp">
+                <span class="checkbox-custom"></span>
+                <span class="checkbox-label">
+                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" style="display: inline-block; margin-right: 0.5rem; vertical-align: middle;">
+                    <path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                  </svg>
+                  WhatsApp Agent
+                </span>
+              </label>
+            </div>
+            <div class="field-help">Select all platforms where your app is available</div>
+          </div>
+
+          <div class="form-group">
+            <label for="category" class="form-label">Category <span class="dev-optional">(Optional in dev mode)</span></label>
+            <select class="input" name="category" id="category">
+              <option value="">Select category</option>
+              <option value="productivity">Productivity</option>
+              <option value="finance">Finance</option>
+              <option value="support">Support</option>
+              <option value="ecommerce">E-commerce</option>
+              <option value="education">Education</option>
+              <option value="personal">Personal</option>
+              <option value="analytics">Analytics</option>
+              <option value="operations">Operations</option>
+              <option value="marketing">Marketing</option>
+              <option value="dev-tools">Dev Tools</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="platform" class="form-label">Built With <span class="dev-optional">(Optional in dev mode)</span></label>
+            <input 
+              id="platform"
+              class="input" 
+              name="platform" 
+              placeholder="e.g., Bubble, Glide, React, Flutter" 
+            />
+            <div class="field-help">What platform or technology was used to build this app?</div>
+          </div>
+
+          <div class="form-group">
+            <label for="link" class="form-label">App Link <span class="dev-optional">(Optional in dev mode)</span></label>
+            <input 
+              id="link"
+              class="input" 
+              name="link" 
+              placeholder="https://yourapp.com" 
+              type="url" 
+            />
+            <div class="field-help">Direct link to your app (website, app store, or wa.me link)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- App Images -->
+      <div class="form-section">
+        <h3 class="section-title">App Images</h3>
+        
+        <!-- App Icon -->
+        <div class="form-group">
+          <label class="form-label">App Icon <span class="dev-optional">(Optional in dev mode)</span></label>
+          <div class="icon-upload-container">
+            <div class="icon-upload-area" id="iconUploadArea">
+              <div class="upload-content">
+                <div class="upload-icon">
+                  <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75V18a.75.75 0 0 1-1.5 0v-5.25H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <h4>Upload App Icon</h4>
+                <p>Square icon, preferably 512x512px</p>
+                <p class="upload-specs">PNG, JPG up to 2MB</p>
+              </div>
+              <input 
+                type="file" 
+                id="iconInput" 
+                name="icon" 
+                accept="image/*" 
+                class="hidden"
+              />
+            </div>
+            
+            <div class="icon-preview hidden" id="iconPreview">
+              <img id="previewIcon" src="" alt="App icon" />
+              <div class="preview-actions">
+                <button type="button" class="btn-remove" id="removeIcon">Remove</button>
+                <button type="button" class="btn-change" id="changeIcon">Change</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Images -->
+        <div class="form-group">
+          <label class="form-label">Screenshots & Additional Images <span class="optional">(Up to 5 images)</span></label>
+          <div class="multiple-upload-container">
+            <div class="upload-area" id="multipleUploadArea">
+              <div class="upload-content">
+                <div class="upload-icon">
+                  <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-2.69 2.69-2.69-2.69a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <h4>Upload Screenshots</h4>
+                <p>Show your app in action</p>
+                <p class="upload-specs">PNG, JPG up to 5MB each • Max 5 images</p>
+              </div>
+              <input 
+                type="file" 
+                id="multipleImageInput" 
+                name="screenshots" 
+                accept="image/*" 
+                multiple
+                class="hidden"
+              />
+            </div>
+            
+            <div class="images-preview-grid" id="imagesPreviewGrid">
+              <!-- Preview images will be added here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Fallback URL inputs -->
+        <div class="form-group">
+          <label for="imageUrl" class="form-label">Or provide image URLs</label>
+          <input 
+            id="imageUrl"
+            class="input" 
+            name="imageUrl" 
+            placeholder="https://example.com/icon.png (App Icon URL)" 
+            type="url"
+          />
+          <div class="field-help">Alternative: provide direct links to your app's images</div>
+        </div>
+      </div>
+
+      <!-- Optional Information -->
+      <div class="form-section">
+        <h3 class="section-title">Additional Information <span class="optional">(Optional)</span></h3>
+        
+        <div class="form-group">
+          <label for="demo" class="form-label">Demo Video</label>
+          <input 
+            id="demo"
+            class="input" 
+            name="demo" 
+            placeholder="https://youtube.com/watch?v=..." 
+            type="url"
+          />
+          <div class="field-help">YouTube, Vimeo, or Loom video showing your app in action</div>
+        </div>
+
+        <div class="form-group">
+          <label for="languages" class="form-label">Supported Languages</label>
+          <input 
+            id="languages"
+            class="input" 
+            name="languages" 
+            placeholder="e.g., English, Spanish, French" 
+          />
+          <div class="field-help">What languages does your app support?</div>
+        </div>
+
+        <div class="form-group">
+          <label for="notes" class="form-label">Additional Notes</label>
+          <textarea 
+            id="notes"
+            class="input notes-textarea" 
+            name="notes" 
+            placeholder="Any special instructions, features, or information for reviewers..." 
+            rows="3"
+            maxlength="500"
+          ></textarea>
+          <div class="field-help">Anything else you'd like us to know about your app?</div>
+        </div>
+      </div>
+
+      <!-- Submission Guidelines -->
+      <div class="guidelines-section">
+        <h4><span class="guideline-icon">📋</span> Submission Guidelines</h4>
+        <ul class="guidelines-list">
+          <li><span class="guideline-icon success">✓</span> Ensure your app is fully functional and accessible</li>
+          <li><span class="guideline-icon success">✓</span> Provide accurate information and working links</li>
+          <li><span class="guideline-icon success">✓</span> Use a clear, professional image/logo</li>
+          <li><span class="guideline-icon error">✗</span> No spam, illegal content, or misleading information</li>
+          <li><span class="guideline-icon error">✗</span> Duplicates may be rejected or merged</li>
+        </ul>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button class="btn primary submit-btn" type="submit" id="submitBtn">
+          <span class="btn-text">Submit for Review</span>
+          <span class="btn-loading hidden">Submitting...</span>
+        </button>
+        <p class="help">Your submission will be reviewed by our team within 24-48 hours.</p>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js';
+
+// Wait for Firebase initialization
+const waitForFb = () => new Promise(r => {
+  const id = setInterval(() => { if (window.$fb) { clearInterval(id); r(window.$fb); } }, 50);
+});
+
+let currentUser = null;
+let uploadedIconFile = null;
+let uploadedScreenshots = [];
+
+// Initialize components
+document.addEventListener('DOMContentLoaded', async () => {
+  const { auth, db, storage } = await waitForFb();
+  
+  // Check authentication state
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    if (!user) {
+      showError('Please sign in to submit an app.');
+      document.getElementById('submitBtn').disabled = true;
+    } else {
+      document.getElementById('submitBtn').disabled = false;
+    }
+  });
+
+  // Initialize form components
+  initializeForm();
+  initializeImageUpload();
+  initializeCharacterCounters();
+  initializeAppTypeValidation(); // Safe to call - does nothing in dev mode
+});
+
+// Form initialization
+function initializeForm() {
+  const form = document.getElementById('submitAppForm');
+  form.addEventListener('submit', handleSubmit);
+
+  // Real-time validation
+  const requiredFields = ['title', 'shortTitle', 'description', 'category', 'platform', 'link'];
+  requiredFields.forEach(field => {
+    const input = document.getElementById(field);
+    if (input) {
+      input.addEventListener('blur', () => validateField(field));
+      input.addEventListener('input', () => clearFieldError(field));
+    }
+  });
+}
+
+// Image upload functionality
+function initializeImageUpload() {
+  initializeIconUpload();
+  initializeMultipleImageUpload();
+}
+
+// Icon upload
+function initializeIconUpload() {
+  const uploadArea = document.getElementById('iconUploadArea');
+  const fileInput = document.getElementById('iconInput');
+  const imagePreview = document.getElementById('iconPreview');
+  const previewImg = document.getElementById('previewIcon');
+  const removeBtn = document.getElementById('removeIcon');
+  const changeBtn = document.getElementById('changeIcon');
+
+  // Click to upload
+  uploadArea.addEventListener('click', () => fileInput.click());
+  
+  // File input change
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) handleIconSelect(file);
+  });
+
+  // Drag and drop
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) handleIconSelect(file);
+  });
+
+  // Remove image
+  removeBtn.addEventListener('click', () => {
+    uploadedIconFile = null;
+    fileInput.value = '';
+    uploadArea.classList.remove('hidden');
+    imagePreview.classList.add('hidden');
+    clearFieldError('icon');
+  });
+
+  // Change image
+  changeBtn.addEventListener('click', () => fileInput.click());
+}
+
+// Multiple images upload
+function initializeMultipleImageUpload() {
+  const uploadArea = document.getElementById('multipleUploadArea');
+  const fileInput = document.getElementById('multipleImageInput');
+  const previewGrid = document.getElementById('imagesPreviewGrid');
+
+  // Click to upload
+  uploadArea.addEventListener('click', () => fileInput.click());
+  
+  // File input change
+  fileInput.addEventListener('change', (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) handleMultipleFilesSelect(files);
+  });
+
+  // Drag and drop
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) handleMultipleFilesSelect(files);
+  });
+}
+
+// Handle icon selection
+function handleIconSelect(file) {
+  // Validate file
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  const maxSize = 2 * 1024 * 1024; // 2MB
+
+  if (!validTypes.includes(file.type)) {
+    showFieldError('icon', 'Please select a valid image file (JPG, PNG, WebP)');
+    return;
+  }
+
+  if (file.size > maxSize) {
+    showFieldError('icon', 'Icon must be smaller than 2MB');
+    return;
+  }
+
+  // Store file and show preview
+  uploadedIconFile = file;
+  showIconPreview(file);
+  clearFieldError('icon');
+}
+
+// Handle multiple files selection
+function handleMultipleFilesSelect(files) {
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  const maxFiles = 5;
+
+  // Check if adding these files would exceed the limit
+  if (uploadedScreenshots.length + files.length > maxFiles) {
+    showFieldError('screenshots', `Maximum ${maxFiles} images allowed`);
+    return;
+  }
+
+  // Validate each file
+  for (const file of files) {
+    if (!validTypes.includes(file.type)) {
+      showFieldError('screenshots', 'Please select valid image files (JPG, PNG, WebP)');
+      return;
+    }
+
+    if (file.size > maxSize) {
+      showFieldError('screenshots', 'Each image must be smaller than 5MB');
+      return;
+    }
+  }
+
+  // Add files to array and show previews
+  uploadedScreenshots.push(...files);
+  updateScreenshotsPreview();
+  clearFieldError('screenshots');
+}
+
+// Show icon preview
+function showIconPreview(file) {
+  const uploadArea = document.getElementById('iconUploadArea');
+  const imagePreview = document.getElementById('iconPreview');
+  const previewImg = document.getElementById('previewIcon');
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewImg.src = e.target.result;
+    uploadArea.classList.add('hidden');
+    imagePreview.classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+// Update screenshots preview
+function updateScreenshotsPreview() {
+  const previewGrid = document.getElementById('imagesPreviewGrid');
+  
+  previewGrid.innerHTML = '';
+  
+  uploadedScreenshots.forEach((file, index) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const previewItem = document.createElement('div');
+      previewItem.className = 'screenshot-preview';
+      previewItem.innerHTML = `
+        <img src="${e.target.result}" alt="Screenshot ${index + 1}" />
+        <button type="button" class="remove-screenshot" data-index="${index}">×</button>
+      `;
+      
+      previewGrid.appendChild(previewItem);
+      
+      // Add remove functionality
+      previewItem.querySelector('.remove-screenshot').addEventListener('click', () => {
+        removeScreenshot(index);
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Remove screenshot
+function removeScreenshot(index) {
+  uploadedScreenshots.splice(index, 1);
+  updateScreenshotsPreview();
+  
+  // Reset file input
+  document.getElementById('multipleImageInput').value = '';
+}
+
+// Character counters
+function initializeCharacterCounters() {
+  // Short title counter
+  const shortTitleInput = document.getElementById('shortTitle');
+  const shortTitleCounter = document.getElementById('short-title-count');
+
+  shortTitleInput.addEventListener('input', () => {
+    const length = shortTitleInput.value.length;
+    shortTitleCounter.textContent = length;
+    
+    if (length > 80) {
+      shortTitleCounter.style.color = '#dc2626';
+    } else if (length > 70) {
+      shortTitleCounter.style.color = '#f59e0b';
+    } else {
+      shortTitleCounter.style.color = 'var(--c-primary)';
+    }
+  });
+
+  // Description counter
+  const textarea = document.getElementById('description');
+  const counter = document.getElementById('char-count');
+
+  textarea.addEventListener('input', () => {
+    const length = textarea.value.length;
+    counter.textContent = length;
+    
+    if (length > 280) {
+      counter.style.color = '#dc2626';
+    } else if (length > 250) {
+      counter.style.color = '#f59e0b';
+    } else {
+      counter.style.color = 'var(--c-primary)';
+    }
+  });
+
+  // Long description counter
+  const longTextarea = document.getElementById('longDescription');
+  const longCounter = document.getElementById('long-char-count');
+
+  if (longTextarea && longCounter) {
+    longTextarea.addEventListener('input', () => {
+      const length = longTextarea.value.length;
+      longCounter.textContent = length;
+      
+      if (length > 1800) {
+        longCounter.style.color = '#dc2626';
+      } else if (length > 1600) {
+        longCounter.style.color = '#f59e0b';
+      } else {
+        longCounter.style.color = 'var(--c-primary)';
+      }
+    });
+  }
+}
+
+// App type validation - DEV MODE: Disabled
+function initializeAppTypeValidation() {
+  // DEV MODE: Skip adding event listeners
+  console.log('🚧 DEV MODE: App type validation disabled');
+  return;
+  
+  /* PRODUCTION CODE - uncomment when ready
+  const checkboxes = document.querySelectorAll('input[name="niche"]');
+  
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      validateAppType();
+    });
+  });
+  */
+}
+
+function validateAppType() {
+  // DEV MODE: Always return true for testing
+  console.log('🚧 DEV MODE: validateAppType called - returning true');
+  return true;
+  
+  /* PRODUCTION CODE - uncomment when ready
+  const checkboxes = document.querySelectorAll('input[name="niche"]:checked');
+  const group = document.getElementById('appTypeGroup');
+  
+  if (checkboxes.length === 0) {
+    showAppTypeError('Please select at least one app type');
+    return false;
+  } else {
+    clearAppTypeError();
+    return true;
+  }
+  */
+}
+
+// Show app type error
+function showAppTypeError(message) {
+  const appTypeGroup = document.getElementById('appTypeGroup');
+  if (!appTypeGroup) return; // Skip if element doesn't exist
+  
+  const group = appTypeGroup.closest('.form-group');
+  if (!group) return; // Skip if form group doesn't exist
+  
+  const helpText = group.querySelector('.field-help');
+  
+  group.classList.remove('success');
+  group.classList.add('error');
+  if (helpText) {
+    helpText.textContent = message;
+  }
+}
+
+// Clear app type error
+function clearAppTypeError() {
+  const appTypeGroup = document.getElementById('appTypeGroup');
+  if (!appTypeGroup) return; // Skip if element doesn't exist
+  
+  const group = appTypeGroup.closest('.form-group');
+  if (!group) return; // Skip if form group doesn't exist
+  
+  const helpText = group.querySelector('.field-help');
+  
+  group.classList.remove('error', 'success');
+  if (helpText) {
+    helpText.textContent = 'Select all platforms where your app is available';
+  }
+}
+
+// Form submission
+async function handleSubmit(e) {
+  e.preventDefault();
+
+  if (!currentUser) {
+    showError('Please sign in to submit an app.');
+    return;
+  }
+
+  // Validate form
+  if (!validateForm()) {
+    showError('Please fill all required fields correctly.');
+    return;
+  }
+
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = submitBtn.querySelector('.btn-text');
+  const btnLoading = submitBtn.querySelector('.btn-loading');
+
+  try {
+    // Show loading state
+    submitBtn.disabled = true;
+    btnText.classList.add('hidden');
+    btnLoading.classList.remove('hidden');
+    document.querySelector('.submit-form').classList.add('form-loading', 'loading');
+
+    // Get form data
+    const formData = getFormData();
+    
+    // Upload images if provided
+    let iconUrl = formData.imageUrl;
+    let screenshotUrls = [];
+    
+    if (uploadedIconFile) {
+      iconUrl = await uploadImage(uploadedIconFile, 'icon');
+    }
+    
+    if (uploadedScreenshots.length > 0) {
+      for (const screenshot of uploadedScreenshots) {
+        const url = await uploadImage(screenshot, 'screenshot');
+        screenshotUrls.push(url);
+      }
+    }
+
+    // Prepare submission payload
+    const payload = {
+      ...formData,
+      imageUrl: iconUrl,
+      screenshots: screenshotUrls,
+      niche: getSelectedAppTypes(), // Get array of selected types
+      status: 'pending',
+      submittedBy: currentUser.uid,
+      submitterEmail: currentUser.email,
+      rating_sum: 0,
+      rating_count: 0,
+      rating_avg: 0,
+      featured: false,
+      editorChoice: false,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+
+    // Submit to Firestore
+    const { db } = await waitForFb();
+    await addDoc(collection(db, 'apps'), payload);
+
+    // Success - show modal instead of inline message
+    showSuccessModal();
+    resetForm();
+
+  } catch (error) {
+    console.error('Submission error:', error);
+    showError('Failed to submit app. Please try again or contact support if the problem persists.');
+  } finally {
+    // Reset loading state
+    submitBtn.disabled = false;
+    btnText.classList.remove('hidden');
+    btnLoading.classList.add('hidden');
+    document.querySelector('.submit-form').classList.remove('form-loading', 'loading');
+  }
+}
+
+// Upload image to Firebase Storage
+async function uploadImage(file, type = 'image') {
+  const { storage } = await waitForFb();
+  const timestamp = Date.now();
+  const fileName = `app-${type}s/${currentUser.uid}-${timestamp}-${file.name}`;
+  const storageRef = ref(storage, fileName);
+  
+  const snapshot = await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(snapshot.ref);
+  
+  return downloadURL;
+}
+
+// Get selected app types
+function getSelectedAppTypes() {
+  const checkboxes = document.querySelectorAll('input[name="niche"]:checked');
+  const selected = Array.from(checkboxes).map(cb => cb.value);
+  
+  // DEV MODE: Return default if nothing selected
+  return selected.length > 0 ? selected : ['web'];
+}
+
+// Get form data
+function getFormData() {
+  const formData = new FormData(document.getElementById('submitAppForm'));
+  return {
+    title: String(formData.get('title') || '').trim(),
+    shortTitle: String(formData.get('shortTitle') || '').trim(),
+    description: String(formData.get('description') || '').trim(),
+    longDescription: String(formData.get('longDescription') || '').trim(),
+    category: String(formData.get('category') || '').trim(),
+    platform: String(formData.get('platform') || '').trim(),
+    link: String(formData.get('link') || '').trim(),
+    imageUrl: String(formData.get('imageUrl') || '').trim(),
+    demo: String(formData.get('demo') || '').trim(),
+    languages: String(formData.get('languages') || '').trim(),
+    notes: String(formData.get('notes') || '').trim(),
+  };
+}
+
+// Form validation - DEV MODE: Only title required
+function validateForm() {
+  // DEV MODE: Only validate title for testing
+  const requiredFields = ['title'];
+  let isValid = true;
+
+  // Check required fields
+  requiredFields.forEach(field => {
+    if (!validateField(field)) {
+      isValid = false;
+    }
+  });
+
+  // DEV MODE: Skip other validations for testing
+  /*
+  // Check app type selection
+  if (!validateAppType()) {
+    isValid = false;
+  }
+
+  // Check icon (either upload or URL)
+  const imageUrl = document.getElementById('imageUrl').value.trim();
+  if (!uploadedIconFile && !imageUrl) {
+    showFieldError('icon', 'Please provide an app icon - either upload a file or provide a URL');
+    isValid = false;
+  }
+  */
+
+  return isValid;
+}
+
+// Validate individual field - DEV MODE: Relaxed validation
+function validateField(fieldName) {
+  const field = document.getElementById(fieldName);
+  if (!field) return true; // Skip if field doesn't exist
+  
+  const value = field.value.trim();
+
+  clearFieldError(fieldName);
+
+  switch (fieldName) {
+    case 'title':
+      // DEV MODE: Only check if title exists, no minimum length
+      if (!value) {
+        showFieldError(fieldName, 'App title is required');
+        return false;
+      }
+      break;
+
+    // DEV MODE: All other fields are optional for testing
+    case 'shortTitle':
+    case 'description':
+    case 'category':
+    case 'platform':
+      // Skip validation in dev mode
+      break;
+
+    case 'link':
+      // DEV MODE: Only validate URL format if provided
+      if (value && !isValidUrl(value)) {
+        showFieldError(fieldName, 'Please enter a valid URL (must start with http:// or https://)');
+        return false;
+      }
+      break;
+  }
+
+  if (value) {
+    showFieldSuccess(fieldName);
+  }
+  return true;
+}
+
+// URL validation - improved to be more lenient
+function isValidUrl(string) {
+  try {
+    // Add protocol if missing
+    if (!string.startsWith('http://') && !string.startsWith('https://')) {
+      string = 'https://' + string;
+    }
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+// Show field error
+function showFieldError(fieldName, message) {
+  // Handle special case for app type
+  if (fieldName === 'appType') {
+    showAppTypeError(message);
+    return;
+  }
+  
+  const element = document.getElementById(fieldName);
+  if (!element) {
+    console.warn(`Element not found for field: ${fieldName}`);
+    return;
+  }
+  
+  const group = element.closest('.form-group');
+  if (!group) {
+    console.warn(`Form group not found for field: ${fieldName}`);
+    return;
+  }
+  
+  const helpText = group.querySelector('.field-help');
+  
+  group.classList.remove('success');
+  group.classList.add('error');
+  if (helpText) {
+    helpText.textContent = message;
+  }
+}
+
+// Show field success
+function showFieldSuccess(fieldName) {
+  const group = document.getElementById(fieldName).closest('.form-group');
+  group.classList.remove('error');
+  group.classList.add('success');
+}
+
+// Clear field error
+function clearFieldError(fieldName) {
+  let element;
+  
+  // Handle special cases
+  if (fieldName === 'image' || fieldName === 'icon') {
+    element = document.querySelector('.icon-upload-container');
+  } else if (fieldName === 'screenshots') {
+    element = document.querySelector('.multiple-upload-container');
+  } else if (fieldName === 'appType') {
+    // Use the dedicated function for app type
+    clearAppTypeError();
+    return;
+  } else {
+    element = document.getElementById(fieldName);
+  }
+  
+  // Check if element exists
+  if (!element) {
+    console.warn(`Element not found for field: ${fieldName}`);
+    return;
+  }
+  
+  const group = element.closest('.form-group') || element.closest('.form-section');
+  if (!group) {
+    console.warn(`Form group not found for field: ${fieldName}`);
+    return;
+  }
+  
+  const helpText = group.querySelector('.field-help');
+  
+  group.classList.remove('error', 'success');
+  
+  // Restore original help text
+  const originalTexts = {
+    title: 'Choose a clear, descriptive name (max 60 characters)',
+    shortTitle: 'Used for SEO and meta descriptions.',
+    description: 'Focus on key features and benefits.',
+    platform: 'What platform or technology was used to build this app?',
+    link: 'Direct link to your app (website, app store, or wa.me link)',
+    imageUrl: 'Alternative: provide direct links to your app\'s images',
+    icon: 'PNG, JPG up to 2MB',
+    screenshots: 'PNG, JPG up to 5MB each • Max 5 images'
+  };
+  
+  if (originalTexts[fieldName] && helpText) {
+    helpText.innerHTML = originalTexts[fieldName];
+  }
+}
+
+// Show global error
+function showError(message) {
+  // Remove existing notifications
+  const existing = document.querySelector('.notification');
+  if (existing) existing.remove();
+
+  const notification = document.createElement('div');
+  notification.className = 'notification error';
+  notification.innerHTML = `
+    <div style="background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 8px; margin: 1rem 0; border-left: 4px solid #dc2626;">
+      <strong>Error:</strong> ${message}
+    </div>
+  `;
+  
+  document.querySelector('.submit-form').prepend(notification);
+  notification.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Show success modal
+function showSuccessModal() {
+  const modal = document.createElement('div');
+  modal.className = 'success-modal-overlay';
+  modal.innerHTML = `
+    <div class="success-modal">
+      <div class="success-icon">🎉</div>
+      <h2>Submission Successful!</h2>
+      <p>Your app has been submitted for review.</p>
+      <div class="success-details">
+        <p><strong>What happens next?</strong></p>
+        <ul>
+          <li>✓ Our team will review your submission</li>
+          <li>✓ Review typically takes 2-3 business days</li>
+          <li>✓ You'll receive an email notification with the decision</li>
+          <li>✓ Approved apps will appear in the marketplace</li>
+        </ul>
+      </div>
+      <div class="modal-actions">
+        <button class="btn primary" onclick="closeSuccessModal()">Got it!</button>
+        <a href="/" class="btn secondary">Back to Home</a>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Auto-close after 10 seconds
+  setTimeout(() => {
+    if (document.body.contains(modal)) {
+      closeSuccessModal();
+    }
+  }, 10000);
+}
+
+// Close success modal
+window.closeSuccessModal = function() {
+  const modal = document.querySelector('.success-modal-overlay');
+  if (modal) {
+    modal.remove();
+  }
+};
+
+// Reset form
+function resetForm() {
+  const form = document.getElementById('submitAppForm');
+  form.reset();
+  
+  // Clear all validation states
+  document.querySelectorAll('.form-group').forEach(group => {
+    group.classList.remove('error', 'success');
+  });
+  
+  // Reset image uploads
+  uploadedIconFile = null;
+  uploadedScreenshots = [];
+  
+  // Reset icon upload area
+  const iconUploadArea = document.getElementById('iconUploadArea');
+  const iconPreview = document.getElementById('iconPreview');
+  if (iconUploadArea && iconPreview) {
+    iconUploadArea.classList.remove('hidden');
+    iconPreview.classList.add('hidden');
+  }
+  
+  // Reset screenshots grid
+  const imagesGrid = document.getElementById('imagesPreviewGrid');
+  if (imagesGrid) {
+    imagesGrid.innerHTML = '';
+  }
+  
+  // Reset character counters
+  const shortTitleCount = document.getElementById('short-title-count');
+  const charCount = document.getElementById('char-count');
+  const longCharCount = document.getElementById('long-char-count');
+  
+  if (shortTitleCount) shortTitleCount.textContent = '0';
+  if (charCount) charCount.textContent = '0';
+  if (longCharCount) longCharCount.textContent = '0';
+  
+  // Uncheck all app type checkboxes
+  document.querySelectorAll('input[name="niche"]').forEach(cb => cb.checked = false);
+  
+  // Clear app type error
+  clearAppTypeError();
+}
+</script>

@@ -1,0 +1,25 @@
+{
+  "name": "vibestore",
+  "version": "1.2.1",
+  "description": "This is the static Jekyll skeleton for **VibeStore**, a problem-first catalog for: - Web Apps - Mobile Apps - WhatsApp AI Agents",
+  "main": "index.js",
+  "scripts": {
+    "dev": "bundle exec jekyll serve --port 4000",
+    "build": "bundle exec jekyll build",
+    "firebase:login": "npx firebase login",
+    "firebase:init": "npx firebase init",
+    "firebase:serve": "npm run build && npx firebase emulators:start --only hosting,functions,firestore,auth",
+    "firebase:deploy:functions": "npx firebase deploy --only functions",
+    "firebase:deploy:hosting": "npm run build && npx firebase deploy --only hosting",
+    "firebase:deploy": "npm run build && npx firebase deploy",
+    "functions:dev": "cd functions && npm run serve",
+    "functions:deploy": "cd functions && npm run deploy",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase-tools": "^14.17.0"
+  }
+}
