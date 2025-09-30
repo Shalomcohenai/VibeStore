@@ -686,10 +686,15 @@ function updatePageSEO(app) {
   // Update document title
   document.title = `${app.title || 'Untitled App'} - VibeStore`;
   
+  // Use long description for SEO if available, otherwise fall back to short description
+  const seoDescription = app.longDescription || app.description || 'Discover this app on VibeStore';
+  // Truncate to 160 characters for SEO
+  const truncatedDescription = seoDescription.length > 160 ? seoDescription.substring(0, 157) + '...' : seoDescription;
+  
   // Update meta description
   const metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) {
-    metaDesc.content = app.description || 'Discover this app on VibeStore';
+    metaDesc.content = truncatedDescription;
   }
   
   // Update Open Graph tags
@@ -697,7 +702,7 @@ function updatePageSEO(app) {
   if (ogTitle) ogTitle.content = `${app.title || 'Untitled App'} - VibeStore`;
   
   const ogDesc = document.querySelector('meta[property="og:description"]');
-  if (ogDesc) ogDesc.content = app.description || 'Discover this app on VibeStore';
+  if (ogDesc) ogDesc.content = truncatedDescription;
   
   const ogImage = document.querySelector('meta[property="og:image"]');
   if (ogImage) ogImage.content = app.image || '/img/placeholder.svg';
@@ -714,7 +719,9 @@ function renderAppContent(app) {
   
   if (titleEl) titleEl.textContent = app.title || 'Untitled App';
   if (descEl) descEl.textContent = app.description || 'No description available';
-  if (fullDescEl) fullDescEl.textContent = app.description || 'No description available';
+  // Use longDescription if available, otherwise fall back to description
+  const longDescription = app.longDescription || app.description || 'No detailed description available';
+  if (fullDescEl) fullDescEl.textContent = longDescription;
   if (categoryEl) categoryEl.textContent = app.category || 'Uncategorized';
   if (platformEl) platformEl.textContent = app.platform || 'Not specified';
   if (nicheEl) nicheEl.textContent = app.niche || 'Not specified';
