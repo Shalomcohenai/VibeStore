@@ -1168,19 +1168,23 @@ function initializeButtons() {
           
           console.log('Interaction logged successfully');
           
-          // Update app users count
+          // Update user count locally (without Cloud Functions)
           try {
-            const { functions, functionsMod } = await waitForFirebase();
-            const { httpsCallable } = functionsMod;
+            const { db, storeMod } = await waitForFirebase();
+            const { doc, getDoc, updateDoc, increment } = storeMod;
             
-            const updateAppUsersCount = httpsCallable(functions, 'updateAppUsersCount');
-            await updateAppUsersCount({ appId: appId });
-            console.log('App users count updated successfully');
+            const appRef = doc(db, 'apps', appId);
+            await updateDoc(appRef, {
+              usersCount: increment(1),
+              updatedAt: new Date()
+            });
+            
+            console.log('User count updated successfully via client-side update');
             
             // Reload app details to show updated count
             await loadAppDetails();
           } catch (error) {
-            console.warn('Failed to update app users count:', error);
+            console.warn('Failed to update user count:', error);
           }
           
         } catch (error) {

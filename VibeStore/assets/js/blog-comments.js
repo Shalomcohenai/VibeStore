@@ -15,8 +15,17 @@ class VibeStoreComments {
 
   async init() {
     try {
-      // Wait for Firebase to be ready
-      await window.waitForFirebase();
+      // Wait for Firebase to be ready with fallback
+      if (typeof window.waitForFirebase === 'function') {
+        await window.waitForFirebase();
+      } else {
+        // Fallback: wait for window.$fb to be available
+        let attempts = 0;
+        while (!window.$fb && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+      }
       
       this.blogId = this.extractBlogId();
       this.comments = [];
@@ -171,8 +180,17 @@ class VibeStoreComments {
       return;
     }
 
-    // Wait for Firebase to be ready
-    await window.waitForFirebase();
+    // Wait for Firebase to be ready with fallback
+    if (typeof window.waitForFirebase === 'function') {
+      await window.waitForFirebase();
+    } else {
+      // Fallback: wait for window.$fb to be available
+      let attempts = 0;
+      while (!window.$fb && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+    }
 
     // Check if user is authenticated
     if (!this.isUserAuthenticated()) {
