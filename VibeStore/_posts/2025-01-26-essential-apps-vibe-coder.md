@@ -2,7 +2,7 @@
 layout: blog-post
 title: "5 Essential Apps Every Vibe Coder Should Have"
 slug: "essential-apps-vibe-coder"
-category: "vibe-coding"
+category: "vibe-tools-workflow"
 tags: ["productivity", "apps", "developer-tools", "mindfulness"]
 author: "VibeStore Team"
 featured_image: "/img/blog/essential-apps.jpg"

@@ -21,51 +21,56 @@ class VibeStoreBlog {
 
   async loadCategories() {
     try {
-      const response = await fetch('/_data/blog-categories.yml');
-      if (!response.ok) throw new Error('Failed to load categories');
-      
       // For now, we'll use the static categories from the YAML file
       // In a real implementation, this would come from Firestore
       this.categories = [
         {
-          id: "vibe-coding",
-          name: "Vibe Coding",
-          slug: "vibe-coding",
-          description: "Discover the art of coding with good vibes and positive energy",
+          id: "vibe-coding-fundamentals",
+          name: "Vibe Coding Fundamentals",
+          slug: "vibe-coding-fundamentals",
+          description: "Core principles and techniques for coding with positive energy",
           color: "#6366f1",
           icon: "💻"
         },
         {
-          id: "app-development",
-          name: "App Development",
-          slug: "app-development",
-          description: "Tips and insights for building amazing mobile and web apps",
+          id: "mindful-programming",
+          name: "Mindful Programming",
+          slug: "mindful-programming",
+          description: "Programming with awareness, focus, and intention",
           color: "#8b5cf6",
-          icon: "📱"
+          icon: "🧘"
         },
         {
-          id: "tech-trends",
-          name: "Tech Trends",
-          slug: "tech-trends",
-          description: "Latest trends and innovations in technology",
+          id: "developer-wellness",
+          name: "Developer Wellness",
+          slug: "developer-wellness",
+          description: "Mental health, work-life balance, and sustainable coding practices",
           color: "#06b6d4",
-          icon: "🚀"
+          icon: "🌱"
         },
         {
-          id: "developer-life",
-          name: "Developer Life",
-          slug: "developer-life",
-          description: "Stories and experiences from the developer community",
+          id: "positive-tech-culture",
+          name: "Positive Tech Culture",
+          slug: "positive-tech-culture",
+          description: "Building inclusive, supportive, and joyful development teams",
           color: "#10b981",
-          icon: "👨‍💻"
+          icon: "🤝"
         },
         {
-          id: "tools-reviews",
-          name: "Tools & Reviews",
-          slug: "tools-reviews",
-          description: "Reviews of development tools and productivity apps",
+          id: "vibe-tools-workflow",
+          name: "Vibe Tools & Workflow",
+          slug: "vibe-tools-workflow",
+          description: "Tools and workflows that enhance your coding experience",
           color: "#f59e0b",
           icon: "🛠️"
+        },
+        {
+          id: "coding-philosophy",
+          name: "Coding Philosophy",
+          slug: "coding-philosophy",
+          description: "Deep thoughts on the art and philosophy of programming",
+          color: "#ef4444",
+          icon: "💭"
         }
       ];
     } catch (error) {
@@ -82,37 +87,37 @@ class VibeStoreBlog {
           id: "art-of-vibe-coding",
           title: "The Art of Vibe Coding: Programming with Positive Energy",
           slug: "art-of-vibe-coding",
-          category: "vibe-coding",
+          category: "vibe-coding-fundamentals",
           excerpt: "Learn how to transform your coding experience by embracing positive energy and mindful programming practices that lead to better code and happier developers.",
           author: "VibeStore Team",
           featured_image: "/img/blog/vibe-coding.jpg",
           published_at: "2025-01-27",
           tags: ["coding", "mindfulness", "productivity", "developer-wellness"],
-          url: "/blog/art-of-vibe-coding/"
+          url: "/vibe-coding-fundamentals/2025/01/27/art-of-vibe-coding/"
         },
         {
           id: "essential-apps-vibe-coder",
           title: "5 Essential Apps Every Vibe Coder Should Have",
           slug: "essential-apps-vibe-coder",
-          category: "vibe-coding",
+          category: "vibe-tools-workflow",
           excerpt: "From mindfulness apps to powerful development tools, here are the essential apps that every vibe coder needs in their toolkit.",
           author: "VibeStore Team",
           featured_image: "/img/blog/essential-apps.jpg",
           published_at: "2025-01-26",
           tags: ["productivity", "apps", "developer-tools", "mindfulness"],
-          url: "/blog/essential-apps-vibe-coder/"
+          url: "/vibe-tools-workflow/2025/01/26/essential-apps-vibe-coder/"
         },
         {
           id: "positive-developer-culture",
           title: "Building a Positive Developer Culture: Lessons from Vibe Coding",
           slug: "positive-developer-culture",
-          category: "developer-life",
+          category: "positive-tech-culture",
           excerpt: "Discover how vibe coding principles can transform your development team culture, creating an environment where everyone thrives.",
           author: "VibeStore Team",
           featured_image: "/img/blog/developer-culture.jpg",
           published_at: "2025-01-25",
           tags: ["team-culture", "leadership", "collaboration", "workplace-wellness"],
-          url: "/blog/positive-developer-culture/"
+          url: "/positive-tech-culture/2025/01/25/positive-developer-culture/"
         }
       ];
     } catch (error) {

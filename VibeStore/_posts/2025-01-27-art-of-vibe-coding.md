@@ -2,7 +2,7 @@
 layout: blog-post
 title: "The Art of Vibe Coding: Programming with Positive Energy"
 slug: "art-of-vibe-coding"
-category: "vibe-coding"
+category: "vibe-coding-fundamentals"
 tags: ["coding", "mindfulness", "productivity", "developer-wellness"]
 author: "VibeStore Team"
 featured_image: "/img/blog/vibe-coding.jpg"

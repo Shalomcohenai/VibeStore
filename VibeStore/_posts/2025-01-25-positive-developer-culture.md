@@ -2,7 +2,7 @@
 layout: blog-post
 title: "Building a Positive Developer Culture: Lessons from Vibe Coding"
 slug: "positive-developer-culture"
-category: "developer-life"
+category: "positive-tech-culture"
 tags: ["team-culture", "leadership", "collaboration", "workplace-wellness"]
 author: "VibeStore Team"
 featured_image: "/img/blog/developer-culture.jpg"

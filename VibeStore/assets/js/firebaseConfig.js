@@ -17,19 +17,21 @@ const firebaseConfig = {
   const authMod    = await import('https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js');
   const storeMod   = await import('https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js');
   const storageMod = await import('https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js');
+  const functionsMod = await import('https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js');
 
   const app     = appMod.initializeApp(firebaseConfig);
   const auth    = authMod.getAuth(app);
   const db      = storeMod.getFirestore(app);
   const storage = storageMod.getStorage(app);
+  const functions = functionsMod.getFunctions(app);
 
   // Expose minimal helpers on window (for prototyping)
-  window.$fb = { app, auth, db, storage, authMod, storeMod, storageMod };
+  window.$fb = { app, auth, db, storage, functions, authMod, storeMod, storageMod, functionsMod };
 
   // Global waitForFirebase function - used by all modules
   window.waitForFirebase = () => new Promise(resolve => {
     const check = () => {
-      if (window.$fb && window.$fb.auth && window.$fb.db) {
+      if (window.$fb && window.$fb.auth && window.$fb.db && window.$fb.functions) {
         resolve(window.$fb);
       } else {
         setTimeout(check, 100);

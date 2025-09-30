@@ -455,6 +455,10 @@ permalink: /pages/app
           <strong>Submitted:</strong>
           <span id="app-created">Loading...</span>
         </div>
+        <div class="detail-item">
+          <strong>Users:</strong>
+          <span id="app-users-count">Loading...</span>
+        </div>
       </div>
     </div>
 
@@ -726,6 +730,11 @@ function renderAppContent(app) {
   const createdEl = document.getElementById('app-created');
   if (createdEl) createdEl.textContent = createdDate;
   
+  // Users count
+  const usersCount = app.usersCount || 0;
+  const usersCountEl = document.getElementById('app-users-count');
+  if (usersCountEl) usersCountEl.textContent = `${usersCount} users`;
+  
   // Badges
   const badgesContainer = document.getElementById('app-badges');
   if (badgesContainer) {
@@ -786,6 +795,13 @@ function renderAppContent(app) {
   if (starsEl) starsEl.textContent = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
   if (scoreEl) scoreEl.textContent = `${rating.toFixed(1)}/5`;
   if (countEl) countEl.textContent = `(${ratingCount} reviews)`;
+  
+  // Update users count in rating section if it exists
+  const usersCountInRating = app.usersCount || 0;
+  const usersCountElInRating = document.querySelector('.users-count');
+  if (usersCountElInRating) {
+    usersCountElInRating.textContent = `${usersCountInRating} users`;
+  }
   
   // CTA Button
   const ctaButton = document.getElementById('app-cta');
@@ -1144,6 +1160,22 @@ function initializeButtons() {
           }, { merge: true });
           
           console.log('Interaction logged successfully');
+          
+          // Update app users count
+          try {
+            const { functions, functionsMod } = await waitForFirebase();
+            const { httpsCallable } = functionsMod;
+            
+            const updateAppUsersCount = httpsCallable(functions, 'updateAppUsersCount');
+            await updateAppUsersCount({ appId: appId });
+            console.log('App users count updated successfully');
+            
+            // Reload app details to show updated count
+            await loadAppDetails();
+          } catch (error) {
+            console.warn('Failed to update app users count:', error);
+          }
+          
         } catch (error) {
           console.warn('Failed to log interaction:', error);
         }

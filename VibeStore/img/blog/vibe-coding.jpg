@@ -1,0 +1,37 @@
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="code" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="400" fill="url(#bg)"/>
+  
+  <!-- Floating code elements -->
+  <text x="100" y="80" font-family="Monaco, monospace" font-size="24" fill="url(#code)" opacity="0.7">function vibeCode() {</text>
+  <text x="120" y="120" font-family="Monaco, monospace" font-size="20" fill="url(#code)" opacity="0.6">  return positiveEnergy;</text>
+  <text x="100" y="160" font-family="Monaco, monospace" font-size="24" fill="url(#code)" opacity="0.7">}</text>
+  
+  <text x="500" y="100" font-family="Monaco, monospace" font-size="18" fill="url(#code)" opacity="0.5">const mindfulness = true;</text>
+  <text x="520" y="140" font-family="Monaco, monospace" font-size="18" fill="url(#code)" opacity="0.5">let creativity = ∞;</text>
+  
+  <!-- Central icon -->
+  <circle cx="400" cy="200" r="60" fill="url(#code)" opacity="0.9"/>
+  <text x="400" y="210" font-family="Arial, sans-serif" font-size="40" text-anchor="middle" fill="#6366f1">💻</text>
+  
+  <!-- Title -->
+  <text x="400" y="320" font-family="Inter, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="white">Vibe Coding</text>
+  <text x="400" y="350" font-family="Inter, sans-serif" font-size="18" text-anchor="middle" fill="white" opacity="0.9">Programming with Positive Energy</text>
+  
+  <!-- Decorative elements -->
+  <circle cx="150" cy="300" r="3" fill="white" opacity="0.6"/>
+  <circle cx="650" cy="100" r="2" fill="white" opacity="0.4"/>
+  <circle cx="200" cy="50" r="2" fill="white" opacity="0.5"/>
+  <circle cx="600" cy="350" r="3" fill="white" opacity="0.6"/>
+</svg>
