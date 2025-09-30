@@ -1,8 +1,15 @@
 # Site-wide data for VibeStore
-version: "3.36"
+version: "3.37"
 last_updated: "2025-01-27"
-cache_bust: "20250127-070-v336"
+cache_bust: "20250127-080-v337"
 features:
+  - "Version 3.37 - Blog System Fully Integrated with Firebase"
+  - "Complete blog system with Firestore integration"
+  - "Real-time comments system with user authentication"
+  - "Blog posts and categories stored in Firestore"
+  - "Enhanced security rules for blog collections"
+  - "Fallback system for offline functionality"
+  - "Populate script for initial blog data setup"
   - "Version 3.36 - Connected Blog to Firebase Firestore"
   - "Fixed comment authentication issues"
   - "Connected blog posts to Firestore database"
