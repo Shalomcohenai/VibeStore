@@ -26,18 +26,21 @@ class VibeStoreComments {
 
   async loadComments() {
     try {
-      if (!window.firebase || !window.firebase.firestore) {
+      if (!window.$fb || !window.$fb.db) {
         console.log('Firebase not available, using static comments');
         this.loadStaticComments();
         return;
       }
 
-      const db = window.firebase.firestore();
-      const commentsSnapshot = await db.collection('blog_comments')
-        .where('blogId', '==', this.blogId)
-        .where('approved', '==', true)
-        .orderBy('createdAt', 'desc')
-        .get();
+      const db = window.$fb.db;
+      const commentsSnapshot = await window.$fb.storeMod.getDocs(
+        window.$fb.storeMod.query(
+          window.$fb.storeMod.collection(db, 'blog_comments'),
+          window.$fb.storeMod.where('blogId', '==', this.blogId),
+          window.$fb.storeMod.where('approved', '==', true),
+          window.$fb.storeMod.orderBy('createdAt', 'desc')
+        )
+      );
 
       this.comments = commentsSnapshot.docs.map(doc => ({
         id: doc.id,
@@ -163,9 +166,9 @@ class VibeStoreComments {
     // Check if user is authenticated
     if (!this.isUserAuthenticated()) {
       console.log('User not authenticated. Firebase auth state:', {
-        firebase: !!window.firebase,
-        auth: !!(window.firebase && window.firebase.auth),
-        currentUser: window.firebase && window.firebase.auth ? window.firebase.auth().currentUser : null
+        $fb: !!window.$fb,
+        auth: !!(window.$fb && window.$fb.auth),
+        currentUser: window.$fb && window.$fb.auth ? window.$fb.auth.currentUser : null
       });
       this.showError('Please sign in to post a comment.');
       return;
@@ -178,19 +181,19 @@ class VibeStoreComments {
       submitBtn.textContent = 'Posting...';
       submitBtn.disabled = true;
 
-      if (window.firebase && window.firebase.firestore) {
+      if (window.$fb && window.$fb.db) {
         // Save to Firestore
-        const db = window.firebase.firestore();
+        const db = window.$fb.db;
         const commentData = {
           blogId: this.blogId,
           userId: this.getCurrentUserId(),
           user_name: this.getCurrentUserName(),
           content: content,
-          createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+          createdAt: window.$fb.storeMod.serverTimestamp(),
           approved: true // Auto-approve for now
         };
 
-        const docRef = await db.collection('blog_comments').add(commentData);
+        const docRef = await window.$fb.storeMod.addDoc(window.$fb.storeMod.collection(db, 'blog_comments'), commentData);
         
         // Add to local comments array
         const newComment = {
@@ -237,9 +240,9 @@ class VibeStoreComments {
   isUserAuthenticated() {
     // Check if user is logged in
     try {
-      return window.firebase && 
-             window.firebase.auth && 
-             window.firebase.auth().currentUser !== null;
+      return window.$fb && 
+             window.$fb.auth && 
+             window.$fb.auth.currentUser !== null;
     } catch (error) {
       console.error('Error checking authentication:', error);
       return false;
@@ -249,8 +252,8 @@ class VibeStoreComments {
   getCurrentUserId() {
     // Get current user ID from Firebase auth
     try {
-      if (window.firebase && window.firebase.auth && window.firebase.auth().currentUser) {
-        return window.firebase.auth().currentUser.uid;
+      if (window.$fb && window.$fb.auth && window.$fb.auth.currentUser) {
+        return window.$fb.auth.currentUser.uid;
       }
     } catch (error) {
       console.error('Error getting user ID:', error);
@@ -261,8 +264,8 @@ class VibeStoreComments {
   getCurrentUserName() {
     // Get current user name from Firebase auth
     try {
-      if (window.firebase && window.firebase.auth && window.firebase.auth().currentUser) {
-        const user = window.firebase.auth().currentUser;
+      if (window.$fb && window.$fb.auth && window.$fb.auth.currentUser) {
+        const user = window.$fb.auth.currentUser;
         return user.displayName || user.email || 'Anonymous User';
       }
     } catch (error) {

@@ -1,8 +1,13 @@
 # Site-wide data for VibeStore
-version: "3.38"
+version: "3.39"
 last_updated: "2025-01-27"
-cache_bust: "20250127-090-v338"
+cache_bust: "20250127-100-v339"
 features:
+  - "Version 3.39 - Fixed Firebase Integration for Blog Comments"
+  - "Updated blog-comments.js to use window.$fb instead of window.firebase"
+  - "Fixed authentication check to work with new Firebase module system"
+  - "Updated Firestore operations to use modular Firebase v9+ syntax"
+  - "Enhanced debug logging for Firebase state"
   - "Version 3.38 - Fixed Blog Comments Issues"
   - "Fixed duplicate Share and Comments sections"
   - "Removed duplicate includes from blog posts"
