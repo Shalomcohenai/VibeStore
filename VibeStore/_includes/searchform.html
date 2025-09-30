@@ -2,7 +2,10 @@
   <div class="search-container" style="position: relative;">
     <input class="input" type="text" name="q" placeholder="What problem do you need a solution for?" aria-label="Search apps" id="search-input" />
     <button type="submit" class="search-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 0.8rem 1.8rem; border-radius: 25px; border: none; background: var(--c-primary); color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
-      {% include icon.html name="magnifying-glass" class="search-icon w-5 h-5" %}
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="search-icon">
+        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="10" cy="10" r="2" fill="white" opacity="0.8"/>
+      </svg>
     </button>
   </div>
 </form>

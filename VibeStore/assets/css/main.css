@@ -16,10 +16,9 @@
   --c-muted:#6b7280;     /* gray-500 */
   --c-line:#e5e7eb;      /* gray-200 */
 
-  /* Card colors - black and purple theme */
-  --c-card-green:#6b46c1;   /* deep purple */
-  --c-card-orange:#8b5cf6;  /* light purple */
-  --c-card-purple:#000000;  /* black */
+  /* Card colors - purple theme */
+  --c-card-primary:#6b46c1;   /* deep purple */
+  --c-card-accent:#8b5cf6;    /* light purple */
 
   --radius:20px;
   --radius-sm:12px;
@@ -63,7 +62,7 @@ body{
 .floating-shape:nth-child(1) {
   width: 300px;
   height: 300px;
-  background: linear-gradient(45deg, var(--c-card-green), var(--c-card-orange));
+  background: linear-gradient(45deg, var(--c-card-primary), var(--c-card-accent));
   top: 10%;
   right: -50px;
   animation-delay: 0s;
@@ -72,7 +71,7 @@ body{
 .floating-shape:nth-child(2) {
   width: 200px;
   height: 200px;
-  background: linear-gradient(45deg, var(--c-card-purple), var(--c-accent));
+  background: linear-gradient(45deg, var(--c-primary), var(--c-accent));
   bottom: 20%;
   left: -30px;
   animation-delay: -5s;
@@ -81,7 +80,7 @@ body{
 .floating-shape:nth-child(3) {
   width: 150px;
   height: 150px;
-  background: linear-gradient(45deg, var(--c-card-orange), var(--c-card-green));
+  background: linear-gradient(45deg, var(--c-card-accent), var(--c-card-primary));
   top: 50%;
   right: 20%;
   animation-delay: -10s;
@@ -534,6 +533,7 @@ img{max-width:100%;height:auto;display:block}
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .stars {
@@ -545,6 +545,12 @@ img{max-width:100%;height:auto;display:block}
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--c-text);
+}
+
+.users-count {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--c-muted);
 }
 
 .card-body-v2 {
@@ -570,28 +576,6 @@ img{max-width:100%;height:auto;display:block}
   overflow: hidden;
 }
 
-.app-stats-v2 {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.stat-item-v2 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.stat-icon {
-  font-size: 1rem;
-  color: var(--c-muted);
-}
-
-.stat-text {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--c-text);
-}
 
 .card-footer-v2 {
   background: #fafbfc;
@@ -629,7 +613,9 @@ img{max-width:100%;height:auto;display:block}
 .action-btn-v2 svg {
   width: 16px;
   height: 16px;
-  fill: currentColor;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
 }
 
 /* Heart button specific styles */
@@ -645,6 +631,7 @@ img{max-width:100%;height:auto;display:block}
 
 .heart-btn.favorited svg {
   fill: white;
+  stroke: white;
 }
 
 /* Version 1 heart button styles */
@@ -655,6 +642,7 @@ img{max-width:100%;height:auto;display:block}
 
 .card-actions-v1 .heart-btn.favorited svg {
   fill: white;
+  stroke: white;
 }
 
 
@@ -795,10 +783,26 @@ img{max-width:100%;height:auto;display:block}
 
 .search-icon {
   transition: all 0.3s ease;
+  animation: search-wiggle 3s ease-in-out infinite;
 }
 
 .search-btn:hover .search-icon {
   animation: search-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes search-wiggle {
+  0%, 100% {
+    transform: translateX(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateX(2px) rotate(1deg);
+  }
+  50% {
+    transform: translateX(0px) rotate(0deg);
+  }
+  75% {
+    transform: translateX(-2px) rotate(-1deg);
+  }
 }
 
 @keyframes search-pulse {
@@ -1733,6 +1737,11 @@ img{max-width:100%;height:auto;display:block}
   transition: all 0.3s ease;
   background: white;
   position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 }
 
 .icon-upload-area:hover,
@@ -2076,7 +2085,8 @@ img{max-width:100%;height:auto;display:block}
   
   .icon-upload-area,
   .multiple-upload-area {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem;
+    min-height: 150px;
   }
   
   .upload-icon {

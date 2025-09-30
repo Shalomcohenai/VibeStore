@@ -8,6 +8,8 @@
       <span class="bar"></span><span class="bar"></span><span class="bar"></span>
     </button>
     <nav class="site-nav" data-nav id="main-nav">
+      <a href="{{ '/blog' | relative_url }}" class="nav-link">Blog</a>
+      
       <!-- Dynamic content based on auth state -->
       <div id="nav-guest" class="nav-state">
         <a class="btn small" href="{{ '/pages/auth' | relative_url }}">Sign in</a>
@@ -15,7 +17,7 @@
       
       <div id="nav-authenticated" class="nav-state" style="display: none;">
         <a href="{{ '/pages/submit-form' | relative_url }}" class="nav-link">Submit App</a>
-        <a href="{{ '/pages/pricing' | relative_url }}" class="nav-link">Promote</a>
+        <!-- <a href="{{ '/pages/pricing' | relative_url }}" class="nav-link">Promote</a> -->
         <div class="user-circle" id="user-circle" title="Go to Profile">
           <span id="user-name"></span>
         </div>

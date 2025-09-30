@@ -16,22 +16,18 @@ permalink: /pages/profile/
       <p class="profile-joined">Member since <span id="profile-joined">2024</span></p>
     </div>
     <div class="profile-actions">
-      <button class="btn-edit-profile" id="edit-profile-btn">
-        <span>✏️</span> Edit Profile
-      </button>
       <button class="btn-logout" id="logout-btn">
-        <span>🚪</span> Sign Out
+        <span>🔓</span> Sign Out
       </button>
       <a class="btn-admin" id="admin-panel-btn" href="/pages/admin" style="display: none;">
-        <span>⚙️</span> Admin Panel
+        <span>🛠️</span> Admin Panel
       </a>
     </div>
   </div>
 
   <!-- Profile Tabs -->
   <div class="profile-tabs">
-    <button class="tab-btn active" data-tab="personal">Personal Info</button>
-    <button class="tab-btn" data-tab="apps">My Apps</button>
+    <button class="tab-btn active" data-tab="apps">My Apps</button>
     <button class="tab-btn" data-tab="lists">App Lists</button>
     <button class="tab-btn" data-tab="settings">Settings</button>
   </div>
@@ -39,27 +35,8 @@ permalink: /pages/profile/
   <!-- Tab Content -->
   <div class="tab-content">
     
-    <!-- Personal Info Tab -->
-    <div class="tab-panel active" id="personal-tab">
-      <div class="info-section">
-        <h3>Personal Information</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <label>Full Name</label>
-            <input type="text" id="user-fullname" placeholder="Enter your full name" />
-          </div>
-          <div class="info-item">
-            <label>Email</label>
-            <input type="email" id="user-email-display" readonly />
-          </div>
-          <div class="info-item">
-            <label>Company</label>
-            <input type="text" id="user-company" placeholder="Your company name" />
-          </div>
-        </div>
-        <button class="btn-save">Save Changes</button>
-      </div>
-
+    <!-- My Apps Tab -->
+    <div class="tab-panel active" id="apps-tab">
       <div class="stats-section">
         <h3>Your Stats</h3>
         <div class="stats-grid">
@@ -75,16 +52,8 @@ permalink: /pages/profile/
             <div class="stat-number" id="stats-lists">0</div>
             <div class="stat-label">Lists Created</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-number" id="stats-views">0</div>
-            <div class="stat-label">Profile Views</div>
-          </div>
         </div>
       </div>
-    </div>
-
-    <!-- My Apps Tab -->
-    <div class="tab-panel" id="apps-tab">
       <div class="apps-section">
         <div class="section-header">
           <h3>My Submitted Apps</h3>
@@ -251,7 +220,7 @@ permalink: /pages/profile/
   gap: 1rem;
 }
 
-.btn-edit-profile, .btn-logout, .btn-admin {
+.btn-logout, .btn-admin {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -262,16 +231,6 @@ permalink: /pages/profile/
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
-}
-
-.btn-edit-profile {
-  background: var(--c-primary);
-  color: white;
-}
-
-.btn-edit-profile:hover {
-  background: var(--c-accent);
-  transform: translateY(-2px);
 }
 
 .btn-logout {
@@ -424,10 +383,11 @@ permalink: /pages/profile/
 .stat-card {
   text-align: center;
   padding: 1.5rem 1rem;
-  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  background: white;
   border-radius: 16px;
-  border: 2px solid transparent;
+  border: 2px solid var(--c-line);
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
 }
 
 .stat-card:hover {
@@ -495,6 +455,7 @@ permalink: /pages/profile/
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
+
 
 .app-card, .list-card {
   padding: 1.5rem;
@@ -575,6 +536,17 @@ permalink: /pages/profile/
   color: var(--c-primary);
 }
 
+.btn-disabled {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #9ca3af;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* Lists specific */
 .list-header {
   display: flex;
@@ -627,6 +599,500 @@ permalink: /pages/profile/
   border-color: var(--c-primary);
   transform: translateY(-4px);
   box-shadow: 0 12px 28px rgba(107,70,193,.15);
+}
+
+/* New list card design */
+.list-card-new {
+  background: white;
+  border: 2px solid var(--c-line);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.list-card-new:hover {
+  border-color: var(--c-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(107,70,193,.15);
+}
+
+.list-card-content {
+  width: 100%;
+}
+
+.list-card-creator {
+  margin: 0 0 0.5rem;
+  color: var(--c-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.list-actions-new {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn-action {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--c-line);
+  background: white;
+  color: var(--c-text);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-action:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+  transform: translateY(-1px);
+}
+
+/* New app card design for list view */
+.list-apps-grid-new {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.list-app-card-new {
+  background: white;
+  border: 2px solid var(--c-line);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.list-app-card-new:hover {
+  border-color: var(--c-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(107,70,193,.1);
+}
+
+.list-app-card-icon-new {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.list-app-card-content-new {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-app-card-title-new {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-text);
+  line-height: 1.3;
+}
+
+.list-app-card-desc-new {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--c-muted);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.list-app-card-meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.app-category, .app-platform {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--c-bg);
+  color: var(--c-muted);
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.list-app-card-actions-new {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.btn-view-app-new {
+  padding: 0.4rem 0.8rem;
+  background: var(--c-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-view-app-new:hover {
+  background: var(--c-accent);
+  transform: translateY(-1px);
+}
+
+.remove-from-list-btn-new {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.remove-from-list-btn-new:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+/* Clean Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease;
+}
+
+.modal-large {
+  max-width: 800px;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--c-muted);
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid var(--c-line);
+  background: #f8f9fa;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--c-line);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+}
+
+/* Button Styles */
+.btn-primary {
+  background: var(--c-primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--c-accent);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--c-text);
+  border: 1px solid var(--c-line);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--c-bg);
+  border-color: var(--c-primary);
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* List Selection Styles */
+.list-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.list-selection-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--c-line);
+  border-radius: 12px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.list-selection-item:hover {
+  border-color: var(--c-primary);
+  box-shadow: 0 4px 12px rgba(107, 70, 193, 0.1);
+}
+
+.list-info h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.list-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--c-muted);
+}
+
+.btn-add-to-list {
+  background: var(--c-primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-add-to-list:hover {
+  background: var(--c-accent);
+  transform: translateY(-1px);
+}
+
+/* Apps in List Styles */
+.apps-in-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.app-card-in-list {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--c-line);
+  border-radius: 12px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.app-card-in-list:hover {
+  border-color: var(--c-primary);
+  box-shadow: 0 4px 12px rgba(107, 70, 193, 0.1);
+}
+
+.app-card-in-list .app-icon {
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-primary);
+  border-radius: 8px;
+  color: white;
+}
+
+.app-card-in-list .app-info {
+  flex: 1;
+}
+
+.app-card-in-list .app-info h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.app-card-in-list .app-info p {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--c-muted);
+}
+
+.app-rating {
+  font-size: 0.8rem;
+  color: var(--c-muted);
+}
+
+.app-card-in-list .app-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.app-card-in-list .btn-view {
+  background: var(--c-primary);
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.app-card-in-list .btn-view:hover {
+  background: var(--c-accent);
+  transform: translateY(-1px);
+}
+
+.app-card-in-list .btn-remove {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.app-card-in-list .btn-remove:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
 }
 
 .list-card-header {
@@ -878,9 +1344,63 @@ permalink: /pages/profile/
 }
 
 .favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* Status and Action Top Layout */
+.status-and-action-top {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.status-badge-container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.app-status {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.app-status.pending {
+  background: #fbbf24;
+  color: #92400e;
+}
+
+.app-status.approved {
+  background: #34d399;
+  color: #065f46;
+}
+
+.app-status.rejected {
+  background: #f87171;
+  color: #991b1b;
+}
+
+/* Action Buttons in Header */
+.status-and-action-top .action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status-and-action-top .action-btn-v2 {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+.status-and-action-top .action-btn-v2[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .favorite-app {
@@ -1052,11 +1572,14 @@ permalink: /pages/profile/
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .apps-grid, .lists-grid {
+  .apps-grid, .lists-grid, .favorites-grid {
     grid-template-columns: 1fr;
   }
 }
 </style>
+
+<!-- Load clean lists system -->
+<script src="/assets/js/lists-clean.js"></script>
 
 <script type="module">
 // Wait for Firebase to initialize
@@ -1084,7 +1607,6 @@ try {
       document.getElementById('profile-initials-large').textContent = initials;
       document.getElementById('profile-name').textContent = user.displayName || username;
       document.getElementById('profile-email').textContent = email;
-      document.getElementById('user-email-display').value = email;
       
       // Set join date (you could store this in Firestore)
       const joinDate = new Date(user.metadata?.creationTime || Date.now());
@@ -1336,14 +1858,42 @@ try {
       if (listsCountEl) listsCountEl.textContent = lists.length;
       if (statsListsEl) statsListsEl.textContent = lists.length;
       
-      // Update submissions count (multiple elements)
-      const submissionsCountEl = document.getElementById('submissions-count');
-      const statsSubmittedEl = document.getElementById('stats-submitted');
-      if (submissionsCountEl) submissionsCountEl.textContent = '0'; // Will be updated when submissions are loaded
-      if (statsSubmittedEl) statsSubmittedEl.textContent = '0'; // Will be updated when submissions are loaded
+      // Update submissions count from database
+      await updateSubmittedAppsCount();
       
     } catch (error) {
       console.error('Error updating user stats:', error);
+    }
+  }
+
+  // Update submitted apps count from database
+  async function updateSubmittedAppsCount() {
+    if (!currentUser) return;
+    
+    try {
+      const { db, storeMod } = await waitForFirebaseProfile();
+      const { collection, query, where, getDocs } = storeMod;
+      
+      console.log('🔍 Updating submitted apps count for user:', currentUser.uid);
+      
+      // Query apps submitted by this user
+      const appsQuery = query(collection(db, 'apps'), where('submittedBy', '==', currentUser.uid));
+      const querySnapshot = await getDocs(appsQuery);
+      
+      const submissionsCount = querySnapshot.size;
+      console.log('📊 Submitted apps count:', submissionsCount);
+      
+      // Update submissions count in stats
+      const statsSubmittedEl = document.getElementById('stats-submitted');
+      if (statsSubmittedEl) {
+        statsSubmittedEl.textContent = submissionsCount;
+        console.log('✅ Updated stats submitted count to:', submissionsCount);
+      } else {
+        console.warn('⚠️ Stats submitted element not found');
+      }
+      
+    } catch (error) {
+      console.error('❌ Error updating submitted apps count:', error);
     }
   }
 
@@ -1397,18 +1947,17 @@ try {
     }
   }
 
-  // Lists management - using event-based approach
+  // Lists management - using clean lists system
   function loadLists() {
-    console.log('🔄 Requesting lists loading via event...');
-    // Trigger event for lists module to handle
-    window.dispatchEvent(new CustomEvent('loadProfileLists'));
+    console.log('🔄 Loading lists using clean system...');
+    // The clean lists system will handle loading automatically
   }
 
   // Submissions management
   async function loadSubmissions() {
     if (!currentUser) return;
     
-    const submissionsGrid = document.getElementById('submissions-grid');
+    const submissionsGrid = document.getElementById('submitted-apps-grid');
     if (!submissionsGrid) return;
     
     submissionsGrid.innerHTML = '<div class="loading-state">Loading your submissions...</div>';
@@ -1420,57 +1969,190 @@ try {
       const { db, storeMod } = await waitForFirebaseProfile();
       const { collection, query, where, getDocs } = storeMod;
       
-      // Query apps submitted by this user
+      console.log('🔍 Loading submissions for user:', currentUser.uid);
+      
+      // Query apps submitted by this user (including all statuses: pending, approved, rejected)
       const appsQuery = query(collection(db, 'apps'), where('submittedBy', '==', currentUser.uid));
       const querySnapshot = await getDocs(appsQuery);
       
       const submissionsCount = querySnapshot.size;
+      console.log('📊 Found submissions:', submissionsCount);
       
       // Update submissions count in stats
-      const submissionsCountEl = document.getElementById('submissions-count');
       const statsSubmittedEl = document.getElementById('stats-submitted');
-      if (submissionsCountEl) submissionsCountEl.textContent = submissionsCount;
       if (statsSubmittedEl) statsSubmittedEl.textContent = submissionsCount;
       
       if (querySnapshot.empty) {
-        submissionsGrid.innerHTML = '<div class="empty-state">No submissions yet. Submit your first app!</div>';
+        console.log('📭 No submissions found');
+        const noAppsEl = document.getElementById('no-submitted-apps');
+        if (noAppsEl) {
+          noAppsEl.style.display = 'block';
+        }
+        submissionsGrid.innerHTML = '';
         return;
       }
       
+      const noAppsEl = document.getElementById('no-submitted-apps');
+      if (noAppsEl) {
+        noAppsEl.style.display = 'none';
+      }
       submissionsGrid.innerHTML = '';
       
       querySnapshot.forEach((doc) => {
         const app = { id: doc.id, ...doc.data() };
-        const appCard = createAppCard(app, false);
+        console.log('📱 Found submitted app:', app.title, 'Status:', app.status);
+        const appCard = createSubmittedAppCard(app);
         submissionsGrid.insertAdjacentHTML('beforeend', appCard);
       });
       
     } catch (error) {
-      console.error('Error loading submissions:', error);
+      console.error('❌ Error loading submissions:', error);
       submissionsGrid.innerHTML = '<div class="empty-state">Error loading submissions. Please refresh the page.</div>';
     }
   }
 
-  // Create app card HTML
+  // Create app card HTML for favorites - using home page card design
   function createAppCard(app, isFavorite = false) {
-    const statusBadge = app.status ? `<span class="status-badge status-${app.status}">${app.status}</span>` : '';
-    const favoriteBtn = isFavorite ? 
-      `<button class="btn-remove" onclick="removeFromFavorites('${app.id}')" title="Remove from favorites">❌</button>` : 
-      `<button class="btn-favorite" onclick="addToFavorites('${app.id}')" title="Add to favorites">❤️</button>`;
+    const rating = app.rating_avg || app.rating || 0;
+    const category = app.category || 'App';
+    const title = app.title || 'Untitled App';
+    const description = app.description || 'No description available';
+    const appId = app.id || app.firestoreId || 'demo';
+    const usersCount = app.usersCount || 0;
+    
+    // Generate stars based on rating
+    const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+    
+    // Get appropriate icon based on niche
+    let appIcon = '📱';
+    if (app.niche === 'web') appIcon = '🌐';
+    else if (app.niche === 'mobile') appIcon = '📱';
+    else if (app.niche === 'whatsapp') appIcon = '💬';
     
     return `
-      <div class="app-card">
-        <div class="app-icon">${app.icon || '📱'}</div>
-        <div class="app-info">
-          <h4>${app.title || 'Untitled App'}</h4>
-          <p>${app.category || 'App'} • ${app.description?.substring(0, 60) || 'No description'}...</p>
-          ${statusBadge}
+      <article class="card card-v2" data-app-id="${appId}" data-niche="${app.niche || 'web'}">
+        <div class="card-header-v2">
+          <div class="app-icon-v2">${appIcon}</div>
+          <div class="header-info">
+            <span class="category-tag">${category}</span>
+            <div class="rating-v2">
+              <span class="stars">${stars}</span>
+              <span class="rating-number">${rating.toFixed ? rating.toFixed(1) : rating}</span>
+            </div>
+            <div class="users-count">${usersCount} users</div>
+          </div>
         </div>
-        <div class="app-actions">
-          <a href="/pages/app?id=${app.id}" class="btn-view">View</a>
-          ${favoriteBtn}
+        
+        <div class="card-body-v2">
+          <h3 class="app-title-v2">${title}</h3>
+          <p class="app-description-v2">${description}</p>
         </div>
-      </div>
+        
+        <div class="card-footer-v2">
+          <button class="action-btn-v2 heart-btn favorited" data-app-id="${appId}" onclick="removeFromFavorites('${appId}')" title="Remove from favorites">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
+          <button class="action-btn-v2 plus-btn" data-app-id="${appId}" title="Add to list">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+          <button class="action-btn-v2 more-btn" data-app-id="${appId}" onclick="window.location.href='/pages/app?id=${appId}'" title="View details">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+      </article>
+    `;
+  }
+
+  // Create submitted app card HTML with proper status display - using home page card design
+  function createSubmittedAppCard(app) {
+    const rating = app.rating_avg || app.rating || 0;
+    const category = app.category || 'App';
+    const title = app.title || 'Untitled App';
+    const description = app.description || 'No description available';
+    const appId = app.id || app.firestoreId || 'demo';
+    const usersCount = app.usersCount || 0;
+    
+    // Generate stars based on rating
+    const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+    
+    // Get appropriate icon based on niche
+    let appIcon = '📱';
+    if (app.niche === 'web') appIcon = '🌐';
+    else if (app.niche === 'mobile') appIcon = '📱';
+    else if (app.niche === 'whatsapp') appIcon = '💬';
+    
+    // Map status to proper labels and access control
+    let statusLabel = 'Pending';
+    let statusClass = 'pending';
+    let allowAccess = false;
+    
+    if (app.status === 'approved') {
+      statusLabel = 'Submitted';
+      statusClass = 'approved';
+      allowAccess = true;
+    } else if (app.status === 'rejected') {
+      statusLabel = 'Rejected';
+      statusClass = 'rejected';
+      allowAccess = false;
+    } else if (app.status === 'pending') {
+      statusLabel = 'Pending';
+      statusClass = 'pending';
+      allowAccess = false;
+    }
+    
+    const statusBadge = `<span class="app-status ${statusClass}">${statusLabel}</span>`;
+    
+    // Only show View button for approved apps (status = 'approved')
+    const viewButton = allowAccess 
+      ? `<button class="action-btn-v2 more-btn" data-app-id="${appId}" onclick="window.location.href='/pages/app?id=${appId}'" title="View details">
+           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+             <circle cx="12" cy="12" r="3"></circle>
+           </svg>
+         </button>`
+      : `<button class="action-btn-v2" disabled title="Not Available" style="opacity: 0.5; cursor: not-allowed;">
+           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+             <circle cx="12" cy="12" r="10"></circle>
+             <line x1="15" y1="9" x2="9" y2="15"></line>
+             <line x1="9" y1="9" x2="15" y2="15"></line>
+           </svg>
+         </button>`;
+    
+    return `
+      <article class="card card-v2" data-app-id="${appId}" data-niche="${app.niche || 'web'}">
+        <div class="card-header-v2">
+          <div class="app-icon-v2">${appIcon}</div>
+          <div class="header-info">
+            <div class="status-and-action-top">
+              <div class="status-badge-container">
+                ${statusBadge}
+              </div>
+              <div class="action-buttons">
+                ${viewButton}
+              </div>
+            </div>
+            <span class="category-tag">${category}</span>
+            <div class="rating-v2">
+              <span class="stars">${stars}</span>
+              <span class="rating-number">${rating.toFixed ? rating.toFixed(1) : rating}</span>
+            </div>
+            <div class="users-count">${usersCount} users</div>
+          </div>
+        </div>
+        
+        <div class="card-body-v2">
+          <h3 class="app-title-v2">${title}</h3>
+          <p class="app-description-v2">${description}</p>
+        </div>
+      </article>
     `;
   }
 

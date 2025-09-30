@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<div class="blog-page">
+  <header class="blog-header">
+    <h1>{{ page.title }}</h1>
+    <p class="blog-description">{{ page.description }}</p>
+  </header>
+
+  {% include blog-categories.html %}
+
+  <div class="blog-content">
+    <div id="blog-posts-container" class="posts-grid">
+      <!-- Posts will be loaded dynamically via JavaScript -->
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading amazing content...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ '/assets/js/blog.js' | relative_url }}"></script>

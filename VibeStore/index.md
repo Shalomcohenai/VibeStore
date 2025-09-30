@@ -6,7 +6,7 @@ permalink: /
 
 <section class="hero">
   <div class="version-notice" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; text-align: center; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">
-    🎉 <strong>גרסה {{ site.data.site.version }}</strong> - תיקון אינדקס התגובות!
+    🎉 <strong>Version {{ site.data.site.version }}</strong> - Fixed Submitted Apps Card Dimensions!
   </div>
   <h1>Discover the Perfect <span style="position:relative;">App<span style="position:absolute; top:-8px; right:-12px; font-size:0.4em;">⚡</span></span> for Every Problem</h1>
   <p>Search across thousands of no-code solutions built by the community</p>

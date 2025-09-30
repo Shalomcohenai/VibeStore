@@ -29,22 +29,18 @@ let currentUserLists = null;
 
 // Initialize lists system
 async function initializeLists() {
-  console.log('🔄 Initializing lists system...');
   try {
     const { auth, authMod } = await waitForFirebaseLists();
-    console.log('✅ Firebase auth ready for lists');
     
     authMod.onAuthStateChanged(auth, (user) => {
-      console.log('👤 Auth state changed for lists:', user ? user.email : 'No user');
       currentUserLists = user;
       if (user) {
-        console.log('📋 Loading user lists...');
         loadUserLists();
       }
     });
     
   } catch (error) {
-    console.error('❌ Error initializing lists:', error);
+    console.error('Error initializing lists:', error);
   }
 }
 
@@ -96,7 +92,7 @@ async function updateUserData(uid, data) {
 }
 
 // Create a new list
-async function createList(listName, description = '', color = '#10b981') {
+async function createList(listName, description = '') {
   if (!currentUserLists) {
     alert('Please sign in to create lists');
     return false;
@@ -126,7 +122,6 @@ async function createList(listName, description = '', color = '#10b981') {
       name: listName.trim(),
       description: description.trim(),
       apps: [],
-      color: color,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -348,31 +343,44 @@ async function getListApps(listId) {
   if (!currentUserLists) return [];
   
   try {
+    console.log('🔍 Getting apps for list:', listId);
     const userData = await getUserData(currentUserLists.uid);
     const lists = userData?.lists || [];
     
     const list = lists.find(l => l.id === listId);
-    if (!list) return [];
+    if (!list) {
+      console.log('❌ List not found:', listId);
+      return [];
+    }
+    
+    console.log('📋 Found list:', list.name, 'with', list.apps?.length || 0, 'apps');
+    console.log('📱 App IDs:', list.apps);
     
     // Fetch app details for each app in the list
     const { db, storeMod } = await waitForFirebaseLists();
     const { doc, getDoc } = storeMod;
     
     const apps = [];
-    for (const appId of list.apps) {
+    for (const appId of list.apps || []) {
       try {
+        console.log('🔍 Loading app:', appId);
         const appDoc = await getDoc(doc(db, 'apps', appId));
         if (appDoc.exists()) {
-          apps.push({ id: appDoc.id, ...appDoc.data() });
+          const appData = { id: appDoc.id, ...appDoc.data() };
+          apps.push(appData);
+          console.log('✅ Loaded app:', appData.title);
+        } else {
+          console.log('❌ App not found in Firestore:', appId);
         }
       } catch (error) {
-        console.error('Error loading app:', error);
+        console.error('❌ Error loading app:', appId, error);
       }
     }
     
+    console.log('📊 Total apps loaded:', apps.length);
     return apps;
   } catch (error) {
-    console.error('Error getting list apps:', error);
+    console.error('❌ Error getting list apps:', error);
     return [];
   }
 }
@@ -396,20 +404,6 @@ function showListModal(list = null) {
           <div class="form-group">
             <label for="list-description">Description (optional)</label>
             <textarea id="list-description" name="description" rows="3">${list?.description || ''}</textarea>
-          </div>
-          <div class="form-group">
-            <label for="list-color">Color</label>
-            <div class="color-picker">
-              <input type="color" id="list-color" name="color" value="${list?.color || '#10b981'}">
-              <div class="color-presets">
-                <div class="color-preset" data-color="#10b981" style="background: #10b981;"></div>
-                <div class="color-preset" data-color="#3b82f6" style="background: #3b82f6;"></div>
-                <div class="color-preset" data-color="#8b5cf6" style="background: #8b5cf6;"></div>
-                <div class="color-preset" data-color="#f59e0b" style="background: #f59e0b;"></div>
-                <div class="color-preset" data-color="#ef4444" style="background: #ef4444;"></div>
-                <div class="color-preset" data-color="#06b6d4" style="background: #06b6d4;"></div>
-              </div>
-            </div>
           </div>
           <div class="form-actions">
             <button type="button" class="btn secondary" id="cancel-list">Cancel</button>
@@ -459,12 +453,11 @@ function showListModal(list = null) {
     const formData = new FormData(e.target);
     const name = formData.get('name').trim();
     const description = formData.get('description').trim();
-    const color = formData.get('color');
     
     if (list) {
-      await updateList(list.id, { name, description, color });
+      await updateList(list.id, { name, description });
     } else {
-      await createList(name, description, color);
+      await createList(name, description);
     }
     
     closeModal(modal);
@@ -496,7 +489,7 @@ async function showListAppsModal(listId) {
       </div>
       <div class="list-modal-body">
         <p class="list-description">${list.description || 'No description'}</p>
-        <div class="list-apps-grid" id="list-apps-grid">
+        <div class="list-apps-grid-new" id="list-apps-grid">
           ${apps.length === 0 ? '<div class="empty-state">No apps in this list yet</div>' : ''}
         </div>
       </div>
@@ -505,6 +498,10 @@ async function showListAppsModal(listId) {
   
   document.body.appendChild(modal);
   
+  // Add opening animation
+  modal.style.opacity = '0';
+  modal.style.transform = 'scale(0.9)';
+  
   // Add styles
   addListModalStyles();
   
@@ -512,10 +509,20 @@ async function showListAppsModal(listId) {
   const appsGrid = modal.querySelector('#list-apps-grid');
   if (apps.length > 0) {
     apps.forEach(app => {
-      const appCard = createListAppCard(app, listId);
+      const appCard = createListAppCardNew(app, listId);
       appsGrid.insertAdjacentHTML('beforeend', appCard);
     });
   }
+  
+  // Store modal reference for cleanup
+  modal._isListModal = true;
+  
+  // Animate in
+  requestAnimationFrame(() => {
+    modal.style.transition = 'all 0.3s ease';
+    modal.style.opacity = '1';
+    modal.style.transform = 'scale(1)';
+  });
   
   // Event listeners
   modal.querySelector('.list-modal-close').addEventListener('click', () => {
@@ -529,7 +536,36 @@ async function showListAppsModal(listId) {
   });
 }
 
-// Create app card for list view
+// Create app card for list view (new design)
+function createListAppCardNew(app, listId) {
+  // Get appropriate icon based on niche
+  let appIcon = '📱';
+  if (app.niche === 'web') appIcon = '🌐';
+  else if (app.niche === 'mobile') appIcon = '📱';
+  else if (app.niche === 'whatsapp') appIcon = '💬';
+  
+  return `
+    <div class="list-app-card-new">
+      <div class="list-app-card-icon-new">
+        ${appIcon}
+      </div>
+      <div class="list-app-card-content-new">
+        <h4 class="list-app-card-title-new">${app.title || 'Untitled App'}</h4>
+        <p class="list-app-card-desc-new">${app.description || 'No description available'}</p>
+        <div class="list-app-card-meta">
+          <span class="app-category">${app.category || 'App'}</span>
+          <span class="app-platform">${app.platform || 'Platform'}</span>
+        </div>
+      </div>
+      <div class="list-app-card-actions-new">
+        <a href="/pages/app?id=${app.id}" class="btn-view-app-new">View</a>
+        <button class="remove-from-list-btn-new" data-app-id="${app.id}" data-list-id="${listId}" title="Remove from list">×</button>
+      </div>
+    </div>
+  `;
+}
+
+// Create app card for list view (old design - kept for compatibility)
 function createListAppCard(app, listId) {
   return `
     <div class="list-app-card">
@@ -566,6 +602,9 @@ async function showListSelectionModal(appTitle, appId) {
     return;
   }
   
+  // Check which lists already contain this app
+  const listsWithApp = lists.filter(list => list.apps?.includes(appId));
+  
   const modal = document.createElement('div');
   modal.className = 'list-modal-overlay';
   modal.innerHTML = `
@@ -577,13 +616,17 @@ async function showListSelectionModal(appTitle, appId) {
       <div class="list-modal-body">
         <p>Choose a list to add "${appTitle}" to:</p>
         <div class="list-selection-grid">
-          ${lists.map(list => `
-            <div class="list-selection-card" data-list-id="${list.id}" style="border-left: 4px solid ${list.color || '#10b981'}">
-              <h4>${list.name}</h4>
-              <p>${list.apps?.length || 0} apps</p>
-              ${list.description ? `<small>${list.description}</small>` : ''}
-            </div>
-          `).join('')}
+          ${lists.map(list => {
+            const hasApp = list.apps?.includes(appId);
+            return `
+              <div class="list-selection-card ${hasApp ? 'has-app' : ''}" data-list-id="${list.id}">
+                <h4>${list.name}</h4>
+                <p>${list.apps?.length || 0} apps</p>
+                ${list.description ? `<small>${list.description}</small>` : ''}
+                ${hasApp ? '<span class="already-added">✓ Already added</span>' : ''}
+              </div>
+            `;
+          }).join('')}
         </div>
         <div class="form-actions">
           <button type="button" class="btn secondary" id="cancel-list-selection">Cancel</button>
@@ -617,10 +660,20 @@ async function showListSelectionModal(appTitle, appId) {
     const listCard = e.target.closest('.list-selection-card');
     if (listCard) {
       const listId = listCard.dataset.listId;
-      const success = await addAppToList(listId, appId);
+      const hasApp = listCard.classList.contains('has-app');
       
-      if (success) {
-        alert(`Added "${appTitle}" to the list!`);
+      if (hasApp) {
+        // Remove from list
+        const success = await removeAppFromList(listId, appId);
+        if (success) {
+          alert(`Removed "${appTitle}" from the list!`);
+        }
+      } else {
+        // Add to list
+        const success = await addAppToList(listId, appId);
+        if (success) {
+          alert(`Added "${appTitle}" to the list!`);
+        }
       }
       
       closeModal(modal);
@@ -949,10 +1002,62 @@ function addListModalStyles() {
 
 // Close modal helper
 function closeModal(modal) {
-  document.body.removeChild(modal);
-  const styles = document.getElementById('list-modal-styles');
-  if (styles) {
-    document.head.removeChild(styles);
+  // Add closing animation
+  modal.style.transition = 'all 0.3s ease';
+  modal.style.opacity = '0';
+  modal.style.transform = 'scale(0.9)';
+  
+  setTimeout(() => {
+    if (document.body.contains(modal)) {
+      // Remove the modal completely first
+      document.body.removeChild(modal);
+    }
+    
+    // Clean up styles
+    const styles = document.getElementById('list-modal-styles');
+    if (styles) {
+      document.head.removeChild(styles);
+    }
+    
+    // Force cleanup of any remaining floating elements
+    const remainingCards = document.querySelectorAll('.list-app-card, .list-app-card-new');
+    remainingCards.forEach(card => {
+      // Remove any app cards that are not inside a valid modal
+      if (!card.closest('.list-modal-overlay')) {
+        card.remove();
+      }
+    });
+  }, 300);
+}
+
+// Update plus button states for all app cards
+async function updatePlusButtonStates() {
+  if (!currentUserLists) return;
+  
+  try {
+    const lists = await getUserLists();
+    const allAppIds = new Set();
+    
+    // Collect all app IDs from all lists
+    lists.forEach(list => {
+      if (list.apps) {
+        list.apps.forEach(appId => allAppIds.add(appId));
+      }
+    });
+    
+    // Update all plus buttons
+    document.querySelectorAll('.plus-btn').forEach(btn => {
+      const appId = btn.dataset.appId;
+      if (appId && allAppIds.has(appId)) {
+        btn.classList.add('pressed');
+        btn.title = 'Remove from List';
+      } else {
+        btn.classList.remove('pressed');
+        btn.title = 'Add to List';
+      }
+    });
+  } catch (error) {
+    console.error('Error updating plus button states:', error);
   }
 }
 
@@ -988,7 +1093,10 @@ function initializeListEventListeners() {
       
       if (appId) {
         console.log('Adding to list:', appId);
-        await showListSelectionModal('', appId);
+        // Get app title from the card
+        const appCard = btn.closest('.card, .card-v1, .card-v2');
+        const appTitle = appCard?.querySelector('.app-title, h3')?.textContent || 'App';
+        await showListSelectionModal(appTitle, appId);
         
         // Add visual feedback
         btn.style.transform = 'scale(1.1)';
@@ -1003,10 +1111,21 @@ function initializeListEventListeners() {
     }
   });
   
-  // List card clicks
+  // List card clicks (old design)
   document.addEventListener('click', (e) => {
     const listCard = e.target.closest('.list-card');
     if (listCard) {
+      const listId = listCard.dataset.listId;
+      if (listId) {
+        showListAppsModal(listId);
+      }
+    }
+  });
+  
+  // List card clicks (new design)
+  document.addEventListener('click', (e) => {
+    const listCard = e.target.closest('.list-card-new');
+    if (listCard && !e.target.closest('.btn-action')) {
       const listId = listCard.dataset.listId;
       if (listId) {
         showListAppsModal(listId);
@@ -1030,9 +1149,9 @@ function initializeListEventListeners() {
     }
   });
   
-  // Remove app from list
+  // Remove app from list (both old and new buttons)
   document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('remove-from-list-btn')) {
+    if (e.target.classList.contains('remove-from-list-btn') || e.target.classList.contains('remove-from-list-btn-new')) {
       e.preventDefault();
       e.stopPropagation();
       
@@ -1040,7 +1159,30 @@ function initializeListEventListeners() {
       const listId = e.target.dataset.listId;
       
       if (confirm('Remove this app from the list?')) {
-        removeAppFromList(listId, appId);
+        removeAppFromList(listId, appId).then(() => {
+          // Remove the app card from the DOM immediately
+          const appCard = e.target.closest('.list-app-card, .list-app-card-new');
+          if (appCard) {
+            // Add fade out animation
+            appCard.style.transition = 'all 0.3s ease';
+            appCard.style.opacity = '0';
+            appCard.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+              if (appCard.parentNode) {
+                appCard.remove();
+              }
+            }, 300);
+          }
+          
+          // Check if this was the last app and show empty state
+          setTimeout(() => {
+            const appsGrid = document.querySelector('.list-apps-grid, .list-apps-grid-new');
+            if (appsGrid && appsGrid.children.length === 0) {
+              appsGrid.innerHTML = '<div class="empty-state">No apps in this list yet</div>';
+            }
+          }, 350);
+        });
       }
     }
   });
@@ -1048,6 +1190,7 @@ function initializeListEventListeners() {
   // Listen for list updates
   window.addEventListener('listsUpdated', () => {
     loadUserLists();
+    updatePlusButtonStates();
   });
 }
 
@@ -1098,21 +1241,21 @@ async function loadListsForProfile() {
 
 // Create list card HTML for profile page
 function createListCard(list) {
-  const color = list.color || '#10b981';
+  const creatorName = currentUserLists?.displayName || currentUserLists?.email?.split('@')[0] || 'Unknown';
   return `
-    <div class="list-card" data-list-id="${list.id}" style="border-left: 4px solid ${color}">
-      <div class="list-card-header">
-        <h4 class="list-card-title">${list.name}</h4>
-        <div class="list-card-actions">
-          <button class="btn-share-list" onclick="shareList('${list.id}')" title="Share List">📤</button>
-          <button class="list-card-menu" data-list-id="${list.id}">⋯</button>
+    <div class="list-card-new clickable-card" data-list-id="${list.id}" onclick="viewList('${list.id}')">
+      <div class="list-card-content">
+        <div class="list-card-header">
+          <h4 class="list-card-title">${list.name}</h4>
+          <p class="list-card-creator">by ${creatorName}</p>
         </div>
-      </div>
-      <p class="list-card-count">${list.apps?.length || 0} apps</p>
-      ${list.description ? `<p class="list-card-description">${list.description}</p>` : ''}
-      <div class="list-actions">
-        <button class="btn-edit" onclick="editList('${list.id}')">Edit</button>
-        <button class="btn-view" onclick="viewList('${list.id}')">View</button>
+        <p class="list-card-count">${list.apps?.length || 0} apps</p>
+        ${list.description ? `<p class="list-card-description">${list.description}</p>` : ''}
+        <div class="list-actions-new">
+          <button class="btn-action" onclick="event.stopPropagation(); editList('${list.id}')">Edit</button>
+          <button class="btn-action" onclick="event.stopPropagation(); viewList('${list.id}')">View</button>
+          <button class="btn-action" onclick="event.stopPropagation(); shareList('${list.id}')">Share</button>
+        </div>
       </div>
     </div>
   `;
@@ -1140,7 +1283,8 @@ window.shareList = async (listId) => {
     const lists = await window.VibeStoreLists.getUserLists();
     const list = lists.find(l => l.id === listId);
     if (list) {
-      const shareUrl = `${window.location.origin}/pages/profile?list=${listId}`;
+      // Create unique sharing URL with list ID
+      const shareUrl = `${window.location.origin}/pages/shared-list?id=${listId}`;
       const shareText = `Check out my app list "${list.name}" on VibeStore!`;
       
       if (navigator.share) {
@@ -1237,6 +1381,7 @@ window.VibeStoreLists = {
   initializeListEventListeners,
   createListCard,
   loadListsForProfile,
+  updatePlusButtonStates,
   currentUserLists: () => currentUserLists
 };
 

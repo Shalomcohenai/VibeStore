@@ -134,6 +134,52 @@ permalink: /pages/app
   min-width: 160px;
 }
 
+/* Action buttons with smaller icons */
+.action-btn {
+  padding: 0.6rem 1.2rem;
+  min-width: 140px;
+  font-size: 0.9rem;
+  gap: 0.4rem;
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.action-btn .btn-icon {
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover .btn-icon {
+  transform: scale(1.1);
+}
+
+/* Pressed/Active states */
+.action-btn.pressed {
+  transform: scale(0.95);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.action-btn.saved {
+  background: #f0f9ff !important;
+  border: 1px solid #0ea5e9 !important;
+  color: #0ea5e9 !important;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+}
+
+.action-btn.saved .btn-icon {
+  fill: #0ea5e9 !important;
+  stroke: #0ea5e9 !important;
+}
+
+.action-btn.saved:hover {
+  background: #e0f2fe !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
 .btn.primary {
   background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
   color: white;
@@ -355,14 +401,29 @@ permalink: /pages/app
         </div>
         
         <div class="app-actions">
-          <a id="app-cta" href="#" target="_blank" class="btn primary">
-            🌐 Open App
+          <a id="app-cta" href="#" target="_blank" class="btn primary action-btn">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15,3 21,3 21,9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            <span>Open App</span>
           </a>
-          <button class="btn secondary" id="save-btn">
-            ❤️ Save
+          <button class="btn secondary action-btn" id="save-btn">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            <span>Save</span>
           </button>
-          <button class="btn secondary" id="add-to-list-btn">
-            📋 Add to List
+          <button class="btn secondary action-btn" id="add-to-list-btn">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14,2 14,8 20,8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10,9 9,9 8,9"></polyline>
+            </svg>
+            <span>Add to List</span>
           </button>
         </div>
       </div>
@@ -843,17 +904,13 @@ async function updateButtonStates() {
     const saveButton = document.getElementById('save-btn');
     if (saveButton) {
       const isFavorited = await checkIfFavorited(appId);
-      saveButton.innerHTML = isFavorited ? '❤️ Saved' : '❤️ Save';
+      const heartIcon = isFavorited ? 
+        '<svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' :
+        '<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+      
+      saveButton.innerHTML = `${heartIcon}<span>${isFavorited ? 'Saved' : 'Save'}</span>`;
       saveButton.classList.toggle('active', isFavorited);
       saveButton.classList.toggle('saved', isFavorited);
-      
-      if (isFavorited) {
-        saveButton.style.background = '#f0f9ff';
-        saveButton.style.borderColor = '#0ea5e9';
-      } else {
-        saveButton.style.background = '';
-        saveButton.style.borderColor = '';
-      }
     }
   } catch (error) {
     console.error('Error updating button states:', error);
@@ -1067,6 +1124,9 @@ function initializeButtons() {
   const openButton = document.getElementById('app-cta');
   if (openButton) {
     openButton.addEventListener('click', async (e) => {
+      // Add pressed state
+      openButton.classList.add('pressed');
+      setTimeout(() => openButton.classList.remove('pressed'), 150);
       const appId = new URLSearchParams(window.location.search).get('id');
       if (appId && currentUser) {
         // Log the interaction for review validation
@@ -1096,6 +1156,9 @@ function initializeButtons() {
   const saveButton = document.getElementById('save-btn');
   if (saveButton) {
     saveButton.addEventListener('click', async () => {
+      // Add pressed state
+      saveButton.classList.add('pressed');
+      setTimeout(() => saveButton.classList.remove('pressed'), 150);
       if (!currentUser) {
         alert('Please sign in to save apps to favorites');
         return;
@@ -1136,19 +1199,17 @@ function initializeButtons() {
                 favorites: arrayRemove(appId),
                 updatedAt: new Date()
               });
-              saveButton.innerHTML = '❤️ Save';
+              const heartIcon = '<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+              saveButton.innerHTML = `${heartIcon}<span>Save</span>`;
               saveButton.classList.remove('active', 'saved');
-              saveButton.style.background = '';
-              saveButton.style.borderColor = '';
             } else {
               await updateDoc(userRef, {
                 favorites: arrayUnion(appId),
                 updatedAt: new Date()
               });
-              saveButton.innerHTML = '❤️ Saved';
+              const heartIcon = '<svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+              saveButton.innerHTML = `${heartIcon}<span>Saved</span>`;
               saveButton.classList.add('active', 'saved');
-              saveButton.style.background = '#f0f9ff';
-              saveButton.style.borderColor = '#0ea5e9';
             }
           } else {
             // Create user document
@@ -1160,10 +1221,9 @@ function initializeButtons() {
               createdAt: new Date(),
               updatedAt: new Date()
             });
-            saveButton.innerHTML = '❤️ Saved';
+            const heartIcon = '<svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+            saveButton.innerHTML = `${heartIcon}<span>Saved</span>`;
             saveButton.classList.add('active', 'saved');
-            saveButton.style.background = '#f0f9ff';
-            saveButton.style.borderColor = '#0ea5e9';
           }
         }
       } catch (error) {
@@ -1177,6 +1237,9 @@ function initializeButtons() {
   const addToListButton = document.getElementById('add-to-list-btn');
   if (addToListButton) {
     addToListButton.addEventListener('click', async () => {
+      // Add pressed state
+      addToListButton.classList.add('pressed');
+      setTimeout(() => addToListButton.classList.remove('pressed'), 150);
       if (!currentUser) {
         alert('Please sign in to add apps to lists');
         return;

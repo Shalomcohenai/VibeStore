@@ -126,45 +126,16 @@
     return createVersion2Card(app, appId, category, title, description, stars);
   }
 
-  // Version 1: Minimal Clean Design
-  function createVersion1Card(app, appId, category, title, description, stars, downloads) {
-    return `
-      <article class="card card-v1 reveal" data-app-id="${appId}">
-        <div class="card-header">
-          <span class="category-badge">${category}</span>
-          <div class="rating">${stars}</div>
-        </div>
-        
-        <div class="card-content">
-          <h3 class="app-title">${title}</h3>
-          <p class="app-description">${description}</p>
-          <div class="user-count">👥 ${downloads} users</div>
-        </div>
-        
-        <div class="card-actions-v1">
-          <button class="action-btn heart-btn" data-app-id="${appId}" title="Add to Favorites">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-            </svg>
-          </button>
-          <button class="action-btn plus-btn" data-app-id="${appId}" title="Add to List">+</button>
-          <button class="action-btn more-btn" data-app-id="${appId}" title="View Details">⋯</button>
-        </div>
-      </article>
-    `;
-  }
-
   // Version 2: Detailed Rich Design - Updated
   function createVersion2Card(app, appId, category, title, description, stars) {
     const rating = app.rating_avg || app.rating || 0;
-    const usersCount = app.usersCount || '1K+';
-    const downloadsCount = app.downloadsCount || '500+';
+    const usersCount = app.usersCount || 0;
     
     // Get appropriate icon based on niche
-    let appIcon = '<svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>';
-    if (app.niche === 'web') appIcon = '<svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM6.262 6.072a8.25 8.25 0 1 0 10.562-.766 4.5 4.5 0 0 1-1.318 1.357L14.25 7.5l.165.33a.75.75 0 0 1-1.224.87l-.604-.302a1.5 1.5 0 0 0-1.122 0l-.604.302a.75.75 0 0 1-1.224-.87l.165-.33-1.156-.578a4.5 4.5 0 0 1-1.318-1.357Z" clip-rule="evenodd" /></svg>';
-    else if (app.niche === 'mobile') appIcon = '<svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>';
-    else if (app.niche === 'whatsapp') appIcon = '<svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" /></svg>';
+    let appIcon = '📱';
+    if (app.niche === 'web') appIcon = '🌐';
+    else if (app.niche === 'mobile') appIcon = '📱';
+    else if (app.niche === 'whatsapp') appIcon = '💬';
     
     return `
       <article class="card card-v2 reveal" data-app-id="${appId}" data-niche="${app.niche || 'web'}">
@@ -176,39 +147,31 @@
               <span class="stars">${stars}</span>
               <span class="rating-number">${rating.toFixed ? rating.toFixed(1) : rating}</span>
             </div>
+            <div class="users-count">${usersCount} users</div>
           </div>
         </div>
         
         <div class="card-body-v2">
           <h3 class="app-title-v2">${title}</h3>
           <p class="app-description-v2">${description}</p>
-          <div class="app-stats-v2">
-            <div class="stat-item-v2">
-              <span class="stat-icon"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128a9.375 9.375 0 0 0 6.75-1.003v-.003l-.001-.119a.75.75 0 0 0-.364-.63 13.067 13.067 0 0 0-6.761-1.873 13.067 13.067 0 0 0-6.76 1.873.75.75 0 0 0-.364.63l-.001.122a9.375 9.375 0 0 0 6.75 1.003v.003Z" /></svg></span>
-              <span class="stat-text">${usersCount} users</span>
-            </div>
-            <div class="stat-item-v2">
-              <span class="stat-icon"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75ZM6.75 15a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15.75a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V15.75a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" /></svg></span>
-              <span class="stat-text">${downloadsCount} downloads</span>
-            </div>
-          </div>
         </div>
         
         <div class="card-footer-v2">
           <button class="action-btn-v2 heart-btn" data-app-id="${appId}" title="Add to favorites">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
           </button>
           <button class="action-btn-v2 plus-btn" data-app-id="${appId}" title="Add to list">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75V18a.75.75 0 0 1-1.5 0v-5.25H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
           </button>
           <button class="action-btn-v2 more-btn" data-app-id="${appId}" title="View details">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" />
-              <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
             </svg>
           </button>
         </div>
@@ -462,6 +425,18 @@
   }
 
   async function loadResultsPage(niche = 'all', sort = 'trending', query = '') {
+    // Use the new search UI module if available
+    if (window.VibeStoreSearchUI && window.VibeStoreSearchEngine) {
+      const options = {
+        niche: niche !== 'all' ? niche : null,
+        sortBy: sort
+      };
+      
+      await window.VibeStoreSearchUI.handleSearchInput(query, options);
+      return;
+    }
+    
+    // Fallback to old implementation if search modules not loaded
     const resultsGrid = document.getElementById('results-grid');
     const loadingState = document.getElementById('loading-state');
     const emptyState = document.getElementById('empty-state');

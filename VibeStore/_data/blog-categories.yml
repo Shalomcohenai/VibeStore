@@ -1,0 +1,36 @@
+# Blog categories for VibeStore
+categories:
+  - id: "vibe-coding"
+    name: "Vibe Coding"
+    slug: "vibe-coding"
+    description: "Discover the art of coding with good vibes and positive energy"
+    color: "#6366f1"
+    icon: "💻"
+  
+  - id: "app-development"
+    name: "App Development"
+    slug: "app-development"
+    description: "Tips and insights for building amazing mobile and web apps"
+    color: "#8b5cf6"
+    icon: "📱"
+  
+  - id: "tech-trends"
+    name: "Tech Trends"
+    slug: "tech-trends"
+    description: "Latest trends and innovations in technology"
+    color: "#06b6d4"
+    icon: "🚀"
+  
+  - id: "developer-life"
+    name: "Developer Life"
+    slug: "developer-life"
+    description: "Stories and experiences from the developer community"
+    color: "#10b981"
+    icon: "👨‍💻"
+  
+  - id: "tools-reviews"
+    name: "Tools & Reviews"
+    slug: "tools-reviews"
+    description: "Reviews of development tools and productivity apps"
+    color: "#f59e0b"
+    icon: "🛠️"

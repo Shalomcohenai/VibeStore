@@ -7,10 +7,6 @@ permalink: /pages/submit-form
 <div class="container">
   <div class="page-content" style="max-width: 800px; margin: 0 auto;">
     <h1 class="page-title center">Submit Your App</h1>
-    <div class="dev-notice" style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem; margin-bottom: 2rem; text-align: center;">
-      <strong>🚧 Development Mode</strong><br>
-      <span style="font-size: 0.9rem; color: #92400e;">Only app title is required for testing. All other fields are optional.</span>
-    </div>
     <p class="help center" style="margin-bottom: 2rem; font-size: 1.1rem;">
       Share your amazing app with the VibeStore community. All submissions are reviewed by our team.
     </p>
@@ -34,13 +30,14 @@ permalink: /pages/submit-form
         </div>
 
         <div class="form-group">
-          <label for="shortTitle" class="form-label">Short Title for SEO <span class="dev-optional">(Optional in dev mode)</span></label>
+          <label for="shortTitle" class="form-label">Short Title for SEO *</label>
           <input 
             id="shortTitle"
             class="input" 
             name="shortTitle" 
             placeholder="Brief title for search engines and meta description" 
             maxlength="90"
+            required
           />
           <div class="field-help">
             <span id="short-title-count">0</span>/90 characters. Used for SEO and meta descriptions.
@@ -48,7 +45,7 @@ permalink: /pages/submit-form
         </div>
 
         <div class="form-group">
-          <label for="description" class="form-label">Short Description <span class="dev-optional">(Optional in dev mode)</span></label>
+          <label for="description" class="form-label">Short Description *</label>
           <textarea 
             id="description"
             class="input description-textarea" 
@@ -56,6 +53,7 @@ permalink: /pages/submit-form
             placeholder="Briefly describe what your app does and its main benefits" 
             maxlength="300"
             rows="4"
+            required
           ></textarea>
           <div class="field-help">
             <span id="char-count">0</span>/300 characters. Focus on key features and benefits.
@@ -63,7 +61,7 @@ permalink: /pages/submit-form
         </div>
 
         <div class="form-group">
-          <label for="longDescription" class="form-label">Detailed Description <span class="optional">(Optional)</span></label>
+          <label for="longDescription" class="form-label">Detailed Description *</label>
           <textarea 
             id="longDescription"
             class="input long-description-textarea" 
@@ -71,6 +69,7 @@ permalink: /pages/submit-form
             placeholder="Provide a comprehensive description of your app, its features, benefits, and use cases. This will help users understand your app better." 
             maxlength="2000" 
             rows="8"
+            required
           ></textarea>
           <div class="field-help">
             <span id="long-char-count">0</span>/2000 characters. Detailed information about your app.
@@ -79,45 +78,30 @@ permalink: /pages/submit-form
 
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">App Type <span class="dev-optional">(Optional in dev mode)</span></label>
+            <label class="form-label">App Type *</label>
             <div class="checkbox-group" id="appTypeGroup">
               <label class="checkbox-item">
                 <input type="checkbox" name="niche" value="web" id="niche-web">
                 <span class="checkbox-custom"></span>
-                <span class="checkbox-label">
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" style="display: inline-block; margin-right: 0.5rem; vertical-align: middle;">
-                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM6.262 6.072a8.25 8.25 0 1 0 10.562-.766 4.5 4.5 0 0 1-1.318 1.357L14.25 7.5l.165.33a.75.75 0 0 1-1.224.87l-.604-.302a1.5 1.5 0 0 0-1.122 0l-.604.302a.75.75 0 0 1-1.224-.87l.165-.33-1.156-.578a4.5 4.5 0 0 1-1.318-1.357Z" clip-rule="evenodd" />
-                  </svg>
-                  Web App
-                </span>
+                <span class="checkbox-label">🌐 Web App</span>
               </label>
               <label class="checkbox-item">
                 <input type="checkbox" name="niche" value="mobile" id="niche-mobile">
                 <span class="checkbox-custom"></span>
-                <span class="checkbox-label">
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" style="display: inline-block; margin-right: 0.5rem; vertical-align: middle;">
-                    <path d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-                  </svg>
-                  Mobile App
-                </span>
+                <span class="checkbox-label">📱 Mobile App</span>
               </label>
               <label class="checkbox-item">
                 <input type="checkbox" name="niche" value="whatsapp" id="niche-whatsapp">
                 <span class="checkbox-custom"></span>
-                <span class="checkbox-label">
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" style="display: inline-block; margin-right: 0.5rem; vertical-align: middle;">
-                    <path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
-                  </svg>
-                  WhatsApp Agent
-                </span>
+                <span class="checkbox-label">💬 WhatsApp Agent</span>
               </label>
             </div>
             <div class="field-help">Select all platforms where your app is available</div>
           </div>
 
           <div class="form-group">
-            <label for="category" class="form-label">Category <span class="dev-optional">(Optional in dev mode)</span></label>
-            <select class="input" name="category" id="category">
+            <label for="category" class="form-label">Category *</label>
+            <select class="input" name="category" id="category" required>
               <option value="">Select category</option>
               <option value="productivity">Productivity</option>
               <option value="finance">Finance</option>
@@ -146,13 +130,14 @@ permalink: /pages/submit-form
           </div>
 
           <div class="form-group">
-            <label for="link" class="form-label">App Link <span class="dev-optional">(Optional in dev mode)</span></label>
+            <label for="link" class="form-label">App Link *</label>
             <input 
               id="link"
               class="input" 
               name="link" 
               placeholder="https://yourapp.com" 
               type="url" 
+              required
             />
             <div class="field-help">Direct link to your app (website, app store, or wa.me link)</div>
           </div>
@@ -165,15 +150,11 @@ permalink: /pages/submit-form
         
         <!-- App Icon -->
         <div class="form-group">
-          <label class="form-label">App Icon <span class="dev-optional">(Optional in dev mode)</span></label>
+          <label class="form-label">App Icon *</label>
           <div class="icon-upload-container">
             <div class="icon-upload-area" id="iconUploadArea">
               <div class="upload-content">
-                <div class="upload-icon">
-                  <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75V18a.75.75 0 0 1-1.5 0v-5.25H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-                  </svg>
-                </div>
+                <div class="upload-icon">🎯</div>
                 <h4>Upload App Icon</h4>
                 <p>Square icon, preferably 512x512px</p>
                 <p class="upload-specs">PNG, JPG up to 2MB</p>
@@ -199,15 +180,11 @@ permalink: /pages/submit-form
 
         <!-- Additional Images -->
         <div class="form-group">
-          <label class="form-label">Screenshots & Additional Images <span class="optional">(Up to 5 images)</span></label>
+          <label class="form-label">Screenshots & Additional Images <span class="optional">(Optional - Up to 5 images)</span></label>
           <div class="multiple-upload-container">
             <div class="upload-area" id="multipleUploadArea">
               <div class="upload-content">
-                <div class="upload-icon">
-                  <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-2.69 2.69-2.69-2.69a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
-                  </svg>
-                </div>
+                <div class="upload-icon">📸</div>
                 <h4>Upload Screenshots</h4>
                 <p>Show your app in action</p>
                 <p class="upload-specs">PNG, JPG up to 5MB each • Max 5 images</p>
@@ -349,7 +326,7 @@ function initializeForm() {
   form.addEventListener('submit', handleSubmit);
 
   // Real-time validation
-  const requiredFields = ['title', 'shortTitle', 'description', 'category', 'platform', 'link'];
+  const requiredFields = ['title', 'shortTitle', 'description', 'longDescription', 'category', 'link', 'niche'];
   requiredFields.forEach(field => {
     const input = document.getElementById(field);
     if (input) {
@@ -606,13 +583,8 @@ function initializeCharacterCounters() {
   }
 }
 
-// App type validation - DEV MODE: Disabled
+// App type validation - Production mode
 function initializeAppTypeValidation() {
-  // DEV MODE: Skip adding event listeners
-  console.log('🚧 DEV MODE: App type validation disabled');
-  return;
-  
-  /* PRODUCTION CODE - uncomment when ready
   const checkboxes = document.querySelectorAll('input[name="niche"]');
   
   checkboxes.forEach(checkbox => {
@@ -620,15 +592,9 @@ function initializeAppTypeValidation() {
       validateAppType();
     });
   });
-  */
 }
 
 function validateAppType() {
-  // DEV MODE: Always return true for testing
-  console.log('🚧 DEV MODE: validateAppType called - returning true');
-  return true;
-  
-  /* PRODUCTION CODE - uncomment when ready
   const checkboxes = document.querySelectorAll('input[name="niche"]:checked');
   const group = document.getElementById('appTypeGroup');
   
@@ -639,7 +605,6 @@ function validateAppType() {
     clearAppTypeError();
     return true;
   }
-  */
 }
 
 // Show app type error
@@ -739,7 +704,9 @@ async function handleSubmit(e) {
 
     // Submit to Firestore
     const { db } = await waitForFb();
-    await addDoc(collection(db, 'apps'), payload);
+    console.log('🚀 Submitting app with payload:', payload);
+    const docRef = await addDoc(collection(db, 'apps'), payload);
+    console.log('✅ App submitted successfully with ID:', docRef.id);
 
     // Success - show modal instead of inline message
     showSuccessModal();
@@ -775,8 +742,7 @@ function getSelectedAppTypes() {
   const checkboxes = document.querySelectorAll('input[name="niche"]:checked');
   const selected = Array.from(checkboxes).map(cb => cb.value);
   
-  // DEV MODE: Return default if nothing selected
-  return selected.length > 0 ? selected : ['web'];
+  return selected;
 }
 
 // Get form data
@@ -797,10 +763,9 @@ function getFormData() {
   };
 }
 
-// Form validation - DEV MODE: Only title required
+// Form validation - Production mode: Full validation
 function validateForm() {
-  // DEV MODE: Only validate title for testing
-  const requiredFields = ['title'];
+  const requiredFields = ['title', 'shortTitle', 'description', 'longDescription', 'category', 'link'];
   let isValid = true;
 
   // Check required fields
@@ -810,8 +775,6 @@ function validateForm() {
     }
   });
 
-  // DEV MODE: Skip other validations for testing
-  /*
   // Check app type selection
   if (!validateAppType()) {
     isValid = false;
@@ -823,12 +786,11 @@ function validateForm() {
     showFieldError('icon', 'Please provide an app icon - either upload a file or provide a URL');
     isValid = false;
   }
-  */
 
   return isValid;
 }
 
-// Validate individual field - DEV MODE: Relaxed validation
+// Validate individual field - Production mode: Full validation
 function validateField(fieldName) {
   const field = document.getElementById(fieldName);
   if (!field) return true; // Skip if field doesn't exist
@@ -839,27 +801,69 @@ function validateField(fieldName) {
 
   switch (fieldName) {
     case 'title':
-      // DEV MODE: Only check if title exists, no minimum length
       if (!value) {
         showFieldError(fieldName, 'App title is required');
         return false;
       }
+      if (value.length < 3) {
+        showFieldError(fieldName, 'App title must be at least 3 characters');
+        return false;
+      }
       break;
 
-    // DEV MODE: All other fields are optional for testing
     case 'shortTitle':
+      if (!value) {
+        showFieldError(fieldName, 'Short title is required');
+        return false;
+      }
+      if (value.length < 10) {
+        showFieldError(fieldName, 'Short title must be at least 10 characters');
+        return false;
+      }
+      break;
+
     case 'description':
+      if (!value) {
+        showFieldError(fieldName, 'Short description is required');
+        return false;
+      }
+      if (value.length < 20) {
+        showFieldError(fieldName, 'Description must be at least 20 characters');
+        return false;
+      }
+      break;
+
+    case 'longDescription':
+      if (!value) {
+        showFieldError(fieldName, 'Detailed description is required');
+        return false;
+      }
+      if (value.length < 50) {
+        showFieldError(fieldName, 'Detailed description must be at least 50 characters');
+        return false;
+      }
+      break;
+
     case 'category':
-    case 'platform':
-      // Skip validation in dev mode
+      if (!value) {
+        showFieldError(fieldName, 'Please select a category');
+        return false;
+      }
       break;
 
     case 'link':
-      // DEV MODE: Only validate URL format if provided
-      if (value && !isValidUrl(value)) {
+      if (!value) {
+        showFieldError(fieldName, 'App link is required');
+        return false;
+      }
+      if (!isValidUrl(value)) {
         showFieldError(fieldName, 'Please enter a valid URL (must start with http:// or https://)');
         return false;
       }
+      break;
+
+    case 'platform':
+      // Platform remains optional
       break;
   }
 

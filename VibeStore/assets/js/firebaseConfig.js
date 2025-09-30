@@ -1,5 +1,5 @@
 // Firebase client bootstrap
-// TODO: Fill with your Firebase config values from the console.
+// Production Firebase configuration
 const firebaseConfig = {
   apiKey:            "AIzaSyCpzqQ4eKeLej8BeN2ly7lOspkx5nnEttE",
   authDomain:        "vibestore-7af1e.firebaseapp.com",

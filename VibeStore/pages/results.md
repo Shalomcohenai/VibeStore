@@ -19,7 +19,12 @@ permalink: /pages/results
       <div class="search-container" style="position: relative;">
         <input class="input" type="text" name="q" placeholder="What problem do you need a solution for?" aria-label="Search apps" id="search-input" />
         <button type="submit" class="search-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 0.8rem 1.8rem; border-radius: 25px; border: none; background: var(--c-primary); color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
-          {% include icon.html name="magnifying-glass" class="search-icon w-5 h-5" %}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="search-icon">
+            <circle cx="10" cy="10" r="7" stroke="white" stroke-width="2.5" fill="none"/>
+            <circle cx="10" cy="10" r="3" stroke="white" stroke-width="1" fill="rgba(255,255,255,0.1)"/>
+            <path d="m17 17l4 4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="10" cy="10" r="1" fill="white" opacity="0.6"/>
+          </svg>
         </button>
       </div>
     </form>

@@ -247,6 +247,37 @@ async function fetchAppReviews(appId) {
   }
 }
 
+// Fetch all apps for search engine (raw data without filters)
+async function fetchAllAppsForSearch() {
+  try {
+    const { db, storeMod } = await waitForFirebaseApps();
+    const { collection, query, where, orderBy, limit, getDocs } = storeMod;
+    
+    // Get all approved apps without any filters
+    let appsQuery = collection(db, 'apps');
+    appsQuery = query(appsQuery, where('status', '==', 'approved'));
+    appsQuery = query(appsQuery, orderBy('createdAt', 'desc'));
+    appsQuery = query(appsQuery, limit(1000)); // Higher limit for search
+    
+    const snapshot = await getDocs(appsQuery);
+    const apps = [];
+    
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      apps.push({
+        firestoreId: doc.id,
+        id: data.id || doc.id,
+        ...data
+      });
+    });
+    
+    return apps;
+  } catch (error) {
+    console.error('Error fetching all apps for search:', error);
+    return [];
+  }
+}
+
 
 // Export functions
 window.VibeStoreFirestore = {
@@ -256,7 +287,8 @@ window.VibeStoreFirestore = {
   fetchEditorsChoice,
   searchApps,
   fetchAppById,
-  fetchAppReviews
+  fetchAppReviews,
+  fetchAllAppsForSearch
 };
 
 console.log('✅ VibeStore Firestore integration loaded');

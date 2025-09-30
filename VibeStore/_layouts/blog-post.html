@@ -1,0 +1,43 @@
+---
+layout: default
+---
+<article class="blog-post">
+  <header class="post-header">
+    <div class="post-meta">
+      <span class="post-category">{{ page.category }}</span>
+      <span class="post-date">{{ page.published_at | date: "%B %d, %Y" }}</span>
+      <span class="post-author">{{ page.author }}</span>
+    </div>
+    <h1 class="post-title">{{ page.title }}</h1>
+    {% if page.excerpt %}
+    <p class="post-excerpt">{{ page.excerpt }}</p>
+    {% endif %}
+  </header>
+  
+  {% if page.featured_image %}
+  <div class="post-featured-image">
+    <img src="{{ page.featured_image }}" alt="{{ page.title }}">
+  </div>
+  {% endif %}
+  
+  <div class="post-content">
+    {{ content }}
+  </div>
+  
+  <footer class="post-footer">
+    {% if page.tags %}
+    <div class="post-tags">
+      <h3>Tags:</h3>
+      {% for tag in page.tags %}
+      <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% include blog-share.html %}
+    {% include blog-comments.html %}
+  </footer>
+</article>
+
+<script src="{{ '/assets/js/blog-comments.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/blog-share.js' | relative_url }}"></script>

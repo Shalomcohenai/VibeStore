@@ -83,6 +83,101 @@ export const grantAdminToShalom = onRequest(
 );
 
 /**
+ * updateAppUsersCount (callable)
+ * - Counts unique users who clicked on an app from interactions collection
+ * - Updates the app's usersCount field
+ */
+export const updateAppUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    const { appId } = req.data || {};
+    if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
+
+    try {
+      // Count unique users who clicked on this app
+      const interactionsQuery = db.collection('interactions').where('appId', '==', String(appId));
+      const interactionsSnap = await interactionsQuery.get();
+      
+      // Count unique UIDs
+      const uniqueUsers = new Set();
+      interactionsSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.uid) {
+          uniqueUsers.add(data.uid);
+        }
+      });
+      
+      const usersCount = uniqueUsers.size;
+      
+      // Update the app with the users count
+      const appRef = db.collection('apps').doc(String(appId));
+      await appRef.update({ 
+        usersCount: usersCount,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      logger.info(`Updated users count for app ${appId}: ${usersCount} users`);
+      return { ok: true, usersCount };
+      
+    } catch (error) {
+      logger.error('Error updating app users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count');
+    }
+  }
+);
+
+/**
+ * updateAllAppsUsersCount (callable, admin only)
+ * - Updates users count for all approved apps
+ * - Useful for batch updates
+ */
+export const updateAllAppsUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const appsQuery = db.collection('apps').where('status', '==', 'approved');
+      const appsSnap = await appsQuery.get();
+      
+      const updatePromises = appsSnap.docs.map(async (appDoc) => {
+        const appId = appDoc.id;
+        const appData = appDoc.data();
+        
+        // Count unique users for this app
+        const interactionsQuery = db.collection('interactions').where('appId', '==', appId);
+        const interactionsSnap = await interactionsQuery.get();
+        
+        const uniqueUsers = new Set();
+        interactionsSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.uid) {
+            uniqueUsers.add(data.uid);
+          }
+        });
+        
+        const usersCount = uniqueUsers.size;
+        
+        // Update the app
+        return appDoc.ref.update({ 
+          usersCount: usersCount,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      
+      await Promise.all(updatePromises);
+      
+      logger.info(`Updated users count for ${appsSnap.size} apps`);
+      return { ok: true, updatedApps: appsSnap.size };
+      
+    } catch (error) {
+      logger.error('Error updating all apps users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count for all apps');
+    }
+  }
+);
+
+/**
  * redirectAndLogClick
  * GET /api/r?appId=...
  * - Fetches app link
@@ -133,6 +228,101 @@ export const redirectAndLogClick = onRequest(
 );
 
 /**
+ * updateAppUsersCount (callable)
+ * - Counts unique users who clicked on an app from interactions collection
+ * - Updates the app's usersCount field
+ */
+export const updateAppUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    const { appId } = req.data || {};
+    if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
+
+    try {
+      // Count unique users who clicked on this app
+      const interactionsQuery = db.collection('interactions').where('appId', '==', String(appId));
+      const interactionsSnap = await interactionsQuery.get();
+      
+      // Count unique UIDs
+      const uniqueUsers = new Set();
+      interactionsSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.uid) {
+          uniqueUsers.add(data.uid);
+        }
+      });
+      
+      const usersCount = uniqueUsers.size;
+      
+      // Update the app with the users count
+      const appRef = db.collection('apps').doc(String(appId));
+      await appRef.update({ 
+        usersCount: usersCount,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      logger.info(`Updated users count for app ${appId}: ${usersCount} users`);
+      return { ok: true, usersCount };
+      
+    } catch (error) {
+      logger.error('Error updating app users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count');
+    }
+  }
+);
+
+/**
+ * updateAllAppsUsersCount (callable, admin only)
+ * - Updates users count for all approved apps
+ * - Useful for batch updates
+ */
+export const updateAllAppsUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const appsQuery = db.collection('apps').where('status', '==', 'approved');
+      const appsSnap = await appsQuery.get();
+      
+      const updatePromises = appsSnap.docs.map(async (appDoc) => {
+        const appId = appDoc.id;
+        const appData = appDoc.data();
+        
+        // Count unique users for this app
+        const interactionsQuery = db.collection('interactions').where('appId', '==', appId);
+        const interactionsSnap = await interactionsQuery.get();
+        
+        const uniqueUsers = new Set();
+        interactionsSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.uid) {
+            uniqueUsers.add(data.uid);
+          }
+        });
+        
+        const usersCount = uniqueUsers.size;
+        
+        // Update the app
+        return appDoc.ref.update({ 
+          usersCount: usersCount,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      
+      await Promise.all(updatePromises);
+      
+      logger.info(`Updated users count for ${appsSnap.size} apps`);
+      return { ok: true, updatedApps: appsSnap.size };
+      
+    } catch (error) {
+      logger.error('Error updating all apps users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count for all apps');
+    }
+  }
+);
+
+/**
  * approveApp (admin callable)
  * - Sets status='approved' and updatedAt=now
  */
@@ -145,6 +335,101 @@ export const approveApp = onCall(
     const ref = db.collection('apps').doc(String(appId));
     await ref.update({ status: 'approved', updatedAt: admin.firestore.FieldValue.serverTimestamp() });
     return { ok: true };
+  }
+);
+
+/**
+ * updateAppUsersCount (callable)
+ * - Counts unique users who clicked on an app from interactions collection
+ * - Updates the app's usersCount field
+ */
+export const updateAppUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    const { appId } = req.data || {};
+    if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
+
+    try {
+      // Count unique users who clicked on this app
+      const interactionsQuery = db.collection('interactions').where('appId', '==', String(appId));
+      const interactionsSnap = await interactionsQuery.get();
+      
+      // Count unique UIDs
+      const uniqueUsers = new Set();
+      interactionsSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.uid) {
+          uniqueUsers.add(data.uid);
+        }
+      });
+      
+      const usersCount = uniqueUsers.size;
+      
+      // Update the app with the users count
+      const appRef = db.collection('apps').doc(String(appId));
+      await appRef.update({ 
+        usersCount: usersCount,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      logger.info(`Updated users count for app ${appId}: ${usersCount} users`);
+      return { ok: true, usersCount };
+      
+    } catch (error) {
+      logger.error('Error updating app users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count');
+    }
+  }
+);
+
+/**
+ * updateAllAppsUsersCount (callable, admin only)
+ * - Updates users count for all approved apps
+ * - Useful for batch updates
+ */
+export const updateAllAppsUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const appsQuery = db.collection('apps').where('status', '==', 'approved');
+      const appsSnap = await appsQuery.get();
+      
+      const updatePromises = appsSnap.docs.map(async (appDoc) => {
+        const appId = appDoc.id;
+        const appData = appDoc.data();
+        
+        // Count unique users for this app
+        const interactionsQuery = db.collection('interactions').where('appId', '==', appId);
+        const interactionsSnap = await interactionsQuery.get();
+        
+        const uniqueUsers = new Set();
+        interactionsSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.uid) {
+            uniqueUsers.add(data.uid);
+          }
+        });
+        
+        const usersCount = uniqueUsers.size;
+        
+        // Update the app
+        return appDoc.ref.update({ 
+          usersCount: usersCount,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      
+      await Promise.all(updatePromises);
+      
+      logger.info(`Updated users count for ${appsSnap.size} apps`);
+      return { ok: true, updatedApps: appsSnap.size };
+      
+    } catch (error) {
+      logger.error('Error updating all apps users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count for all apps');
+    }
   }
 );
 
@@ -186,6 +471,101 @@ export const deleteApp = onCall(
     
     logger.info(`App ${appId} and all related data deleted by admin`);
     return { ok: true, deletedReviews: reviewsSnap.size, deletedInteractions: interactionsSnap.size };
+  }
+);
+
+/**
+ * updateAppUsersCount (callable)
+ * - Counts unique users who clicked on an app from interactions collection
+ * - Updates the app's usersCount field
+ */
+export const updateAppUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    const { appId } = req.data || {};
+    if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
+
+    try {
+      // Count unique users who clicked on this app
+      const interactionsQuery = db.collection('interactions').where('appId', '==', String(appId));
+      const interactionsSnap = await interactionsQuery.get();
+      
+      // Count unique UIDs
+      const uniqueUsers = new Set();
+      interactionsSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.uid) {
+          uniqueUsers.add(data.uid);
+        }
+      });
+      
+      const usersCount = uniqueUsers.size;
+      
+      // Update the app with the users count
+      const appRef = db.collection('apps').doc(String(appId));
+      await appRef.update({ 
+        usersCount: usersCount,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      logger.info(`Updated users count for app ${appId}: ${usersCount} users`);
+      return { ok: true, usersCount };
+      
+    } catch (error) {
+      logger.error('Error updating app users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count');
+    }
+  }
+);
+
+/**
+ * updateAllAppsUsersCount (callable, admin only)
+ * - Updates users count for all approved apps
+ * - Useful for batch updates
+ */
+export const updateAllAppsUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const appsQuery = db.collection('apps').where('status', '==', 'approved');
+      const appsSnap = await appsQuery.get();
+      
+      const updatePromises = appsSnap.docs.map(async (appDoc) => {
+        const appId = appDoc.id;
+        const appData = appDoc.data();
+        
+        // Count unique users for this app
+        const interactionsQuery = db.collection('interactions').where('appId', '==', appId);
+        const interactionsSnap = await interactionsQuery.get();
+        
+        const uniqueUsers = new Set();
+        interactionsSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.uid) {
+            uniqueUsers.add(data.uid);
+          }
+        });
+        
+        const usersCount = uniqueUsers.size;
+        
+        // Update the app
+        return appDoc.ref.update({ 
+          usersCount: usersCount,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      
+      await Promise.all(updatePromises);
+      
+      logger.info(`Updated users count for ${appsSnap.size} apps`);
+      return { ok: true, updatedApps: appsSnap.size };
+      
+    } catch (error) {
+      logger.error('Error updating all apps users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count for all apps');
+    }
   }
 );
 
@@ -240,6 +620,101 @@ export const createReview = onCall(
 );
 
 /**
+ * updateAppUsersCount (callable)
+ * - Counts unique users who clicked on an app from interactions collection
+ * - Updates the app's usersCount field
+ */
+export const updateAppUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    const { appId } = req.data || {};
+    if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
+
+    try {
+      // Count unique users who clicked on this app
+      const interactionsQuery = db.collection('interactions').where('appId', '==', String(appId));
+      const interactionsSnap = await interactionsQuery.get();
+      
+      // Count unique UIDs
+      const uniqueUsers = new Set();
+      interactionsSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.uid) {
+          uniqueUsers.add(data.uid);
+        }
+      });
+      
+      const usersCount = uniqueUsers.size;
+      
+      // Update the app with the users count
+      const appRef = db.collection('apps').doc(String(appId));
+      await appRef.update({ 
+        usersCount: usersCount,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      logger.info(`Updated users count for app ${appId}: ${usersCount} users`);
+      return { ok: true, usersCount };
+      
+    } catch (error) {
+      logger.error('Error updating app users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count');
+    }
+  }
+);
+
+/**
+ * updateAllAppsUsersCount (callable, admin only)
+ * - Updates users count for all approved apps
+ * - Useful for batch updates
+ */
+export const updateAllAppsUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const appsQuery = db.collection('apps').where('status', '==', 'approved');
+      const appsSnap = await appsQuery.get();
+      
+      const updatePromises = appsSnap.docs.map(async (appDoc) => {
+        const appId = appDoc.id;
+        const appData = appDoc.data();
+        
+        // Count unique users for this app
+        const interactionsQuery = db.collection('interactions').where('appId', '==', appId);
+        const interactionsSnap = await interactionsQuery.get();
+        
+        const uniqueUsers = new Set();
+        interactionsSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.uid) {
+            uniqueUsers.add(data.uid);
+          }
+        });
+        
+        const usersCount = uniqueUsers.size;
+        
+        // Update the app
+        return appDoc.ref.update({ 
+          usersCount: usersCount,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      
+      await Promise.all(updatePromises);
+      
+      logger.info(`Updated users count for ${appsSnap.size} apps`);
+      return { ok: true, updatedApps: appsSnap.size };
+      
+    } catch (error) {
+      logger.error('Error updating all apps users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count for all apps');
+    }
+  }
+);
+
+/**
  * stripeWebhook — activate/deactivate Featured
  * - Expect Stripe checkout.session.completed with metadata.appId and period end
  * - Set apps/{appId}.featured.active=true with start/end timestamps
@@ -277,6 +752,101 @@ export const stripeWebhook = onRequest(
     }
 
     res.json({ received: true });
+  }
+);
+
+/**
+ * updateAppUsersCount (callable)
+ * - Counts unique users who clicked on an app from interactions collection
+ * - Updates the app's usersCount field
+ */
+export const updateAppUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    const { appId } = req.data || {};
+    if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
+
+    try {
+      // Count unique users who clicked on this app
+      const interactionsQuery = db.collection('interactions').where('appId', '==', String(appId));
+      const interactionsSnap = await interactionsQuery.get();
+      
+      // Count unique UIDs
+      const uniqueUsers = new Set();
+      interactionsSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.uid) {
+          uniqueUsers.add(data.uid);
+        }
+      });
+      
+      const usersCount = uniqueUsers.size;
+      
+      // Update the app with the users count
+      const appRef = db.collection('apps').doc(String(appId));
+      await appRef.update({ 
+        usersCount: usersCount,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      logger.info(`Updated users count for app ${appId}: ${usersCount} users`);
+      return { ok: true, usersCount };
+      
+    } catch (error) {
+      logger.error('Error updating app users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count');
+    }
+  }
+);
+
+/**
+ * updateAllAppsUsersCount (callable, admin only)
+ * - Updates users count for all approved apps
+ * - Useful for batch updates
+ */
+export const updateAllAppsUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const appsQuery = db.collection('apps').where('status', '==', 'approved');
+      const appsSnap = await appsQuery.get();
+      
+      const updatePromises = appsSnap.docs.map(async (appDoc) => {
+        const appId = appDoc.id;
+        const appData = appDoc.data();
+        
+        // Count unique users for this app
+        const interactionsQuery = db.collection('interactions').where('appId', '==', appId);
+        const interactionsSnap = await interactionsQuery.get();
+        
+        const uniqueUsers = new Set();
+        interactionsSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.uid) {
+            uniqueUsers.add(data.uid);
+          }
+        });
+        
+        const usersCount = uniqueUsers.size;
+        
+        // Update the app
+        return appDoc.ref.update({ 
+          usersCount: usersCount,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      
+      await Promise.all(updatePromises);
+      
+      logger.info(`Updated users count for ${appsSnap.size} apps`);
+      return { ok: true, updatedApps: appsSnap.size };
+      
+    } catch (error) {
+      logger.error('Error updating all apps users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count for all apps');
+    }
   }
 );
 
@@ -344,6 +914,101 @@ export const weeklyNewsletterJob = onSchedule(
 );
 
 /**
+ * updateAppUsersCount (callable)
+ * - Counts unique users who clicked on an app from interactions collection
+ * - Updates the app's usersCount field
+ */
+export const updateAppUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    const { appId } = req.data || {};
+    if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
+
+    try {
+      // Count unique users who clicked on this app
+      const interactionsQuery = db.collection('interactions').where('appId', '==', String(appId));
+      const interactionsSnap = await interactionsQuery.get();
+      
+      // Count unique UIDs
+      const uniqueUsers = new Set();
+      interactionsSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.uid) {
+          uniqueUsers.add(data.uid);
+        }
+      });
+      
+      const usersCount = uniqueUsers.size;
+      
+      // Update the app with the users count
+      const appRef = db.collection('apps').doc(String(appId));
+      await appRef.update({ 
+        usersCount: usersCount,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      logger.info(`Updated users count for app ${appId}: ${usersCount} users`);
+      return { ok: true, usersCount };
+      
+    } catch (error) {
+      logger.error('Error updating app users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count');
+    }
+  }
+);
+
+/**
+ * updateAllAppsUsersCount (callable, admin only)
+ * - Updates users count for all approved apps
+ * - Useful for batch updates
+ */
+export const updateAllAppsUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const appsQuery = db.collection('apps').where('status', '==', 'approved');
+      const appsSnap = await appsQuery.get();
+      
+      const updatePromises = appsSnap.docs.map(async (appDoc) => {
+        const appId = appDoc.id;
+        const appData = appDoc.data();
+        
+        // Count unique users for this app
+        const interactionsQuery = db.collection('interactions').where('appId', '==', appId);
+        const interactionsSnap = await interactionsQuery.get();
+        
+        const uniqueUsers = new Set();
+        interactionsSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.uid) {
+            uniqueUsers.add(data.uid);
+          }
+        });
+        
+        const usersCount = uniqueUsers.size;
+        
+        // Update the app
+        return appDoc.ref.update({ 
+          usersCount: usersCount,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      
+      await Promise.all(updatePromises);
+      
+      logger.info(`Updated users count for ${appsSnap.size} apps`);
+      return { ok: true, updatedApps: appsSnap.size };
+      
+    } catch (error) {
+      logger.error('Error updating all apps users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count for all apps');
+    }
+  }
+);
+
+/**
  * createReview (callable)
  * - Requires verified interaction within last 30 days
  * - Writes review and updates app's aggregates (ratingAvg, ratingCount, ratingSum)
@@ -390,5 +1055,100 @@ export const createReview = onCall(
     });
 
     return { ok: true };
+  }
+);
+
+/**
+ * updateAppUsersCount (callable)
+ * - Counts unique users who clicked on an app from interactions collection
+ * - Updates the app's usersCount field
+ */
+export const updateAppUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    const { appId } = req.data || {};
+    if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
+
+    try {
+      // Count unique users who clicked on this app
+      const interactionsQuery = db.collection('interactions').where('appId', '==', String(appId));
+      const interactionsSnap = await interactionsQuery.get();
+      
+      // Count unique UIDs
+      const uniqueUsers = new Set();
+      interactionsSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.uid) {
+          uniqueUsers.add(data.uid);
+        }
+      });
+      
+      const usersCount = uniqueUsers.size;
+      
+      // Update the app with the users count
+      const appRef = db.collection('apps').doc(String(appId));
+      await appRef.update({ 
+        usersCount: usersCount,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      logger.info(`Updated users count for app ${appId}: ${usersCount} users`);
+      return { ok: true, usersCount };
+      
+    } catch (error) {
+      logger.error('Error updating app users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count');
+    }
+  }
+);
+
+/**
+ * updateAllAppsUsersCount (callable, admin only)
+ * - Updates users count for all approved apps
+ * - Useful for batch updates
+ */
+export const updateAllAppsUsersCount = onCall(
+  { enforceAppCheck: false },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const appsQuery = db.collection('apps').where('status', '==', 'approved');
+      const appsSnap = await appsQuery.get();
+      
+      const updatePromises = appsSnap.docs.map(async (appDoc) => {
+        const appId = appDoc.id;
+        const appData = appDoc.data();
+        
+        // Count unique users for this app
+        const interactionsQuery = db.collection('interactions').where('appId', '==', appId);
+        const interactionsSnap = await interactionsQuery.get();
+        
+        const uniqueUsers = new Set();
+        interactionsSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.uid) {
+            uniqueUsers.add(data.uid);
+          }
+        });
+        
+        const usersCount = uniqueUsers.size;
+        
+        // Update the app
+        return appDoc.ref.update({ 
+          usersCount: usersCount,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      
+      await Promise.all(updatePromises);
+      
+      logger.info(`Updated users count for ${appsSnap.size} apps`);
+      return { ok: true, updatedApps: appsSnap.size };
+      
+    } catch (error) {
+      logger.error('Error updating all apps users count:', error);
+      throw new HttpsError('internal', 'Failed to update users count for all apps');
+    }
   }
 );
