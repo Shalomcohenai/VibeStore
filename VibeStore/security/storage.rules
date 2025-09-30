@@ -1,0 +1,37 @@
+rules_version = '2';
+
+// Craft rules based on data in your Firestore database
+// and write the rules in such a way that other security rules use them.
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper functions
+    function isAuthed() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthed() && (request.auth.token.admin == true || request.auth.token.email == 'shalom.cohen.111@gmail.com');
+    }
+
+    // App icons and screenshots - allow authenticated users to upload
+    match /app-icons/{allPaths=**} {
+      allow read: if true; // Anyone can read app icons
+      allow write: if isAuthed(); // Only authenticated users can upload
+    }
+
+    match /app-screenshots/{allPaths=**} {
+      allow read: if true; // Anyone can read screenshots
+      allow write: if isAuthed(); // Only authenticated users can upload
+    }
+
+    // Admin-only uploads
+    match /admin/{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Default rule - deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

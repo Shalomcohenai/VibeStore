@@ -728,12 +728,16 @@ async function handleSubmit(e) {
 async function uploadImage(file, type = 'image') {
   const { storage } = await waitForFb();
   const timestamp = Date.now();
-  const fileName = `app-${type}s/${currentUser.uid}-${timestamp}-${file.name}`;
+  // Sanitize filename to avoid issues with spaces and special characters
+  const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+  const fileName = `app-${type}s/${currentUser.uid}-${timestamp}-${sanitizedName}`;
   const storageRef = ref(storage, fileName);
   
+  console.log(`📤 Uploading ${type}: ${fileName}`);
   const snapshot = await uploadBytes(storageRef, file);
   const downloadURL = await getDownloadURL(snapshot.ref);
   
+  console.log(`✅ Upload successful: ${downloadURL}`);
   return downloadURL;
 }
 
