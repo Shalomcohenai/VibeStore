@@ -80,49 +80,80 @@ class VibeStoreBlog {
 
   async loadPosts() {
     try {
-      // For now, we'll use static posts
-      // In a real implementation, this would come from Firestore
-      this.posts = [
-        {
-          id: "art-of-vibe-coding",
-          title: "The Art of Vibe Coding: Programming with Positive Energy",
-          slug: "art-of-vibe-coding",
-          category: "vibe-coding-fundamentals",
-          excerpt: "Learn how to transform your coding experience by embracing positive energy and mindful programming practices that lead to better code and happier developers.",
-          author: "VibeStore Team",
-          featured_image: "/img/blog/vibe-coding.jpg",
-          published_at: "2025-01-27",
-          tags: ["coding", "mindfulness", "productivity", "developer-wellness"],
-          url: "/vibe-coding-fundamentals/2025/01/27/art-of-vibe-coding.html"
-        },
-        {
-          id: "essential-apps-vibe-coder",
-          title: "5 Essential Apps Every Vibe Coder Should Have",
-          slug: "essential-apps-vibe-coder",
-          category: "vibe-tools-workflow",
-          excerpt: "From mindfulness apps to powerful development tools, here are the essential apps that every vibe coder needs in their toolkit.",
-          author: "VibeStore Team",
-          featured_image: "/img/blog/essential-apps.jpg",
-          published_at: "2025-01-26",
-          tags: ["productivity", "apps", "developer-tools", "mindfulness"],
-          url: "/vibe-tools-workflow/2025/01/26/essential-apps-vibe-coder.html"
-        },
-        {
-          id: "positive-developer-culture",
-          title: "Building a Positive Developer Culture: Lessons from Vibe Coding",
-          slug: "positive-developer-culture",
-          category: "positive-tech-culture",
-          excerpt: "Discover how vibe coding principles can transform your development team culture, creating an environment where everyone thrives.",
-          author: "VibeStore Team",
-          featured_image: "/img/blog/developer-culture.jpg",
-          published_at: "2025-01-25",
-          tags: ["team-culture", "leadership", "collaboration", "workplace-wellness"],
-          url: "/positive-tech-culture/2025/01/25/positive-developer-culture.html"
-        }
-      ];
+      if (!window.firebase || !window.firebase.firestore) {
+        console.log('Firebase not available, using static posts');
+        this.loadStaticPosts();
+        return;
+      }
+
+      const db = window.firebase.firestore();
+      const postsSnapshot = await db.collection('blog_posts')
+        .where('published', '==', true)
+        .orderBy('publishedAt', 'desc')
+        .get();
+
+      this.posts = postsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        url: doc.data().url || this.generatePostUrl(doc.data())
+      }));
+
+      console.log(`Loaded ${this.posts.length} posts from Firestore`);
     } catch (error) {
-      console.error('Error loading posts:', error);
+      console.error('Error loading posts from Firestore:', error);
+      this.loadStaticPosts();
     }
+  }
+
+  generatePostUrl(post) {
+    // Generate URL based on Jekyll's structure
+    const date = new Date(post.publishedAt);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `/${post.category}/${year}/${month}/${day}/${post.slug}.html`;
+  }
+
+  loadStaticPosts() {
+    // Fallback to static posts if Firestore is not available
+    this.posts = [
+      {
+        id: "art-of-vibe-coding",
+        title: "The Art of Vibe Coding: Programming with Positive Energy",
+        slug: "art-of-vibe-coding",
+        category: "vibe-coding-fundamentals",
+        excerpt: "Learn how to transform your coding experience by embracing positive energy and mindful programming practices that lead to better code and happier developers.",
+        author: "VibeStore Team",
+        featured_image: "/img/blog/vibe-coding.jpg",
+        published_at: "2025-01-27",
+        tags: ["coding", "mindfulness", "productivity", "developer-wellness"],
+        url: "/vibe-coding-fundamentals/2025/01/27/art-of-vibe-coding.html"
+      },
+      {
+        id: "essential-apps-vibe-coder",
+        title: "5 Essential Apps Every Vibe Coder Should Have",
+        slug: "essential-apps-vibe-coder",
+        category: "vibe-tools-workflow",
+        excerpt: "From mindfulness apps to powerful development tools, here are the essential apps that every vibe coder needs in their toolkit.",
+        author: "VibeStore Team",
+        featured_image: "/img/blog/essential-apps.jpg",
+        published_at: "2025-01-26",
+        tags: ["productivity", "apps", "developer-tools", "mindfulness"],
+        url: "/vibe-tools-workflow/2025/01/26/essential-apps-vibe-coder.html"
+      },
+      {
+        id: "positive-developer-culture",
+        title: "Building a Positive Developer Culture: Lessons from Vibe Coding",
+        slug: "positive-developer-culture",
+        category: "positive-tech-culture",
+        excerpt: "Discover how vibe coding principles can transform your development team culture, creating an environment where everyone thrives.",
+        author: "VibeStore Team",
+        featured_image: "/img/blog/developer-culture.jpg",
+        published_at: "2025-01-25",
+        tags: ["team-culture", "leadership", "collaboration", "workplace-wellness"],
+        url: "/positive-tech-culture/2025/01/25/positive-developer-culture.html"
+      }
+    ];
   }
 
   renderPosts() {
