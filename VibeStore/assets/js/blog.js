@@ -93,7 +93,7 @@ class VibeStoreBlog {
           featured_image: "/img/blog/vibe-coding.jpg",
           published_at: "2025-01-27",
           tags: ["coding", "mindfulness", "productivity", "developer-wellness"],
-          url: "/vibe-coding-fundamentals/2025/01/27/art-of-vibe-coding/"
+          url: "/vibe-coding-fundamentals/2025/01/27/art-of-vibe-coding.html"
         },
         {
           id: "essential-apps-vibe-coder",
@@ -105,7 +105,7 @@ class VibeStoreBlog {
           featured_image: "/img/blog/essential-apps.jpg",
           published_at: "2025-01-26",
           tags: ["productivity", "apps", "developer-tools", "mindfulness"],
-          url: "/vibe-tools-workflow/2025/01/26/essential-apps-vibe-coder/"
+          url: "/vibe-tools-workflow/2025/01/26/essential-apps-vibe-coder.html"
         },
         {
           id: "positive-developer-culture",
@@ -117,7 +117,7 @@ class VibeStoreBlog {
           featured_image: "/img/blog/developer-culture.jpg",
           published_at: "2025-01-25",
           tags: ["team-culture", "leadership", "collaboration", "workplace-wellness"],
-          url: "/positive-tech-culture/2025/01/25/positive-developer-culture/"
+          url: "/positive-tech-culture/2025/01/25/positive-developer-culture.html"
         }
       ];
     } catch (error) {
