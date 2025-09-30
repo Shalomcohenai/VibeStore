@@ -1,8 +1,14 @@
 # Site-wide data for VibeStore
-version: "3.34"
+version: "3.35"
 last_updated: "2025-01-27"
-cache_bust: "20250127-050-v334"
+cache_bust: "20250127-060-v335"
 features:
+  - "Version 3.35 - Made App Icon Upload Optional"
+  - "Removed mandatory icon upload requirement from submit form"
+  - "Users can now submit apps without uploading images"
+  - "Icon upload is now completely optional"
+  - "Simplified app submission process"
+  - "Better responsive design for category badges"
   - "Version 3.34 - Fixed Firebase Storage CORS Issues"
   - "Added Firebase Storage security rules for authenticated uploads"
   - "Created CORS configuration for web app file uploads"

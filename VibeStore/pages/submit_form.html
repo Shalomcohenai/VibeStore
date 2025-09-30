@@ -150,7 +150,7 @@ permalink: /pages/submit-form
         
         <!-- App Icon -->
         <div class="form-group">
-          <label class="form-label">App Icon *</label>
+          <label class="form-label">App Icon <span class="optional">(Optional)</span></label>
           <div class="icon-upload-container">
             <div class="icon-upload-area" id="iconUploadArea">
               <div class="upload-content">
@@ -784,12 +784,7 @@ function validateForm() {
     isValid = false;
   }
 
-  // Check icon (either upload or URL)
-  const imageUrl = document.getElementById('imageUrl').value.trim();
-  if (!uploadedIconFile && !imageUrl) {
-    showFieldError('icon', 'Please provide an app icon - either upload a file or provide a URL');
-    isValid = false;
-  }
+  // Icon is now optional - no validation required
 
   return isValid;
 }
@@ -968,7 +963,7 @@ function clearFieldError(fieldName) {
     platform: 'What platform or technology was used to build this app?',
     link: 'Direct link to your app (website, app store, or wa.me link)',
     imageUrl: 'Alternative: provide direct links to your app\'s images',
-    icon: 'PNG, JPG up to 2MB',
+    icon: 'PNG, JPG up to 2MB (Optional)',
     screenshots: 'PNG, JPG up to 5MB each • Max 5 images'
   };
   
