@@ -1,8 +1,13 @@
 # Site-wide data for VibeStore
-version: "3.40"
+version: "3.41"
 last_updated: "2025-01-27"
-cache_bust: "20250127-110-v340"
+cache_bust: "20250127-120-v341"
 features:
+  - "Version 3.41 - Fixed Firebase Async Loading for Blog Comments"
+  - "Added waitForFirebase() calls in blog comments system"
+  - "Fixed async initialization issues"
+  - "Ensured Firebase is ready before authentication checks"
+  - "Improved error handling and debugging"
   - "Version 3.40 - Blog System Complete with Firebase Integration"
   - "Complete blog system with Firestore integration"
   - "Real-time comments system with user authentication"

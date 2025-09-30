@@ -15,9 +15,17 @@ class VibeStoreComments {
 
   async init() {
     try {
+      // Wait for Firebase to be ready
+      await window.waitForFirebase();
+      
+      this.blogId = this.extractBlogId();
+      this.comments = [];
+      
       await this.loadComments();
       this.renderComments();
       this.setupEventListeners();
+      
+      console.log('Blog comments initialized for:', this.blogId);
     } catch (error) {
       console.error('Error initializing comments:', error);
       this.showError('Failed to load comments. Please try again later.');
@@ -162,6 +170,9 @@ class VibeStoreComments {
       this.showError('Please enter a comment.');
       return;
     }
+
+    // Wait for Firebase to be ready
+    await window.waitForFirebase();
 
     // Check if user is authenticated
     if (!this.isUserAuthenticated()) {
