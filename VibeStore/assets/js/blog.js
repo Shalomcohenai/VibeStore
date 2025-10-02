@@ -1,4 +1,6 @@
 // Blog functionality for VibeStore
+// Firebase imports are handled globally in firebaseConfig.js
+
 class VibeStoreBlog {
   constructor() {
     this.posts = [];
@@ -9,6 +11,7 @@ class VibeStoreBlog {
 
   async init() {
     try {
+      this.showLoadingSpinner();
       await this.loadCategories();
       await this.loadPosts();
       this.renderPosts();
@@ -19,58 +22,61 @@ class VibeStoreBlog {
     }
   }
 
+  showLoadingSpinner() {
+    const container = document.getElementById('blog-posts-container');
+    if (!container) return;
+    
+    container.innerHTML = `
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading amazing content...</p>
+      </div>
+    `;
+  }
+
   async loadCategories() {
     try {
-      // For now, we'll use the static categories from the YAML file
-      // In a real implementation, this would come from Firestore
+      // Updated categories for AI-assisted coding focus
       this.categories = [
         {
-          id: "vibe-coding-fundamentals",
-          name: "Vibe Coding Fundamentals",
-          slug: "vibe-coding-fundamentals",
-          description: "Core principles and techniques for coding with positive energy",
+          id: "tools-platforms",
+          name: "Tools & Platforms",
+          slug: "tools-platforms",
+          description: "Reviews of AI coding tools, platforms, and version updates (Replit, Cursor, GitHub Copilot, Cloudflare VibeSDK, etc.)",
           color: "#6366f1",
-          icon: "💻"
-        },
-        {
-          id: "mindful-programming",
-          name: "Mindful Programming",
-          slug: "mindful-programming",
-          description: "Programming with awareness, focus, and intention",
-          color: "#8b5cf6",
-          icon: "🧘"
-        },
-        {
-          id: "developer-wellness",
-          name: "Developer Wellness",
-          slug: "developer-wellness",
-          description: "Mental health, work-life balance, and sustainable coding practices",
-          color: "#06b6d4",
-          icon: "🌱"
-        },
-        {
-          id: "positive-tech-culture",
-          name: "Positive Tech Culture",
-          slug: "positive-tech-culture",
-          description: "Building inclusive, supportive, and joyful development teams",
-          color: "#10b981",
-          icon: "🤝"
-        },
-        {
-          id: "vibe-tools-workflow",
-          name: "Vibe Tools & Workflow",
-          slug: "vibe-tools-workflow",
-          description: "Tools and workflows that enhance your coding experience",
-          color: "#f59e0b",
           icon: "🛠️"
         },
         {
-          id: "coding-philosophy",
-          name: "Coding Philosophy",
-          slug: "coding-philosophy",
-          description: "Deep thoughts on the art and philosophy of programming",
+          id: "use-cases-examples",
+          name: "Use Cases & Real-World Examples",
+          slug: "use-cases-examples",
+          description: "How people are actually using AI-assisted coding - rapid prototyping, team projects, integrations, success stories and failures",
+          color: "#10b981",
+          icon: "💡"
+        },
+        {
+          id: "best-practices",
+          name: "Best Practices & Methodology",
+          slug: "best-practices",
+          description: "Working effectively without compromising quality - code review, validation, testing, dependency management, and version control",
+          color: "#8b5cf6",
+          icon: "✅"
+        },
+        {
+          id: "challenges-risks",
+          name: "Challenges & Risks",
+          slug: "challenges-risks",
+          description: "Security risks, vendor lock-in, maintainability problems, and critical perspectives on AI-assisted coding",
           color: "#ef4444",
-          icon: "💭"
+          icon: "⚠️"
+        },
+        {
+          id: "general",
+          name: "General",
+          slug: "general",
+          description: "News, announcements, community updates, and opinion pieces",
+          color: "#06b6d4",
+          icon: "📰"
         }
       ];
     } catch (error) {
@@ -80,34 +86,130 @@ class VibeStoreBlog {
 
   async loadPosts() {
     try {
-      if (!window.firebase || !window.firebase.firestore) {
-        console.log('Firebase not available, using static posts');
-        this.loadStaticPosts();
-        return;
-      }
+      // Load both Firestore posts and static Jekyll posts
+      const firestorePosts = await this.loadFirestorePosts();
+      const staticPosts = this.getStaticPosts();
+      
+      // Combine and sort by date
+      this.posts = [...firestorePosts, ...staticPosts].sort((a, b) => {
+        const dateA = new Date(a.published_at || a.publishDate);
+        const dateB = new Date(b.published_at || b.publishDate);
+        return dateB - dateA;
+      });
 
-      const db = window.firebase.firestore();
-      const postsSnapshot = await db.collection('blog_posts')
-        .where('published', '==', true)
-        .orderBy('publishedAt', 'desc')
-        .get();
-
-      this.posts = postsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        url: doc.data().url || this.generatePostUrl(doc.data())
-      }));
-
-      console.log(`Loaded ${this.posts.length} posts from Firestore`);
+      console.log(`Loaded ${this.posts.length} posts (${firestorePosts.length} from Firestore, ${staticPosts.length} static)`);
     } catch (error) {
-      console.error('Error loading posts from Firestore:', error);
+      console.error('Error loading posts:', error);
       this.loadStaticPosts();
     }
   }
 
+  async loadFirestorePosts() {
+    try {
+      // Wait for Firebase to be ready with fallback
+      let fb;
+      if (window.waitForFirebase) {
+        fb = await window.waitForFirebase();
+      } else {
+        // Fallback: wait for window.$fb to be available
+        fb = await this.waitForFirebaseFallback();
+      }
+      
+      if (!fb || !fb.db || !fb.storeMod) {
+        console.log('Firestore not available');
+        return [];
+      }
+
+      // Use Firebase v9+ modular API
+      const { collection, query, where, getDocs, orderBy } = fb.storeMod;
+      
+      const postsRef = collection(fb.db, 'blog_posts');
+      const q = query(
+        postsRef, 
+        where('published', '==', true),
+        orderBy('publishDate', 'desc')
+      );
+      
+      const snapshot = await getDocs(q);
+      
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        url: `/blog/post/?id=${doc.id}`,
+        source: 'firestore'
+      }));
+    } catch (error) {
+      console.error('Error loading Firestore posts:', error);
+      return [];
+    }
+  }
+
+  waitForFirebaseFallback() {
+    return new Promise((resolve) => {
+      const check = () => {
+        if (window.$fb && window.$fb.auth && window.$fb.db) {
+          resolve(window.$fb);
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
+    });
+  }
+
+  getStaticPosts() {
+    // Static Jekyll posts
+    return [
+      {
+        id: "art-of-vibe-coding",
+        title: "The Art of Vibe Coding: Programming with Positive Energy",
+        slug: "art-of-vibe-coding",
+        category: "vibe-coding-fundamentals",
+        excerpt: "Learn how to transform your coding experience by embracing positive energy and mindful programming practices that lead to better code and happier developers.",
+        author: "VibeStore Team",
+        featured_image: "/img/blog/vibe-coding.jpg",
+        published_at: "2025-01-27",
+        tags: ["coding", "mindfulness", "productivity", "developer-wellness"],
+        url: "/vibe-coding-fundamentals/2025/01/27/art-of-vibe-coding.html",
+        source: 'jekyll'
+      },
+      {
+        id: "essential-apps-vibe-coder",
+        title: "5 Essential Apps Every Vibe Coder Should Have",
+        slug: "essential-apps-vibe-coder",
+        category: "vibe-tools-workflow",
+        excerpt: "From mindfulness apps to powerful development tools, here are the essential apps that every vibe coder needs in their toolkit.",
+        author: "VibeStore Team",
+        featured_image: "/img/blog/essential-apps.jpg",
+        published_at: "2025-01-26",
+        tags: ["productivity", "apps", "developer-tools", "mindfulness"],
+        url: "/vibe-tools-workflow/2025/01/26/essential-apps-vibe-coder.html",
+        source: 'jekyll'
+      },
+      {
+        id: "positive-developer-culture",
+        title: "Building a Positive Developer Culture: Lessons from Vibe Coding",
+        slug: "positive-developer-culture",
+        category: "positive-tech-culture",
+        excerpt: "Discover how vibe coding principles can transform your development team culture, creating an environment where everyone thrives.",
+        author: "VibeStore Team",
+        featured_image: "/img/blog/developer-culture.jpg",
+        published_at: "2025-01-25",
+        tags: ["team-culture", "leadership", "collaboration", "workplace-wellness"],
+        url: "/positive-tech-culture/2025/01/25/positive-developer-culture.html",
+        source: 'jekyll'
+      }
+    ];
+  }
+
   generatePostUrl(post) {
+    // Firestore posts use query parameter, Jekyll posts use static URLs
+    if (post.source === 'firestore') {
+      return `/blog/post/?id=${post.id}`;
+    }
+    
     // Generate URL based on Jekyll's structure
-    const date = new Date(post.publishedAt);
+    const date = new Date(post.publishDate || post.published_at);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -180,17 +282,19 @@ class VibeStoreBlog {
   createPostCard(post) {
     const category = this.categories.find(cat => cat.id === post.category);
     const categoryColor = category ? category.color : '#6366f1';
+    const featuredImage = post.featured_image || post.featuredImage || '/img/placeholder.png';
+    const publishDate = post.published_at || post.publishDate;
     
     return `
       <article class="post-card">
         <a href="${post.url}" class="post-card-link">
-          <img src="${post.featured_image}" alt="${post.title}" class="post-card-image" onerror="this.src='/img/placeholder.png'">
+          <img src="${featuredImage}" alt="${post.title}" class="post-card-image" onerror="this.src='/img/placeholder.png'">
           <div class="post-card-content">
             <div class="post-card-meta">
               <span class="post-card-category" style="background-color: ${categoryColor}">
-                ${category ? category.name : post.category}
+                ${category ? category.icon + ' ' + category.name : post.category}
               </span>
-              <span class="post-card-date">${this.formatDate(post.published_at)}</span>
+              <span class="post-card-date">${this.formatDate(publishDate)}</span>
             </div>
             <h2 class="post-card-title">${post.title}</h2>
             <p class="post-card-excerpt">${post.excerpt}</p>

@@ -29,8 +29,9 @@ async function fetchAppsFromFirestore(filters = {}) {
     appsQuery = query(appsQuery, where('status', '==', 'approved'));
     
     // Apply filters
+    // Note: niche is stored as an array, so we use array-contains
     if (filters.niche && filters.niche !== 'all') {
-      appsQuery = query(appsQuery, where('niche', '==', filters.niche));
+      appsQuery = query(appsQuery, where('niche', 'array-contains', filters.niche));
     }
     
     if (filters.category && filters.category !== 'all') {

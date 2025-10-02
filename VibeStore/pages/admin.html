@@ -1,36 +1,143 @@
----
-title: Admin Panel
-layout: page
-permalink: /pages/admin
----
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<div class="admin-panel">
+<!-- Dynamic SEO meta tags -->
+<title>Admin Panel | VibeStore</title>
+
+<meta name="description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="http://0.0.0.0:4000/pages/admin">
+<meta property="og:title" content="Admin Panel | VibeStore">
+<meta property="og:description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.">
+<meta property="og:image" content="http://0.0.0.0:4000/img/placeholder.svg">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="http://0.0.0.0:4000/pages/admin">
+<meta property="twitter:title" content="Admin Panel | VibeStore">
+<meta property="twitter:description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.">
+<meta property="twitter:image" content="http://0.0.0.0:4000/img/placeholder.svg">
+
+<!-- Additional SEO -->
+<meta name="robots" content="index, follow">
+<meta name="author" content="VibeStore">
+<link rel="canonical" href="http://0.0.0.0:4000/pages/admin">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<link rel="icon" href="/img/favicon.svg?v=20241219-007-v32" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/main.css?v=20241219-007-v32">
+
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Admin Panel | VibeStore</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Admin Panel" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community." />
+<meta property="og:description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community." />
+<link rel="canonical" href="http://0.0.0.0:4000/pages/admin" />
+<meta property="og:url" content="http://0.0.0.0:4000/pages/admin" />
+<meta property="og:site_name" content="VibeStore" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Admin Panel" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.","headline":"Admin Panel","url":"http://0.0.0.0:4000/pages/admin"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+  <body class="body">
+    <!-- Dynamic background -->
+    <div class="dynamic-bg" aria-hidden="true">
+      <div class="floating-shape"></div>
+      <div class="floating-shape"></div>
+      <div class="floating-shape"></div>
+    </div>
+    
+    <header class="site-header">
+  <div class="wrap">
+    <a class="site-title hover-lift" href="/">
+      <span class="logo-dot" aria-hidden="true"></span>
+      VibeStore
+    </a>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+    <nav class="site-nav" data-nav id="main-nav">
+      <!-- Dynamic content based on auth state -->
+      <div id="nav-guest" class="nav-state">
+        <a class="btn small" href="/pages/auth">Sign in</a>
+      </div>
+      
+      <div id="nav-authenticated" class="nav-state" style="display: none;">
+        <a href="/pages/submit-form" class="nav-link">Submit App</a>
+        <div class="user-circle" id="user-circle" title="Go to Profile">
+          <span id="user-name"></span>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+    <main class="container">
+      <section class="page">
+  <h1 class="page-title">Admin Panel</h1>
+  <div class="page-content">
+    <div class="admin-panel">
   <!-- Admin Header -->
   <div class="admin-header">
     <h1 class="page-title">Admin Panel</h1>
     <div style="text-align: right; color: var(--c-muted); font-size: 0.9rem; margin-top: 0.5rem;">
-      Version: 3.2 - Enhanced UI and Performance
+      Version: 4.0-free - Advanced Statistics (No Cloud Functions)
+    </div>
+    
+    <!-- Admin Welcome -->
+    <div style="margin: 2rem 0; padding: 1.5rem; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; border-radius: 12px;">
+      <h2 style="margin: 0 0 0.5rem 0; color: white;">👋 Welcome, Admin!</h2>
+      <p style="margin: 0; opacity: 0.9;">Manage your platform from one central dashboard</p>
     </div>
     
     <!-- Development Section -->
     <div class="development-info" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem; margin: 1rem 0; font-size: 0.85rem;">
       <h3 style="margin: 0 0 0.5rem 0; color: #495057;">Development Information</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
-        <div><strong>Version:</strong> 3.2</div>
-        <div><strong>Last Updated:</strong> 2024-12-19</div>
-        <div><strong>Cache Bust:</strong> 20241219-007-v32</div>
-        <div><strong>Build Status:</strong> <span style="color: #28a745;">✓ Clean Build</span></div>
+        <div><strong>Version:</strong> 4.0.0-free</div>
+        <div><strong>Last Updated:</strong> 2025-01-10</div>
+        <div><strong>Cache Bust:</strong> 20250110-002-v40</div>
+        <div><strong>Build Status:</strong> <span style="color: #28a745;">✓ Free Tier</span></div>
       </div>
       <div style="margin-top: 0.5rem;">
         <strong>Latest Features:</strong>
         <ul style="margin: 0.25rem 0 0 1rem; font-size: 0.8rem;">
-          {% for feature in site.features limit:3 %}
-          <li>{{ feature }}</li>
-          {% endfor %}
+          <li>📊 Advanced Statistics Dashboard (Direct Firestore)</li>
+          <li>📧 Newsletter Management with CSV Export</li>
+          <li>⚠️ User Reports Management System</li>
+          <li>🔒 Enhanced Security & Access Control</li>
+          <li>✨ NO Cloud Functions - 100% Free Tier</li>
         </ul>
       </div>
     </div>
-    <div class="admin-stats" id="admin-stats">
+    
+    <!-- Management Tabs -->
+    <div class="management-tabs" style="margin: 2rem 0;">
+      <button class="management-tab active" data-tab="apps">📱 Apps Approval</button>
+      <button class="management-tab" data-tab="statistics">📊 Statistics</button>
+      <button class="management-tab" data-tab="blog">✍️ Blog</button>
+    </div>
+  </div>
+
+  <!-- Apps Management Section -->
+  <div class="management-content" id="apps-management">
+    
+    <!-- Apps Overview Stats -->
+    <div class="admin-stats" id="admin-stats" style="margin-bottom: 2rem;">
       <div class="stat-card">
         <div class="stat-number" id="pending-count">-</div>
         <div class="stat-label">Pending Review</div>
@@ -52,35 +159,175 @@ permalink: /pages/admin
         <div class="stat-label">Rejected</div>
       </div>
     </div>
-  </div>
+    
+    <!-- Filter Tabs -->
+    <div class="admin-tabs">
+      <button class="tab-btn active" data-status="pending">Pending Review</button>
+      <button class="tab-btn" data-status="approved">Approved</button>
+      <button class="tab-btn" data-status="promoted">Promoted</button>
+      <button class="tab-btn" data-status="rejected">Rejected</button>
+      <button class="tab-btn" data-status="all">All Apps</button>
+    </div>
 
-  <!-- Filter Tabs -->
-  <div class="admin-tabs">
-    <button class="tab-btn active" data-status="pending">Pending Review</button>
-    <button class="tab-btn" data-status="approved">Approved</button>
-    <button class="tab-btn" data-status="promoted">Promoted</button>
-    <button class="tab-btn" data-status="rejected">Rejected</button>
-    <button class="tab-btn" data-status="all">All Apps</button>
-  </div>
-
-  <!-- Apps List -->
-  <div class="admin-content">
-    <div class="loading-state" id="loading-state">
-      <div style="text-align: center; padding: 2rem;">
-        <div class="spinner"></div>
-        <p>Loading apps...</p>
+    <!-- Apps List -->
+    <div class="admin-content">
+      <div class="loading-state" id="loading-state">
+        <div style="text-align: center; padding: 2rem;">
+          <div class="spinner"></div>
+          <p>Loading apps...</p>
+        </div>
+      </div>
+      
+      <div class="apps-list" id="apps-list" style="display: none;">
+        <!-- Apps will be loaded here -->
+      </div>
+      
+      <div class="empty-state" id="empty-state" style="display: none;">
+        <div style="text-align: center; padding: 3rem; color: var(--c-muted);">
+          <h3>No apps found</h3>
+          <p>No apps match the current filter.</p>
+        </div>
       </div>
     </div>
-    
-    <div class="apps-list" id="apps-list" style="display: none;">
-      <!-- Apps will be loaded here -->
-    </div>
-    
-    <div class="empty-state" id="empty-state" style="display: none;">
-      <div style="text-align: center; padding: 3rem; color: var(--c-muted);">
-        <h3>No apps found</h3>
-        <p>No apps match the current filter.</p>
+  </div>
+  
+  <!-- Statistics Management Section -->
+  <div class="management-content" id="statistics-management" style="display: none;">
+    <div class="admin-content">
+      
+      <!-- Platform Overview Stats -->
+      <div style="margin-bottom: 2rem;">
+        <h2 style="margin: 0 0 1rem 0; color: #111827;">Platform Overview</h2>
+        <div class="admin-stats">
+          <div class="stat-card">
+            <div class="stat-number" id="stats-total-users">-</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stats-users-favorites">-</div>
+            <div class="stat-label">Users with Favorites</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stats-total-reviews">-</div>
+            <div class="stat-label">Total Reviews</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stats-avg-rating">-</div>
+            <div class="stat-label">Average Rating</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stats-total-likes">-</div>
+            <div class="stat-label">Total Likes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stats-interactions">-</div>
+            <div class="stat-label">Total Interactions</div>
+          </div>
+        </div>
       </div>
+      
+      <!-- Newsletter Section -->
+      <div style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.05);">
+          <div>
+            <h3 style="margin: 0 0 0.5rem 0;">📧 Newsletter Subscriptions</h3>
+            <p style="margin: 0; color: var(--c-muted); font-size: 0.9rem;">
+              Total: <strong id="newsletter-count">-</strong> | 
+              Last 30 days: <strong id="newsletter-recent">-</strong>
+            </p>
+          </div>
+          <button id="export-newsletter-csv" class="btn primary">
+            📥 Export to CSV
+          </button>
+        </div>
+        
+        <div class="newsletter-list-container" style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.05); overflow: hidden;">
+          <div id="newsletter-list" style="max-height: 400px; overflow-y: auto;">
+            <div style="text-align: center; padding: 2rem;">
+              <div class="spinner"></div>
+              <p>Loading subscriptions...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Reports Section -->
+      <div style="margin-bottom: 2rem;">
+        <div style="margin-bottom: 1rem; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.05);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="margin: 0;">⚠️ User Reports</h3>
+            <p style="margin: 0; color: var(--c-muted); font-size: 0.9rem;">
+              Total: <strong id="reports-count">-</strong> | 
+              Pending: <strong id="reports-pending">-</strong>
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="report-filter active" data-status="pending">Pending</button>
+            <button class="report-filter" data-status="resolved">Resolved</button>
+            <button class="report-filter" data-status="all">All Reports</button>
+          </div>
+        </div>
+        
+        <div class="reports-list-container" style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.05); overflow: hidden;">
+          <div id="reports-list" style="max-height: 400px; overflow-y: auto; padding: 1rem;">
+            <div style="text-align: center; padding: 2rem;">
+              <div class="spinner"></div>
+              <p>Loading reports...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- Blog Management Section -->
+  <div class="management-content" id="blog-management" style="display: none;">
+    <div class="admin-content">
+      
+      <h2 style="margin: 0 0 2rem 0; color: #111827;">Blog Management</h2>
+      
+      <!-- Quick Actions -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <!-- Blog Editor -->
+        <a href="/admin/blog-editor/" style="text-decoration: none;">
+          <div class="stat-card" style="cursor: pointer; border: 2px solid transparent; transition: all 0.3s;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">✍️</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: var(--c-text);">Create New Post</h3>
+            <p style="margin: 0; color: var(--c-muted); font-size: 0.9rem;">Write and publish new blog posts</p>
+          </div>
+        </a>
+        
+        <!-- View Blog -->
+        <a href="/blog/" style="text-decoration: none;">
+          <div class="stat-card" style="cursor: pointer; border: 2px solid transparent; transition: all 0.3s;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📰</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: var(--c-text);">View Blog</h3>
+            <p style="margin: 0; color: var(--c-muted); font-size: 0.9rem;">See all published blog posts</p>
+          </div>
+        </a>
+        
+        <!-- Blog Categories -->
+        <div class="stat-card" style="border: 2px solid transparent;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">📂</div>
+          <h3 style="margin: 0 0 0.5rem 0; color: var(--c-text);">Categories</h3>
+          <p style="margin: 0; color: var(--c-muted); font-size: 0.9rem;">Manage blog categories</p>
+        </div>
+        
+      </div>
+      
+      <!-- Blog Info -->
+      <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,.05);">
+        <h3 style="margin: 0 0 1rem 0;">Blog Management Guide</h3>
+        <div style="color: var(--c-muted); line-height: 1.6;">
+          <p><strong>✍️ Create New Post:</strong> Use the blog editor to write, preview, and publish new articles.</p>
+          <p><strong>📰 View Blog:</strong> See all published posts as they appear to visitors.</p>
+          <p><strong>📂 Categories:</strong> Blog posts are organized by categories for better navigation.</p>
+          <p><strong>💡 Tips:</strong> Use clear titles, add relevant images, and optimize for SEO.</p>
+        </div>
+      </div>
+      
     </div>
   </div>
 </div>
@@ -290,6 +537,11 @@ permalink: /pages/admin
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
+}
+
+.quick-link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .admin-header {
@@ -552,6 +804,128 @@ permalink: /pages/admin
   100% { transform: rotate(360deg); }
 }
 
+/* Management Tabs */
+.management-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+}
+
+.management-tab {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.management-tab.active {
+  background: var(--c-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(34,197,94,.3);
+}
+
+.management-tab:hover:not(.active) {
+  background: var(--c-bg);
+}
+
+/* Newsletter & Reports */
+.subscription-item,
+.report-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--c-line);
+  transition: background 0.2s ease;
+}
+
+.subscription-item:hover,
+.report-item:hover {
+  background: var(--c-bg);
+}
+
+.subscription-email {
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: 0.25rem;
+}
+
+.subscription-date {
+  font-size: 0.85rem;
+  color: var(--c-muted);
+}
+
+.report-item {
+  border-left: 3px solid transparent;
+}
+
+.report-item:not(.resolved) {
+  border-left-color: #fbbf24;
+}
+
+.report-item.resolved {
+  opacity: 0.6;
+  border-left-color: #22c55e;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.report-date {
+  font-size: 0.8rem;
+  color: var(--c-muted);
+  margin-left: 0.5rem;
+}
+
+.report-message {
+  color: var(--c-text);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.report-filter {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--c-line);
+  background: white;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.report-filter.active {
+  background: var(--c-primary);
+  color: white;
+  border-color: var(--c-primary);
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge.resolved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
 @media (max-width: 768px) {
   .admin-stats {
     grid-template-columns: repeat(2, 1fr);
@@ -575,6 +949,15 @@ permalink: /pages/admin
   .app-actions {
     width: 100%;
     justify-content: flex-end;
+  }
+  
+  .management-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .management-tab {
+    flex: 1 1 30%;
+    min-width: 100px;
   }
 }
 
@@ -1186,7 +1569,7 @@ permalink: /pages/admin
 
 <script type="module">
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js';
-import { getFirestore, collection, query, where, orderBy, onSnapshot, doc, updateDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js';
+import { getFirestore, collection, query, where, orderBy, onSnapshot, doc, updateDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js';
 import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js';
 
 let currentUser = null;
@@ -1232,61 +1615,9 @@ async function checkAdminAccess() {
           console.log('🔍 Email claim:', idTokenResult.claims.email);
         });
         
-        // Show admin access info with claims setup button
-        document.querySelector('.admin-panel').insertAdjacentHTML('afterbegin', `
-          <div style="background: #dcfce7; border: 1px solid #16a34a; border-radius: 8px; padding: 1rem; margin-bottom: 2rem;">
-            <strong>👑 Admin Access:</strong> You're logged in as the admin user.
-            <div style="margin-top: 0.5rem; color: var(--c-muted); font-size: 0.9rem;">
-              <strong>✅ Admin Panel is fully functional!</strong><br>
-              You can approve/reject apps, manage the platform, and all features work perfectly.
-            </div>
-            <div style="margin-top: 1rem;">
-              <button id="setup-claims-btn" style="background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
-                🔧 Setup Firebase Claims (for Profile Button)
-              </button>
-              <span id="claims-status" style="margin-left: 1rem; font-size: 0.9rem;"></span>
-            </div>
-          </div>
-        `);
-        
+        // Admin verified - initialize panel
+        console.log('✅ Admin access granted');
         initializeAdminPanel();
-        
-        // Setup claims button functionality
-        document.getElementById('setup-claims-btn')?.addEventListener('click', async () => {
-          const btn = document.getElementById('setup-claims-btn');
-          const status = document.getElementById('claims-status');
-          
-          btn.disabled = true;
-          btn.textContent = '⏳ Setting up...';
-          status.textContent = '';
-          
-          try {
-            // Check current claims first
-            const idTokenResult = await user.getIdTokenResult();
-            if (idTokenResult.claims.admin === true) {
-              status.innerHTML = '<span style="color: #16a34a;">✅ Already set up!</span>';
-              btn.textContent = '✅ Claims Ready';
-              return;
-            }
-            
-            // For now, just show manual instructions since Cloud Functions require Blaze plan
-            throw new Error('Manual setup required');
-            
-          } catch (error) {
-            console.error('Claims setup error:', error);
-            status.innerHTML = `
-              <div style="color: #dc2626; font-size: 0.8rem;">
-                ❌ Auto-setup failed. Manual setup needed:<br>
-                1. Go to Firebase Console → Authentication → Users<br>
-                2. Find your user → Click menu → Set custom claims<br>
-                3. Add: {"admin": true, "role": "admin"}
-              </div>
-            `;
-            btn.textContent = '❌ Manual Setup Needed';
-          } finally {
-            btn.disabled = false;
-          }
-        });
       } else {
         // Not the admin user
         document.querySelector('.admin-panel').innerHTML = `
@@ -1309,7 +1640,10 @@ async function checkAdminAccess() {
 
 // Initialize admin panel
 async function initializeAdminPanel() {
-  loadAppStats();
+  // Load all statistics first
+  await loadAndRenderAllStats();
+  
+  // Load apps
   loadApps(currentFilter);
   
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1330,44 +1664,74 @@ async function initializeAdminPanel() {
   
   // Initialize delete confirmation modal
   initializeDeleteConfirmationModal();
+  
+  // Initialize management tabs
+  initializeManagementTabs();
+  
+  // Setup statistics event listeners
+  setupStatisticsEventListeners();
 }
 
-// Load app statistics
-async function loadAppStats() {
-  try {
-    const { db } = await waitForFirebase();
-    
-    const appsSnapshot = await getDocs(collection(db, 'apps'));
-    const stats = {
-      pending: 0,
-      approved: 0,
-      rejected: 0,
-      featured: 0,
-      editor: 0
-    };
-    
-    appsSnapshot.forEach(doc => {
-      const app = doc.data();
-      stats[app.status] = (stats[app.status] || 0) + 1;
+// Initialize management tabs (Apps, Statistics, Blog)
+function initializeManagementTabs() {
+  const tabs = document.querySelectorAll('.management-tab');
+  const contents = {
+    'apps': document.getElementById('apps-management'),
+    'statistics': document.getElementById('statistics-management'),
+    'blog': document.getElementById('blog-management')
+  };
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Remove active from all tabs
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
       
-      if (app.featured?.active) {
-        stats.featured++;
-      }
+      // Hide all content sections
+      Object.values(contents).forEach(content => {
+        if (content) content.style.display = 'none';
+      });
       
-      if (app.editor_pick === true) {
-        stats.editor++;
+      // Show selected content
+      const selectedTab = tab.dataset.tab;
+      if (contents[selectedTab]) {
+        contents[selectedTab].style.display = 'block';
+        
+        // If opening statistics tab, populate the stats if not already done
+        if (selectedTab === 'statistics' && adminStats) {
+          populateStatisticsTab();
+        }
       }
     });
-    
-    document.getElementById('pending-count').textContent = stats.pending || 0;
-    document.getElementById('approved-count').textContent = stats.approved || 0;
-    document.getElementById('rejected-count').textContent = stats.rejected || 0;
-    document.getElementById('featured-count').textContent = stats.featured || 0;
-    document.getElementById('editor-count').textContent = stats.editor || 0;
-    
-  } catch (error) {
-    console.error('Error loading stats:', error);
-  }
+  });
+}
+
+// Populate statistics tab with data
+function populateStatisticsTab() {
+  if (!adminStats) return;
+  
+  // Update stats cards in statistics tab
+  document.getElementById('stats-total-users').textContent = adminStats.users.total || 0;
+  document.getElementById('stats-users-favorites').textContent = adminStats.users.withFavorites || 0;
+  document.getElementById('stats-total-reviews').textContent = adminStats.reviews.total || 0;
+  document.getElementById('stats-avg-rating').textContent = adminStats.reviews.averageRating || '0';
+  document.getElementById('stats-total-likes').textContent = adminStats.likes.total || 0;
+  document.getElementById('stats-interactions').textContent = adminStats.interactions.total || 0;
+  
+  // Update newsletter counts
+  document.getElementById('newsletter-count').textContent = adminStats.newsletter.total || 0;
+  document.getElementById('newsletter-recent').textContent = adminStats.newsletter.recent || 0;
+  
+  // Update reports counts
+  document.getElementById('reports-count').textContent = adminStats.reports.total || 0;
+  document.getElementById('reports-unresolved').textContent = adminStats.reports.unresolved || 0;
+}
+
+// Load app statistics (replaced by loadAndRenderAllStats)
+async function loadAppStats() {
+  // This function is replaced by loadAndRenderAllStats
+  // Kept for backward compatibility
+  await loadAndRenderAllStats();
 }
 
 // Load apps
@@ -2040,7 +2404,7 @@ async function confirmDeleteApp() {
     
     // Get Firebase Functions
     const { auth } = await waitForFirebase();
-    const functions = getFunctions();
+    const functions = getFunctions(auth.app, 'us-central1');
     const deleteAppFunction = httpsCallable(functions, 'deleteApp');
     
     // Call the delete function
@@ -2077,6 +2441,372 @@ async function confirmDeleteApp() {
   }
 }
 
+// Global variable for admin stats
+let adminStats = null;
+
+// Load and render all statistics (including extended stats)
+async function loadAndRenderAllStats() {
+  try {
+    const { db } = await waitForFirebase();
+    
+    console.log('Loading all statistics from Firestore...');
+    
+    // Fetch all collections in parallel
+    const [appsSnap, usersSnap, reviewsSnap, interactionsSnap, newsletterSnap, reportsSnap] = await Promise.all([
+      getDocs(collection(db, 'apps')),
+      getDocs(collection(db, 'users')),
+      getDocs(collection(db, 'reviews')),
+      getDocs(collection(db, 'interactions')),
+      getDocs(collection(db, 'newsletter_subscriptions')).catch(() => ({ docs: [] })),
+      getDocs(collection(db, 'reports')).catch(() => ({ docs: [] }))
+    ]);
+    
+    console.log('📊 Firebase Data Loaded:');
+    console.log('  Apps:', appsSnap.size);
+    console.log('  Users:', usersSnap.size);
+    console.log('  Reviews:', reviewsSnap.size);
+    console.log('  Interactions:', interactionsSnap.size);
+    console.log('  Newsletter:', newsletterSnap.docs ? newsletterSnap.docs.length : 0);
+    console.log('  Reports:', reportsSnap.docs ? reportsSnap.docs.length : 0);
+    
+    // Calculate app statistics
+    let appStats = {
+      total: 0,
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      featured: 0,
+      editorChoice: 0
+    };
+    
+    let totalLikes = 0;
+    let totalRatings = 0;
+    let totalRatingSum = 0;
+    
+    appsSnap.forEach(docSnap => {
+      const app = docSnap.data();
+      appStats.total++;
+      
+      if (app.status === 'pending') appStats.pending++;
+      else if (app.status === 'approved') appStats.approved++;
+      else if (app.status === 'rejected') appStats.rejected++;
+      
+      if (app.featured?.active) appStats.featured++;
+      if (app.editor_pick) appStats.editorChoice++;
+      
+      totalLikes += Number(app.likes_count || 0);
+      totalRatings += Number(app.rating_count || 0);
+      totalRatingSum += Number(app.rating_sum || 0);
+    });
+    
+    // User statistics
+    const userStats = {
+      total: usersSnap.size,
+      withFavorites: 0,
+      withLists: 0
+    };
+    
+    usersSnap.forEach(docSnap => {
+      const user = docSnap.data();
+      if (user.favorites && user.favorites.length > 0) userStats.withFavorites++;
+      if (user.lists && user.lists.length > 0) userStats.withLists++;
+    });
+    
+    // Review statistics
+    const reviewStats = {
+      total: reviewsSnap.size,
+      averageRating: totalRatings > 0 ? (totalRatingSum / totalRatings).toFixed(1) : '0'
+    };
+    
+    // Interaction statistics
+    const interactionStats = {
+      total: interactionsSnap.size,
+      uniqueUsers: new Set(interactionsSnap.docs.map(d => d.data().uid)).size
+    };
+    
+    // Newsletter statistics
+    const newsletterStats = {
+      total: newsletterSnap.docs ? newsletterSnap.docs.length : 0,
+      recent: newsletterSnap.docs ? newsletterSnap.docs.filter(docSnap => {
+        const data = docSnap.data();
+        const createdAt = data.createdAt?.toDate?.() || new Date(0);
+        const daysSince = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+        return daysSince <= 30;
+      }).length : 0,
+      subscriptions: newsletterSnap.docs ? newsletterSnap.docs.map(docSnap => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+        createdAt: docSnap.data().createdAt?.toDate?.().toISOString?.() || 'Unknown'
+      })) : []
+    };
+    
+    // Report statistics
+    const reportStats = {
+      total: reportsSnap.docs ? reportsSnap.docs.length : 0,
+      pending: reportsSnap.docs ? reportsSnap.docs.filter(docSnap => {
+        const data = docSnap.data();
+        return data.status === 'pending';
+      }).length : 0,
+      reports: reportsSnap.docs ? reportsSnap.docs.map(docSnap => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+        createdAt: docSnap.data().createdAt?.toDate?.().toISOString?.() || 'Unknown'
+      })) : []
+    };
+    
+    // Save to global variable
+    adminStats = {
+      apps: appStats,
+      users: userStats,
+      reviews: reviewStats,
+      interactions: interactionStats,
+      likes: { total: totalLikes },
+      newsletter: newsletterStats,
+      reports: reportStats,
+      firebase: { connected: true, lastCheck: new Date() },
+      lastUpdated: new Date()
+    };
+    
+    // Render all stats
+    renderAllStats();
+    
+    console.log('✅ All statistics loaded successfully', adminStats);
+    
+  } catch (error) {
+    console.error('Error loading statistics:', error);
+  }
+}
+
+// Render all statistics
+function renderAllStats() {
+  if (!adminStats) return;
+  
+  // Apps overview stats (shown in Apps tab)
+  document.getElementById('pending-count').textContent = adminStats.apps.pending || 0;
+  document.getElementById('approved-count').textContent = adminStats.apps.approved || 0;
+  document.getElementById('featured-count').textContent = adminStats.apps.featured || 0;
+  document.getElementById('editor-count').textContent = adminStats.apps.editorChoice || 0;
+  document.getElementById('rejected-count').textContent = adminStats.apps.rejected || 0;
+  
+  // Extended stats (shown in Statistics tab)
+  if (document.getElementById('stats-total-users')) {
+    document.getElementById('stats-total-users').textContent = adminStats.users.total || 0;
+    document.getElementById('stats-users-favorites').textContent = adminStats.users.withFavorites || 0;
+    document.getElementById('stats-total-reviews').textContent = adminStats.reviews.total || 0;
+    document.getElementById('stats-avg-rating').textContent = adminStats.reviews.averageRating || '0';
+    document.getElementById('stats-total-likes').textContent = adminStats.likes.total || 0;
+    document.getElementById('stats-interactions').textContent = adminStats.interactions.total || 0;
+    
+    // Newsletter counts
+    document.getElementById('newsletter-count').textContent = adminStats.newsletter.total || 0;
+    document.getElementById('newsletter-recent').textContent = adminStats.newsletter.recent || 0;
+    
+    // Reports counts
+    document.getElementById('reports-count').textContent = adminStats.reports.total || 0;
+    document.getElementById('reports-pending').textContent = adminStats.reports.pending || 0;
+  }
+  
+  // Render newsletter list
+  renderNewsletterList();
+  
+  // Render reports list
+  renderReportsList('pending'); // Show pending by default
+}
+
+// Render newsletter subscriptions
+function renderNewsletterList() {
+  const container = document.getElementById('newsletter-list');
+  if (!container) return;
+  
+  const subscriptions = adminStats?.newsletter?.subscriptions || [];
+  
+  if (subscriptions.length === 0) {
+    container.innerHTML = '<p style="color: var(--c-muted); text-align: center; padding: 2rem;">No newsletter subscriptions yet.</p>';
+    return;
+  }
+  
+  container.innerHTML = subscriptions.map(sub => `
+    <div class="subscription-item">
+      <div class="subscription-email">${sub.email}</div>
+      <div class="subscription-date">${new Date(sub.createdAt).toLocaleDateString()}</div>
+    </div>
+  `).join('');
+}
+
+// Render reports list
+function renderReportsList(status = 'pending') {
+  const container = document.getElementById('reports-list');
+  if (!container) return;
+  
+  const allReports = adminStats?.reports?.reports || [];
+  let filteredReports = allReports;
+  
+  if (status === 'pending') {
+    filteredReports = allReports.filter(r => r.status === 'pending');
+  } else if (status === 'resolved') {
+    filteredReports = allReports.filter(r => r.status === 'resolved');
+  }
+  
+  if (filteredReports.length === 0) {
+    container.innerHTML = '<p style="color: var(--c-muted); text-align: center; padding: 2rem;">No reports found.</p>';
+    return;
+  }
+  
+  container.innerHTML = filteredReports.map(report => `
+    <div class="report-item ${report.status === 'resolved' ? 'resolved' : ''}">
+      <div class="report-header">
+        <div>
+          <strong>${report.reportedByEmail || 'Anonymous'}</strong>
+          <span class="report-date">${new Date(report.createdAt).toLocaleString()}</span>
+        </div>
+        <span class="badge ${report.status}">${report.status.toUpperCase()}</span>
+      </div>
+      <div style="margin-bottom: 0.5rem;">
+        <strong>App:</strong> ${report.appTitle || 'Unknown App'}
+      </div>
+      <div style="margin-bottom: 0.5rem;">
+        <strong>Type:</strong> ${getReportTypeLabel(report.reportType)}
+      </div>
+      ${report.details ? `
+        <div class="report-message">
+          <strong>Details:</strong> ${report.details}
+        </div>
+      ` : ''}
+      ${report.status === 'pending' ? `
+        <div style="margin-top: 1rem;">
+          <button class="btn small primary" onclick="markReportResolved('${report.id}', 'resolved')">
+            Mark as Resolved
+          </button>
+        </div>
+      ` : ''}
+    </div>
+  `).join('');
+}
+
+// Get report type label
+function getReportTypeLabel(type) {
+  const labels = {
+    'not-working': 'App doesn\'t work or doesn\'t match description',
+    'scam': 'App contains fraud or scam',
+    'other': 'Other'
+  };
+  return labels[type] || type;
+}
+
+// Export newsletter to CSV
+function exportNewsletterToCSV() {
+  const subscriptions = adminStats?.newsletter?.subscriptions || [];
+  
+  if (subscriptions.length === 0) {
+    alert('No subscriptions to export');
+    return;
+  }
+  
+  const csv = [
+    ['Email', 'Subscribed Date'],
+    ...subscriptions.map(sub => [
+      sub.email,
+      new Date(sub.createdAt).toLocaleDateString()
+    ])
+  ].map(row => row.join(',')).join('\n');
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `newsletter-subscriptions-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+
+// Mark report as resolved
+async function markReportResolved(reportId, status) {
+  try {
+    const { db, auth } = await waitForFirebase();
+    const reportRef = doc(db, 'reports', reportId);
+    
+    await updateDoc(reportRef, {
+      status: status,
+      reviewedAt: new Date(),
+      reviewedBy: auth.currentUser?.uid || 'admin'
+    });
+    
+    // Reload all stats
+    await loadAndRenderAllStats();
+    
+    // Switch filter if needed
+    const filter = document.querySelector('.report-filter.active');
+    const currentStatus = filter && filter.dataset.status;
+    renderReportsList(currentStatus);
+    
+  } catch (error) {
+    console.error('Error marking report as resolved:', error);
+    alert('Failed to update report: ' + error.message);
+  }
+}
+
+// Setup event listeners for Statistics tab
+function setupStatisticsEventListeners() {
+  // Export CSV button
+  const exportBtn = document.getElementById('export-newsletter-csv');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportNewsletterToCSV);
+  }
+  
+  // Report filters
+  document.querySelectorAll('.report-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.report-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const status = btn.dataset.status;
+      renderReportsList(status);
+    });
+  });
+}
+
 // Initialize when page loads
 checkAdminAccess();
 </script>
+
+  </div>
+</section>
+
+    </main>
+    <footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-main">
+      <p class="muted">© VibeStore — Find a ready-made app for your problem</p>
+      <p class="version-info">v3.3 | Built: 2024-12-19 22:25</p>
+    </div>
+    <nav class="foot-nav">
+      <a href="/pages/newsletter">Newsletter</a>
+      <a href="/pages/guidelines">Guidelines</a>
+      <a href="/pages/terms">Terms</a>
+      <a href="/pages/privacy">Privacy</a>
+      <a href="/pages/report">Report</a>
+      <a href="/pages/blog">Blog</a>
+      <a href="/pages/submit_form.html">Submit App</a>
+    </nav>
+  </div>
+</footer>
+
+        <!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-59FYNPQGEP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-59FYNPQGEP', { 'anonymize_ip': true });
+</script>
+
+        <!-- Firebase config must load first -->
+        <script type="module" src="/assets/js/firebaseConfig.js?v=20241219-007-v32"></script>
+        <!-- Other scripts load after Firebase is ready -->
+        <script src="/assets/js/firestore-apps.js?v=20241219-007-v32" defer></script>
+        <script src="/assets/js/favorites.js?v=20241219-007-v32" defer></script>
+        
+        
+        <script src="/assets/js/app.js?v=20241219-007-v32" defer></script>
+    </body>
+</html>

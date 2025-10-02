@@ -16,23 +16,27 @@
  *  - mailchimp.list_id=xxxxxxxx
  */
 
-import { onRequest, onCall, HttpsError, logger, onSchedule } from 'firebase-functions/v2/https';
-import { defineSecret } from 'firebase-functions/params';
-import * as admin from 'firebase-admin';
+import { onRequest, onCall, HttpsError } from 'firebase-functions/v2/https';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
+import { logger } from 'firebase-functions';
+// import { defineSecret } from 'firebase-functions/params';
+import admin from 'firebase-admin';
 import Stripe from 'stripe';
 import fetch from 'node-fetch';
+import sharp from 'sharp';
 
 admin.initializeApp();
 const db = admin.firestore();
 
 
 // Secrets (deploy and link via "functions:secrets:set")
-const STRIPE_SECRET        = defineSecret('STRIPE_SECRET');
-const STRIPE_WEBHOOK       = defineSecret('STRIPE_WEBHOOK');
-const NEWSLETTER_PROVIDER  = defineSecret('NEWSLETTER_PROVIDER');
-const BUTTONDOWN_API_KEY   = defineSecret('BUTTONDOWN_API_KEY');
-const MAILCHIMP_API_KEY    = defineSecret('MAILCHIMP_API_KEY');
-const MAILCHIMP_LIST_ID    = defineSecret('MAILCHIMP_LIST_ID');
+// For now, we'll use environment variables instead of secrets
+const STRIPE_SECRET        = process.env.STRIPE_SECRET || 'sk_test_placeholder';
+const STRIPE_WEBHOOK       = process.env.STRIPE_WEBHOOK || 'whsec_placeholder';
+const NEWSLETTER_PROVIDER  = process.env.NEWSLETTER_PROVIDER || 'buttondown';
+const BUTTONDOWN_API_KEY   = process.env.BUTTONDOWN_API_KEY || 'bd_placeholder';
+const MAILCHIMP_API_KEY    = process.env.MAILCHIMP_API_KEY || 'mc_placeholder';
+const MAILCHIMP_LIST_ID    = process.env.MAILCHIMP_LIST_ID || 'list_placeholder';
 
 /**
  * Helper: check admin claim
@@ -48,7 +52,7 @@ function assertAdmin(context){
  * Call this once, then remove it from the code
  */
 export const grantAdminToShalom = onRequest(
-  { secrets: [] },
+  { cors: true },
   async (req, res) => {
     try {
       const email = 'shalom.cohen.111@gmail.com';
@@ -88,7 +92,7 @@ export const grantAdminToShalom = onRequest(
  * - Updates the app's usersCount field
  */
 export const updateAppUsersCount = onCall(
-  { enforceAppCheck: false, cors: true },
+  { cors: true },
   async (req) => {
     const { appId } = req.data || {};
     if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
@@ -132,7 +136,7 @@ export const updateAppUsersCount = onCall(
  * - Useful for batch updates
  */
 export const updateAllAppsUsersCount = onCall(
-  { enforceAppCheck: false, cors: true },
+  { cors: true },
   async (req) => {
     assertAdmin(req);
     
@@ -187,7 +191,7 @@ export const updateAllAppsUsersCount = onCall(
  * NOTE: For static site, authorize via Firebase Web Auth and send ID token header
  */
 export const redirectAndLogClick = onRequest(
-  { secrets: [], cors: true },
+  { cors: true },
   async (req, res) => {
     try {
       const appId = req.query.appId;
@@ -232,7 +236,7 @@ export const redirectAndLogClick = onRequest(
  * - Sets status='approved' and updatedAt=now
  */
 export const approveApp = onCall(
-  { enforceAppCheck: false, cors: true },
+  { cors: true },
   async (req) => {
     assertAdmin(req);
     const { appId } = req.data || {};
@@ -249,7 +253,7 @@ export const approveApp = onCall(
  * - Also deletes related reviews and interactions
  */
 export const deleteApp = onCall(
-  { enforceAppCheck: false, cors: true },
+  { cors: true },
   async (req) => {
     assertAdmin(req);
     const { appId } = req.data || {};
@@ -290,7 +294,7 @@ export const deleteApp = onCall(
  * - Writes review and updates app's aggregates (ratingAvg, ratingCount, ratingSum)
  */
 export const createReview = onCall(
-  { enforceAppCheck: false, cors: true },
+  { cors: true },
   async (req) => {
     if (!req.auth?.uid) throw new HttpsError('unauthenticated', 'Login required');
     const uid = req.auth.uid;
@@ -342,14 +346,14 @@ export const createReview = onCall(
  * TODO (YOU): Create a PRICE (monthly) in Stripe dashboard and configure Checkout.
  */
 export const stripeWebhook = onRequest(
-  { secrets: [STRIPE_SECRET, STRIPE_WEBHOOK], cors: true },
+  { cors: true },
   async (req, res) => {
-    const stripe = new Stripe(STRIPE_SECRET.value());
+    const stripe = new Stripe(STRIPE_SECRET);
     const sig = req.headers['stripe-signature'];
     let event;
 
     try {
-      event = stripe.webhooks.constructEvent(req.rawBody, sig, STRIPE_WEBHOOK.value());
+      event = stripe.webhooks.constructEvent(req.rawBody, sig, STRIPE_WEBHOOK);
     } catch (err) {
       logger.error('Webhook signature verification failed', err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -376,6 +380,258 @@ export const stripeWebhook = onRequest(
 );
 
 /**
+ * cacheAdminStats — Calculate and cache admin statistics
+ * - Runs every hour
+ * - Caches results in admin_stats collection
+ * - Reduces load on Firestore for admin panel
+ */
+export const cacheAdminStats = onSchedule(
+  { schedule: '0 * * * *', timeZone: 'UTC' },
+  async () => {
+    try {
+      logger.info('Starting admin stats caching...');
+      
+      // Fetch all collections in parallel
+      const [appsSnap, usersSnap, reviewsSnap, interactionsSnap, newsletterSnap, reportsSnap] = await Promise.all([
+        db.collection('apps').get(),
+        db.collection('users').get(),
+        db.collection('reviews').get(),
+        db.collection('interactions').get(),
+        db.collection('newsletter_subscriptions').get(),
+        db.collection('reports').get()
+      ]);
+      
+      // Calculate app statistics
+      let appStats = {
+        total: 0,
+        pending: 0,
+        approved: 0,
+        rejected: 0,
+        featured: 0,
+        editorChoice: 0
+      };
+      
+      let totalLikes = 0;
+      let totalRatings = 0;
+      let totalRatingSum = 0;
+      
+      appsSnap.forEach(doc => {
+        const app = doc.data();
+        appStats.total++;
+        
+        if (app.status === 'pending') appStats.pending++;
+        else if (app.status === 'approved') appStats.approved++;
+        else if (app.status === 'rejected') appStats.rejected++;
+        
+        if (app.featured?.active) appStats.featured++;
+        if (app.editor_pick) appStats.editorChoice++;
+        
+        totalLikes += Number(app.likes_count || 0);
+        totalRatings += Number(app.rating_count || 0);
+        totalRatingSum += Number(app.rating_sum || 0);
+      });
+      
+      // User statistics
+      const userStats = {
+        total: usersSnap.size,
+        withFavorites: 0,
+        withLists: 0
+      };
+      
+      usersSnap.forEach(doc => {
+        const user = doc.data();
+        if (user.favorites && user.favorites.length > 0) userStats.withFavorites++;
+        if (user.lists && user.lists.length > 0) userStats.withLists++;
+      });
+      
+      // Review statistics
+      const reviewStats = {
+        total: reviewsSnap.size,
+        averageRating: totalRatings > 0 ? (totalRatingSum / totalRatings).toFixed(2) : 0
+      };
+      
+      // Interaction statistics
+      const interactionStats = {
+        total: interactionsSnap.size,
+        uniqueUsers: new Set(interactionsSnap.docs.map(doc => doc.data().uid)).size
+      };
+      
+      // Newsletter statistics
+      const newsletterStats = {
+        total: newsletterSnap.size,
+        recent: newsletterSnap.docs.filter(doc => {
+          const data = doc.data();
+          const createdAt = data.createdAt?.toDate?.() || new Date(0);
+          const daysSince = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+          return daysSince <= 30;
+        }).length
+      };
+      
+      // Report statistics
+      const reportStats = {
+        total: reportsSnap.size,
+        unresolved: reportsSnap.docs.filter(doc => {
+          const data = doc.data();
+          return !data.resolved;
+        }).length
+      };
+      
+      // Firebase connection status
+      const firebaseStats = {
+        connected: true,
+        lastCheck: admin.firestore.Timestamp.now()
+      };
+      
+      // Compile all statistics
+      const stats = {
+        apps: appStats,
+        users: userStats,
+        reviews: reviewStats,
+        interactions: interactionStats,
+        likes: { total: totalLikes },
+        newsletter: newsletterStats,
+        reports: reportStats,
+        firebase: firebaseStats,
+        lastUpdated: admin.firestore.Timestamp.now(),
+        nextUpdate: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 60 * 60 * 1000))
+      };
+      
+      // Save to admin_stats collection
+      await db.collection('admin_stats').doc('current').set(stats);
+      
+      logger.info('Admin stats cached successfully:', stats);
+      
+    } catch (error) {
+      logger.error('Error caching admin stats:', error);
+    }
+  }
+);
+
+/**
+ * getAdminStats — Get cached admin statistics
+ * - Returns cached stats from admin_stats collection
+ * - Admin only
+ */
+export const getAdminStats = onCall(
+  { cors: true },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const statsDoc = await db.collection('admin_stats').doc('current').get();
+      
+      if (!statsDoc.exists) {
+        throw new HttpsError('not-found', 'Stats not cached yet. Wait for next hourly update.');
+      }
+      
+      return { ok: true, stats: statsDoc.data() };
+      
+    } catch (error) {
+      logger.error('Error getting admin stats:', error);
+      throw new HttpsError('internal', 'Failed to get admin stats');
+    }
+  }
+);
+
+/**
+ * getNewsletterSubscriptions — Get newsletter subscriptions for admin
+ * - Returns all newsletter subscriptions
+ * - Admin only
+ */
+export const getNewsletterSubscriptions = onCall(
+  { cors: true },
+  async (req) => {
+    assertAdmin(req);
+    
+    try {
+      const subscriptionsSnap = await db.collection('newsletter_subscriptions')
+        .orderBy('createdAt', 'desc')
+        .limit(100)
+        .get();
+      
+      const subscriptions = subscriptionsSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate?.().toISOString?.() || null
+      }));
+      
+      return { ok: true, subscriptions };
+      
+    } catch (error) {
+      logger.error('Error getting newsletter subscriptions:', error);
+      throw new HttpsError('internal', 'Failed to get newsletter subscriptions');
+    }
+  }
+);
+
+/**
+ * getReports — Get user reports for admin
+ * - Returns all reports with optional filter
+ * - Admin only
+ */
+export const getReports = onCall(
+  { cors: true },
+  async (req) => {
+    assertAdmin(req);
+    
+    const { resolved } = req.data || {};
+    
+    try {
+      let query = db.collection('reports').orderBy('createdAt', 'desc').limit(100);
+      
+      if (resolved !== undefined) {
+        query = query.where('resolved', '==', Boolean(resolved));
+      }
+      
+      const reportsSnap = await query.get();
+      
+      const reports = reportsSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate?.().toISOString?.() || null
+      }));
+      
+      return { ok: true, reports };
+      
+    } catch (error) {
+      logger.error('Error getting reports:', error);
+      throw new HttpsError('internal', 'Failed to get reports');
+    }
+  }
+);
+
+/**
+ * markReportResolved — Mark a report as resolved
+ * - Admin only
+ */
+export const markReportResolved = onCall(
+  { cors: true },
+  async (req) => {
+    assertAdmin(req);
+    
+    const { reportId, resolved } = req.data || {};
+    
+    if (!reportId) {
+      throw new HttpsError('invalid-argument', 'Missing reportId');
+    }
+    
+    try {
+      await db.collection('reports').doc(reportId).update({
+        resolved: Boolean(resolved),
+        resolvedAt: admin.firestore.FieldValue.serverTimestamp(),
+        resolvedBy: req.auth.uid
+      });
+      
+      return { ok: true };
+      
+    } catch (error) {
+      logger.error('Error marking report resolved:', error);
+      throw new HttpsError('internal', 'Failed to mark report resolved');
+    }
+  }
+);
+
+/**
  * weeklyNewsletterJob — compose digest & send via provider
  * - Runs weekly (Sunday 08:00 UTC as example)
  * - Picks "New", "Trending", "Editor's Picks" (naive example)
@@ -383,7 +639,7 @@ export const stripeWebhook = onRequest(
  * TODO (YOU): Set provider secret + template content.
  */
 export const weeklyNewsletterJob = onSchedule(
-  { schedule: '0 8 * * 0', timeZone: 'UTC', secrets: [NEWSLETTER_PROVIDER, BUTTONDOWN_API_KEY, MAILCHIMP_API_KEY, MAILCHIMP_LIST_ID] },
+  { schedule: '0 8 * * 0', timeZone: 'UTC' },
   async () => {
     try {
       // Fetch some items
@@ -411,13 +667,13 @@ export const weeklyNewsletterJob = onSchedule(
         'Visit VibeStore to explore more.'
       ].join('\n');
 
-      const provider = (NEWSLETTER_PROVIDER.value() || '').toLowerCase();
+      const provider = (NEWSLETTER_PROVIDER || '').toLowerCase();
       if (provider === 'buttondown') {
         const resp = await fetch('https://api.buttondown.email/v1/emails', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Token ${BUTTONDOWN_API_KEY.value()}`
+            'Authorization': `Token ${BUTTONDOWN_API_KEY}`
           },
           body: JSON.stringify({
             subject: 'VibeStore — Weekly Digest',
@@ -434,6 +690,182 @@ export const weeklyNewsletterJob = onSchedule(
       }
     } catch (e) {
       logger.error('weeklyNewsletterJob error', e);
+    }
+  }
+);
+
+/**
+ * processImage - Cloud Function for automatic image processing
+ * Creates optimized versions of uploaded images
+ */
+export const processImage = onRequest(
+  { secrets: [], cors: true },
+  async (req, res) => {
+    try {
+      const { imageUrl, appId, type = 'screenshot' } = req.body;
+      
+      if (!imageUrl || !appId) {
+        return res.status(400).json({ error: 'Missing required parameters' });
+      }
+      
+      logger.info(`Processing image: ${imageUrl} for app: ${appId}`);
+      
+      // Download original image
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to download image: ${response.statusText}`);
+      }
+      
+      const imageBuffer = await response.buffer();
+      
+      // Define sizes based on type
+      const sizes = type === 'icon' 
+        ? [{ size: 512, name: 'large' }, { size: 256, name: 'medium' }, { size: 128, name: 'small' }]
+        : [{ size: 1920, name: 'large' }, { size: 1024, name: 'medium' }, { size: 512, name: 'small' }];
+      
+      const processedImages = {};
+      
+      // Process each size
+      for (const { size, name } of sizes) {
+        try {
+          const processedBuffer = await sharp(imageBuffer)
+            .resize(size, size, { 
+              fit: 'inside',
+              withoutEnlargement: true 
+            })
+            .jpeg({ quality: 85 })
+            .toBuffer();
+          
+          // Upload to Storage
+          const fileName = `processed/${appId}/${type}_${name}_${Date.now()}.jpg`;
+          const bucket = admin.storage().bucket();
+          const file = bucket.file(fileName);
+          
+          await file.save(processedBuffer, {
+            metadata: {
+              contentType: 'image/jpeg',
+              cacheControl: 'public, max-age=31536000'
+            }
+          });
+          
+          // Make public and get URL
+          await file.makePublic();
+          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+          
+          processedImages[name] = {
+            size,
+            url: publicUrl,
+            width: size,
+            height: size
+          };
+          
+          logger.info(`Created ${name} version: ${publicUrl}`);
+          
+        } catch (sizeError) {
+          logger.error(`Error processing ${name} size:`, sizeError);
+        }
+      }
+      
+      // Update Firestore with processed image URLs
+      if (Object.keys(processedImages).length > 0) {
+        const appRef = db.collection('apps').doc(appId);
+        await appRef.update({
+          [`processedImages_${type}`]: processedImages,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        
+        logger.info(`Updated Firestore for app ${appId} with processed images`);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: 'Image processing completed',
+        processedImages,
+        original: imageUrl
+      });
+      
+    } catch (error) {
+      logger.error('processImage error:', error);
+      res.status(500).json({ error: 'Failed to process image' });
+    }
+  }
+);
+
+/**
+ * generateThumbnail - Generate optimized thumbnails for images
+ * Callable function for manual thumbnail generation
+ */
+export const generateThumbnail = onCall(
+  { cors: true },
+  async (req) => {
+    try {
+      const { imageUrl, sizes = [512, 256, 128], appId } = req.data || {};
+      
+      if (!imageUrl) {
+        throw new HttpsError('invalid-argument', 'Missing imageUrl');
+      }
+      
+      logger.info(`Generating thumbnails for: ${imageUrl}`);
+      
+      // Download original image
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to download image: ${response.statusText}`);
+      }
+      
+      const imageBuffer = await response.buffer();
+      const thumbnails = [];
+      
+      // Generate thumbnails for each size
+      for (const size of sizes) {
+        try {
+          const thumbnailBuffer = await sharp(imageBuffer)
+            .resize(size, size, { 
+              fit: 'cover',
+              position: 'center'
+            })
+            .jpeg({ quality: 80 })
+            .toBuffer();
+          
+          // Upload to Storage
+          const fileName = `thumbnails/${appId || 'temp'}/thumb_${size}_${Date.now()}.jpg`;
+          const bucket = admin.storage().bucket();
+          const file = bucket.file(fileName);
+          
+          await file.save(thumbnailBuffer, {
+            metadata: {
+              contentType: 'image/jpeg',
+              cacheControl: 'public, max-age=31536000'
+            }
+          });
+          
+          // Make public and get URL
+          await file.makePublic();
+          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+          
+          thumbnails.push({
+            size,
+            url: publicUrl,
+            width: size,
+            height: size
+          });
+          
+          logger.info(`Created thumbnail ${size}x${size}: ${publicUrl}`);
+          
+        } catch (sizeError) {
+          logger.error(`Error creating thumbnail ${size}:`, sizeError);
+        }
+      }
+      
+      return { 
+        ok: true, 
+        thumbnails,
+        original: imageUrl
+      };
+      
+    } catch (error) {
+      logger.error('generateThumbnail error:', error);
+      throw new HttpsError('internal', 'Failed to generate thumbnails');
     }
   }
 );

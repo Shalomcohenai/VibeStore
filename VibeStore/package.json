@@ -1,7 +1,7 @@
 {
   "name": "vibestore",
-  "version": "1.2.1",
-  "description": "This is the static Jekyll skeleton for **VibeStore**, a problem-first catalog for: - Web Apps - Mobile Apps - WhatsApp AI Agents",
+  "version": "4.0.7",
+  "description": "VibeStore - Advanced admin dashboard with real-time statistics, newsletter management, and user reports system (No Cloud Functions - 100% Free Tier)",
   "main": "index.js",
   "scripts": {
     "dev": "bundle exec jekyll serve --port 4000",

@@ -12,12 +12,8 @@ layout: default
   <div class="blog-content">
     <div id="blog-posts-container" class="posts-grid">
       <!-- Posts will be loaded dynamically via JavaScript -->
-      <div class="loading-spinner">
-        <div class="spinner"></div>
-        <p>Loading amazing content...</p>
-      </div>
     </div>
   </div>
 </div>
 
-<script src="{{ '/assets/js/blog.js' | relative_url }}"></script>
+<script type="module" src="{{ '/assets/js/blog.js' | relative_url }}?v={{ site.data.site.cache_bust }}"></script>

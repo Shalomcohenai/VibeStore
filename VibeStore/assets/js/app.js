@@ -105,6 +105,11 @@
       // Add click handlers for favorite functionality
       addCardClickHandlers();
       
+      // Initialize lazy loading for new images
+      if (window.initializeLazyLoading) {
+        window.initializeLazyLoading();
+      }
+      
     } catch (error) {
       console.error('Error rendering apps:', error);
       marketplaceGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted);">Error loading apps. Please try again.</div>';
@@ -126,21 +131,52 @@
     return createVersion2Card(app, appId, category, title, description, stars);
   }
 
-  // Version 2: Detailed Rich Design - Updated
+  // Version 2: Detailed Rich Design - Updated with correct favorites state
   function createVersion2Card(app, appId, category, title, description, stars) {
     const rating = app.rating_avg || app.rating || 0;
     const usersCount = app.usersCount || 0;
     
-    // Get appropriate icon based on niche
+    // Get appropriate icon based on niche (handle array or single value)
     let appIcon = '📱';
-    if (app.niche === 'web') appIcon = '🌐';
-    else if (app.niche === 'mobile') appIcon = '📱';
-    else if (app.niche === 'whatsapp') appIcon = '💬';
+    const nicheArray = Array.isArray(app.niche) ? app.niche : [app.niche];
+    if (nicheArray.includes('whatsapp')) appIcon = '💬';
+    else if (nicheArray.includes('mobile')) appIcon = '📱';
+    else if (nicheArray.includes('web')) appIcon = '🌐';
     
+    // Use first niche for data attribute, or join them
+    const nicheAttr = Array.isArray(app.niche) ? app.niche.join(',') : (app.niche || 'web');
+    
+    // Check if app is favorited (using FavoritesManager if available)
+    const isFavorited = window.favoritesManager && window.favoritesManager.initialized 
+      ? window.favoritesManager.isFavorited(appId)
+      : false;
+    
+    // Set appropriate class and fill for favorite button
+    const heartClass = isFavorited ? 'action-btn-v2 heart-btn favorited' : 'action-btn-v2 heart-btn';
+    const heartFill = isFavorited ? 'currentColor' : 'none';
+    const heartTitle = isFavorited ? 'Remove from favorites' : 'Add to favorites';
+    
+    // Use app image if available, otherwise fallback to emoji
+    const appImageUrl = app.image || app.imageUrl;
+    const iconContent = appImageUrl 
+      ? `<div class="app-icon-container">
+           <img 
+             data-src="${appImageUrl}" 
+             alt="${title} Icon" 
+             class="lazy-image app-icon-img"
+             loading="lazy"
+             onerror="this.parentElement.innerHTML='${appIcon}'"
+           >
+           <div class="image-placeholder">
+             <div class="loading-spinner"></div>
+           </div>
+         </div>`
+      : `<div class="app-icon-v2">${appIcon}</div>`;
+
     return `
-      <article class="card card-v2 reveal" data-app-id="${appId}" data-niche="${app.niche || 'web'}">
+      <article class="card card-v2 reveal" data-app-id="${appId}" data-niche="${nicheAttr}">
         <div class="card-header-v2">
-          <div class="app-icon-v2">${appIcon}</div>
+          ${iconContent}
           <div class="header-info">
             <span class="category-tag">${category}</span>
             <div class="rating-v2">
@@ -157,8 +193,8 @@
         </div>
         
         <div class="card-footer-v2">
-          <button class="action-btn-v2 heart-btn" data-app-id="${appId}" title="Add to favorites">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="${heartClass}" data-app-id="${appId}" title="${heartTitle}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="${heartFill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
           </button>
@@ -304,12 +340,21 @@
       guestNav.style.display = 'none';
       authNav.style.display = 'flex';
       
-      // Create 2-letter initials from user name or email
+      // Create 2-letter initials from user name or email (English only)
       let initials = 'US';
+      
       if (user.displayName) {
-        // If display name exists, use first 2 letters of first name
         const firstName = user.displayName.split(' ')[0];
-        initials = firstName.substring(0, 2).toUpperCase();
+        // Check if firstName contains only English letters
+        const englishOnly = /^[A-Za-z]+$/;
+        
+        if (englishOnly.test(firstName)) {
+          // Use first 2 letters of first name if it's English
+          initials = firstName.substring(0, 2).toUpperCase();
+        } else if (user.email) {
+          // If name is not English (e.g., Hebrew), use email
+          initials = user.email.substring(0, 2).toUpperCase();
+        }
       } else if (user.email) {
         // Use first 2 characters of email
         initials = user.email.substring(0, 2).toUpperCase();
@@ -323,10 +368,17 @@
     }
   }
 
-  // User circle/avatar click handler (go to profile)
+  // User circle/avatar click handler
   document.addEventListener('click', (e) => {
-    if (e.target.closest('.user-circle') || e.target.closest('.user-avatar')) {
-      // Navigate to profile page
+    const guestCircle = e.target.closest('#guest-circle');
+    const userCircle = e.target.closest('#user-circle');
+    const userAvatar = e.target.closest('.user-avatar');
+    
+    if (guestCircle) {
+      // Guest circle - go to auth page
+      window.location.href = '/pages/auth';
+    } else if (userCircle || userAvatar) {
+      // Authenticated user circle - go to profile page
       window.location.href = '/pages/profile/';
     }
   });

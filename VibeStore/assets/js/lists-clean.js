@@ -69,9 +69,13 @@ class VibeStoreListsClean {
     // List card actions
     document.addEventListener('click', (e) => {
       if (e.target.closest('.btn-edit')) {
+        e.preventDefault();
+        e.stopPropagation();
         const listId = e.target.closest('.list-card').dataset.listId;
         this.showEditListModal(listId);
       } else if (e.target.closest('.btn-view')) {
+        e.preventDefault();
+        e.stopPropagation();
         const listId = e.target.closest('.list-card').dataset.listId;
         this.showListAppsModal(listId);
       }
@@ -116,16 +120,12 @@ class VibeStoreListsClean {
         <div class="list-card-header">
           <h4>${list.name}</h4>
           <div class="list-card-actions">
-            <button class="btn-edit" title="Edit List">✏️</button>
-            <button class="btn-view" title="View Apps">👁️</button>
+            <button class="btn-edit" title="Edit List">Edit</button>
+            <button class="btn-view" title="View Apps">View Apps</button>
           </div>
         </div>
         <div class="list-card-count">${list.apps?.length || 0} apps</div>
         <div class="list-card-description">${list.description || 'No description'}</div>
-        <div class="list-actions">
-          <button class="btn-edit">Edit</button>
-          <button class="btn-view">View Apps</button>
-        </div>
       </div>
     `).join('');
   }
@@ -226,8 +226,8 @@ class VibeStoreListsClean {
         name,
         description,
         apps: [],
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
 
       await updateDoc(doc(db, 'users', this.currentUser.uid), {
@@ -258,7 +258,7 @@ class VibeStoreListsClean {
         ...this.userLists[listIndex],
         name,
         description,
-        updatedAt: serverTimestamp()
+        updatedAt: new Date()
       };
 
       await updateDoc(doc(db, 'users', this.currentUser.uid), {
@@ -368,7 +368,7 @@ class VibeStoreListsClean {
       }
 
       this.userLists[listIndex].apps.push(appId);
-      this.userLists[listIndex].updatedAt = serverTimestamp();
+      this.userLists[listIndex].updatedAt = new Date();
 
       await updateDoc(doc(db, 'users', this.currentUser.uid), {
         lists: this.userLists,
@@ -394,7 +394,7 @@ class VibeStoreListsClean {
       if (listIndex === -1) return;
 
       this.userLists[listIndex].apps = this.userLists[listIndex].apps.filter(id => id !== appId);
-      this.userLists[listIndex].updatedAt = serverTimestamp();
+      this.userLists[listIndex].updatedAt = new Date();
 
       await updateDoc(doc(db, 'users', this.currentUser.uid), {
         lists: this.userLists,
@@ -419,7 +419,10 @@ class VibeStoreListsClean {
       <div class="modal modal-large">
         <div class="modal-header">
           <h3>${list.name}</h3>
-          <button class="modal-close">&times;</button>
+          <div class="modal-header-actions">
+            <button class="btn-share-list" title="Share List" onclick="shareList('${listId}')">Share</button>
+            <button class="modal-close">&times;</button>
+          </div>
         </div>
         <div class="modal-body">
           <p>${list.description || 'No description'}</p>
@@ -478,10 +481,12 @@ class VibeStoreListsClean {
     const rating = app.rating_avg || app.rating || 0;
     const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
     
+    // Get appropriate icon based on niche (handle array or single value)
     let appIcon = '📱';
-    if (app.niche === 'web') appIcon = '🌐';
-    else if (app.niche === 'mobile') appIcon = '📱';
-    else if (app.niche === 'whatsapp') appIcon = '💬';
+    const nicheArray = Array.isArray(app.niche) ? app.niche : [app.niche];
+    if (nicheArray.includes('whatsapp')) appIcon = '💬';
+    else if (nicheArray.includes('mobile')) appIcon = '📱';
+    else if (nicheArray.includes('web')) appIcon = '🌐';
 
     return `
       <div class="app-card-in-list">
@@ -504,6 +509,87 @@ class VibeStoreListsClean {
 window.removeFromList = async (appId, listId) => {
   if (window.VibeStoreListsClean) {
     await window.VibeStoreListsClean.removeAppFromList(listId, appId);
+  }
+};
+
+// Share list function
+window.shareList = async (listId) => {
+  if (window.VibeStoreListsClean) {
+    const list = window.VibeStoreListsClean.userLists.find(l => l.id === listId);
+    if (list) {
+      // Create unique sharing URL with list ID
+      const shareUrl = `${window.location.origin}/pages/shared-list?id=${listId}`;
+      const shareText = `Check out my app list "${list.name}" on VibeStore!`;
+      
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: list.name,
+            text: shareText,
+            url: shareUrl
+          });
+        } catch (error) {
+          console.log('Share cancelled or failed');
+        }
+      } else {
+        // Fallback: copy to clipboard
+        try {
+          await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+          alert('List link copied to clipboard!');
+        } catch (error) {
+          // Fallback: show share modal
+          showShareModal(list, shareUrl);
+        }
+      }
+    }
+  }
+};
+
+// Show share modal for fallback
+function showShareModal(list, shareUrl) {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Share "${list.name}"</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Share this list with others:</p>
+        <div class="share-url-container">
+          <input type="text" value="${shareUrl}" readonly class="share-url-input">
+          <button class="btn-copy-url" onclick="copyToClipboard('${shareUrl}')">Copy</button>
+        </div>
+        <div class="share-actions">
+          <button type="button" class="btn-secondary" onclick="closeModal(this.closest('.modal-overlay'))">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Event listeners
+  modal.querySelector('.modal-close').addEventListener('click', () => {
+    modal.remove();
+  });
+  
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+}
+
+// Copy to clipboard function
+window.copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert('Link copied to clipboard!');
+  } catch (error) {
+    console.error('Failed to copy:', error);
+    alert('Failed to copy link');
   }
 };
 

@@ -46,8 +46,15 @@ async function handleSearchInput(query, options = {}) {
     }
     
     // Apply additional filters if provided
+    // Note: niche is stored as an array, check if it includes the selected niche
     if (options.niche && options.niche !== 'all') {
-      results = results.filter(app => app.niche === options.niche);
+      results = results.filter(app => {
+        if (Array.isArray(app.niche)) {
+          return app.niche.includes(options.niche);
+        }
+        // Fallback for legacy single-value niche
+        return app.niche === options.niche;
+      });
     }
     
     if (options.category && options.category !== 'all') {
@@ -161,7 +168,7 @@ function showSearchError() {
   }
 }
 
-// Default card HTML (fallback if createCardHTML is not available)
+// Default card HTML (fallback if createCardHTML is not available) - with correct favorites state
 function createDefaultCardHTML(app) {
   const rating = app.rating_avg || app.rating || 0;
   const category = app.category || 'App';
@@ -172,14 +179,28 @@ function createDefaultCardHTML(app) {
   // Generate stars based on rating
   const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
   
-  // Get appropriate icon based on niche
+  // Get appropriate icon based on niche (handle array or single value)
   let appIcon = '📱';
-  if (app.niche === 'web') appIcon = '🌐';
-  else if (app.niche === 'mobile') appIcon = '📱';
-  else if (app.niche === 'whatsapp') appIcon = '💬';
+  const nicheArray = Array.isArray(app.niche) ? app.niche : [app.niche];
+  if (nicheArray.includes('whatsapp')) appIcon = '💬';
+  else if (nicheArray.includes('mobile')) appIcon = '📱';
+  else if (nicheArray.includes('web')) appIcon = '🌐';
+  
+  // Use first niche for data attribute, or join them
+  const nicheAttr = Array.isArray(app.niche) ? app.niche.join(',') : (app.niche || 'web');
+  
+  // Check if app is favorited (using FavoritesManager if available)
+  const isFavorited = window.favoritesManager && window.favoritesManager.initialized 
+    ? window.favoritesManager.isFavorited(appId)
+    : false;
+  
+  // Set appropriate class and fill for favorite button
+  const heartClass = isFavorited ? 'action-btn-v2 heart-btn favorited' : 'action-btn-v2 heart-btn';
+  const heartFill = isFavorited ? 'currentColor' : 'none';
+  const heartTitle = isFavorited ? 'Remove from favorites' : 'Add to favorites';
   
   return `
-    <article class="card card-v2 reveal" data-app-id="${appId}" data-niche="${app.niche || 'web'}">
+    <article class="card card-v2 reveal" data-app-id="${appId}" data-niche="${nicheAttr}">
       <div class="card-header-v2">
         <div class="app-icon-v2">${appIcon}</div>
         <div class="header-info">
@@ -199,8 +220,8 @@ function createDefaultCardHTML(app) {
       </div>
       
       <div class="card-footer-v2">
-        <button class="action-btn-v2 heart-btn" data-app-id="${appId}" title="Add to favorites">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="${heartClass}" data-app-id="${appId}" title="${heartTitle}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="${heartFill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
           </svg>
         </button>

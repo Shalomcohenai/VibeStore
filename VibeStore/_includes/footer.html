@@ -5,12 +5,13 @@
       <p class="version-info">v{{ site.data.site.version | default: "1.2.0" }} | {% assign build_time = site.time | date: "%Y-%m-%d %H:%M" %}Built: {{ build_time }}</p>
     </div>
     <nav class="foot-nav">
-      <a href="{{ '/pages/pricing' | relative_url }}">Promote</a>
       <a href="{{ '/pages/newsletter' | relative_url }}">Newsletter</a>
       <a href="{{ '/pages/guidelines' | relative_url }}">Guidelines</a>
       <a href="{{ '/pages/terms'      | relative_url }}">Terms</a>
       <a href="{{ '/pages/privacy'    | relative_url }}">Privacy</a>
-      <a href="mailto:contact@example.com">Report</a>
+      <a href="{{ '/pages/report'     | relative_url }}">Report</a>
+      <a href="{{ '/pages/blog'       | relative_url }}">Blog</a>
+      <a href="{{ '/pages/submit_form.html' | relative_url }}">Submit App</a>
     </nav>
   </div>
 </footer>

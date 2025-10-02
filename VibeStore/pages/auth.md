@@ -89,18 +89,70 @@ permalink: /pages/auth
 </div>
 
 <style>
+/* Auth page background animation */
 .auth-container {
   max-width: 400px;
   margin: 2rem auto;
   padding: 0 1rem;
+  position: relative;
+}
+
+.auth-container::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: linear-gradient(135deg, rgba(107,70,193,0.15), rgba(139,92,246,0.1));
+  border-radius: 50%;
+  z-index: -1;
+  animation: auth-float 8s ease-in-out infinite;
+  filter: blur(80px);
+}
+
+.auth-container::after {
+  content: '';
+  position: fixed;
+  top: 30%;
+  right: 10%;
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(225deg, rgba(139,92,246,0.12), rgba(107,70,193,0.08));
+  border-radius: 50%;
+  z-index: -1;
+  animation: auth-float-reverse 10s ease-in-out infinite;
+  filter: blur(60px);
+}
+
+@keyframes auth-float {
+  0%, 100% { 
+    transform: translate(-50%, -50%) translateY(0px) scale(1);
+  }
+  50% { 
+    transform: translate(-50%, -50%) translateY(-30px) scale(1.1);
+  }
+}
+
+@keyframes auth-float-reverse {
+  0%, 100% { 
+    transform: translateY(0px) translateX(0px) scale(1);
+  }
+  50% { 
+    transform: translateY(20px) translateX(-20px) scale(0.9);
+  }
 }
 
 .auth-card {
-  background: white;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 10px 25px rgba(0,0,0,.08);
-  border: 1px solid var(--c-line);
+  box-shadow: 0 10px 25px rgba(107,70,193,.12);
+  border: 1px solid rgba(107,70,193,0.1);
+  position: relative;
+  z-index: 1;
 }
 
 .auth-title {
@@ -177,26 +229,26 @@ permalink: /pages/auth
 }
 
 .divider {
+  display: flex;
+  align-items: center;
   text-align: center;
   margin: 1.5rem 0;
-  position: relative;
+  gap: 1rem;
 }
 
-.divider::before {
+.divider::before,
+.divider::after {
   content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
+  flex: 1;
   height: 1px;
   background: var(--c-line);
 }
 
 .divider span {
-  background: white;
-  padding: 0 1rem;
   color: var(--c-muted);
   font-size: 0.9rem;
+  font-weight: 500;
+  flex-shrink: 0;
 }
 
 .auth-switch {

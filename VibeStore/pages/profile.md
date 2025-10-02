@@ -830,6 +830,12 @@ permalink: /pages/profile/
   border-bottom: 1px solid var(--c-line);
 }
 
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .modal-header h3 {
   margin: 0;
   font-size: 1.3rem;
@@ -851,6 +857,23 @@ permalink: /pages/profile/
 .modal-close:hover {
   background: var(--c-bg);
   color: var(--c-text);
+}
+
+.btn-share-list {
+  background: var(--c-primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-share-list:hover {
+  background: var(--c-accent);
+  transform: translateY(-1px);
 }
 
 .modal-body {
@@ -1752,13 +1775,15 @@ try {
     }
   };
 
-  // Remove from favorites function
+  // Remove from favorites function (using FavoritesManager)
   window.removeFromFavorites = async (appId) => {
     try {
-      if (window.VibeStoreFavorites) {
-        await window.VibeStoreFavorites.removeFromFavorites(appId);
+      if (window.favoritesManager && window.favoritesManager.initialized) {
+        await window.favoritesManager.removeFromFavorites(appId);
         // Reload favorite apps
         await loadFavoriteApps();
+      } else {
+        alert('Favorites system not initialized. Please refresh the page.');
       }
     } catch (error) {
       console.error('Error removing from favorites:', error);
@@ -2158,14 +2183,16 @@ try {
 
   // List functions are now handled by lists.js module
 
-  // Add to favorites function
+  // Add to favorites function (using FavoritesManager)
   window.addToFavorites = async (appId) => {
     try {
-      if (window.VibeStoreFavorites) {
-        await window.VibeStoreFavorites.addToFavorites(appId);
+      if (window.favoritesManager && window.favoritesManager.initialized) {
+        await window.favoritesManager.addToFavorites(appId);
         // Reload favorites
         await loadFavorites();
         await updateUserStats();
+      } else {
+        alert('Favorites system not initialized. Please refresh the page.');
       }
     } catch (error) {
       console.error('Error adding to favorites:', error);
@@ -2173,14 +2200,16 @@ try {
     }
   };
 
-  // Remove from favorites function
+  // Remove from favorites function (using FavoritesManager)
   window.removeFromFavorites = async (appId) => {
     try {
-      if (window.VibeStoreFavorites) {
-        await window.VibeStoreFavorites.removeFromFavorites(appId);
+      if (window.favoritesManager && window.favoritesManager.initialized) {
+        await window.favoritesManager.removeFromFavorites(appId);
         // Reload favorites
         await loadFavorites();
         await updateUserStats();
+      } else {
+        alert('Favorites system not initialized. Please refresh the page.');
       }
     } catch (error) {
       console.error('Error removing from favorites:', error);

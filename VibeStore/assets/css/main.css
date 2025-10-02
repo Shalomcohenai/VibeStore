@@ -1,9 +1,10 @@
 /* =========================================================
-   VibeStore — main.css v1.2.8
+   VibeStore — main.css v1.2.9
    - Clean, mobile-first UI
    - 3-color palette + neutral whites for readability
    - Subtle, accessible animations
    - Complete results page redesign with flat vector icons
+   - Lazy loading and responsive images
    ========================================================= */
 
 /* Color system (modern marketplace palette) */
@@ -246,6 +247,12 @@ img{max-width:100%;height:auto;display:block}
   animation-play-state: paused;
 }
 
+/* Guest circle with user icon */
+.user-circle svg {
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
 /* Pulsing animation similar to logo dot */
 @keyframes user-pulse {
   0% { 
@@ -477,9 +484,11 @@ img{max-width:100%;height:auto;display:block}
   padding: 0;
   transition: all 0.3s ease;
   overflow: hidden;
-  min-height: 320px;
+  height: 380px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
 }
 
 .card-v2:hover {
@@ -494,6 +503,8 @@ img{max-width:100%;height:auto;display:block}
   align-items: center;
   gap: 1rem;
   border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  min-height: 100px;
 }
 
 .app-icon-v2 {
@@ -507,6 +518,64 @@ img{max-width:100%;height:auto;display:block}
   justify-content: center;
   color: white;
   transition: all 0.3s ease;
+}
+
+/* App Icon Container for Images */
+.app-icon-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: var(--c-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: opacity 0.3s ease;
+}
+
+/* Lazy Loading Styles */
+.lazy-image {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lazy-image.loaded {
+  opacity: 1;
+}
+
+.image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e0e7ff;
+  border-top: 2px solid var(--c-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .card-v2:hover .app-icon-v2 {
@@ -555,6 +624,9 @@ img{max-width:100%;height:auto;display:block}
 
 .card-body-v2 {
   padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-title-v2 {
@@ -569,11 +641,13 @@ img{max-width:100%;height:auto;display:block}
   font-size: 0.9rem;
   color: var(--c-muted);
   line-height: 1.5;
-  margin: 0 0 1.5rem 0;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  height: 4rem;
+  flex-shrink: 0;
 }
 
 
@@ -583,6 +657,8 @@ img{max-width:100%;height:auto;display:block}
   border-top: 1px solid #e5e7eb;
   display: flex;
   gap: 0.5rem;
+  flex-shrink: 0;
+  min-height: 60px;
 }
 
 .action-btn-v2 {
@@ -749,7 +825,7 @@ img{max-width:100%;height:auto;display:block}
 .badge.mobile{ background:#ecfeff; color:#155e75; border-color:#cffafe }
 .badge.whatsapp{ background:#effdf5; color:#065f46; border-color:#bbf7d0 }
 .badge.featured{ background: #f5f3ff; color: #5b21b6; border-color:#ddd6fe }
-.badge.editor{ background: #fff7ed; color:#9a3412; border-color:#fed7aa }
+.badge.editor{ background: #f0fdf4; color:#166534; border-color:#86efac }
 
 .chip{
   display:inline-block; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb;
@@ -1257,7 +1333,7 @@ img{max-width:100%;height:auto;display:block}
   }
   
   .card-v2 {
-    min-height: 280px;
+    height: 380px;
   }
   
   .card-header-v2 {

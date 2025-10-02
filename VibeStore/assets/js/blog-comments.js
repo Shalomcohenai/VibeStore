@@ -2,11 +2,11 @@
 class VibeStoreComments {
   constructor() {
     this.comments = [];
-    this.blogId = this.getBlogId();
+    this.blogId = this.extractBlogId();
     this.init();
   }
 
-  getBlogId() {
+  extractBlogId() {
     // Extract blog ID from URL or page data
     const path = window.location.pathname;
     const segments = path.split('/').filter(segment => segment);
@@ -59,10 +59,18 @@ class VibeStoreComments {
         )
       );
 
-      this.comments = commentsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      this.comments = commentsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          blogId: data.blogId,
+          userId: data.userId,
+          user_name: data.user_name,
+          content: data.content,
+          created_at: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : new Date().toISOString(),
+          approved: data.approved
+        };
+      });
 
       console.log(`Loaded ${this.comments.length} comments for blog ${this.blogId}`);
     } catch (error) {

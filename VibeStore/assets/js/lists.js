@@ -485,7 +485,10 @@ async function showListAppsModal(listId) {
     <div class="list-modal list-apps-modal">
       <div class="list-modal-header">
         <h3>${list.name}</h3>
-        <button class="list-modal-close">&times;</button>
+        <div class="list-modal-actions">
+          <button class="btn-share-list" data-list-id="${listId}" title="Share this list">📤 Share</button>
+          <button class="list-modal-close">&times;</button>
+        </div>
       </div>
       <div class="list-modal-body">
         <p class="list-description">${list.description || 'No description'}</p>
@@ -529,6 +532,13 @@ async function showListAppsModal(listId) {
     closeModal(modal);
   });
   
+  // Share list button
+  modal.querySelector('.btn-share-list').addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const listId = e.target.dataset.listId;
+    await shareList(listId);
+  });
+  
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       closeModal(modal);
@@ -538,11 +548,12 @@ async function showListAppsModal(listId) {
 
 // Create app card for list view (new design)
 function createListAppCardNew(app, listId) {
-  // Get appropriate icon based on niche
+  // Get appropriate icon based on niche (handle array or single value)
   let appIcon = '📱';
-  if (app.niche === 'web') appIcon = '🌐';
-  else if (app.niche === 'mobile') appIcon = '📱';
-  else if (app.niche === 'whatsapp') appIcon = '💬';
+  const nicheArray = Array.isArray(app.niche) ? app.niche : [app.niche];
+  if (nicheArray.includes('whatsapp')) appIcon = '💬';
+  else if (nicheArray.includes('mobile')) appIcon = '📱';
+  else if (nicheArray.includes('web')) appIcon = '🌐';
   
   return `
     <div class="list-app-card-new">
@@ -737,6 +748,32 @@ function addListModalStyles() {
       margin: 0;
       color: var(--c-text);
       font-size: 1.25rem;
+    }
+
+    .list-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-share-list {
+      background: var(--c-primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .btn-share-list:hover {
+      background: #16a34a;
+      transform: translateY(-1px);
     }
 
     .list-modal-close {
@@ -1111,18 +1148,7 @@ function initializeListEventListeners() {
     }
   });
   
-  // List card clicks (old design)
-  document.addEventListener('click', (e) => {
-    const listCard = e.target.closest('.list-card');
-    if (listCard) {
-      const listId = listCard.dataset.listId;
-      if (listId) {
-        showListAppsModal(listId);
-      }
-    }
-  });
-  
-  // List card clicks (new design)
+  // List card clicks (new design only - removed old design to prevent duplicates)
   document.addEventListener('click', (e) => {
     const listCard = e.target.closest('.list-card-new');
     if (listCard && !e.target.closest('.btn-action')) {
@@ -1267,7 +1293,8 @@ window.editList = async (listId) => {
     const lists = await window.VibeStoreLists.getUserLists();
     const list = lists.find(l => l.id === listId);
     if (list) {
-      window.VibeStoreLists.showListModal(list);
+      // Show edit modal directly, not view modal
+      showListModal(list);
     }
   }
 };

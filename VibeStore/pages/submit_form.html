@@ -355,9 +355,9 @@ function initializeIconUpload() {
   uploadArea.addEventListener('click', () => fileInput.click());
   
   // File input change
-  fileInput.addEventListener('change', (e) => {
+  fileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    if (file) handleIconSelect(file);
+    if (file) await handleIconSelect(file);
   });
 
   // Drag and drop
@@ -370,11 +370,11 @@ function initializeIconUpload() {
     uploadArea.classList.remove('dragover');
   });
 
-  uploadArea.addEventListener('drop', (e) => {
+  uploadArea.addEventListener('drop', async (e) => {
     e.preventDefault();
     uploadArea.classList.remove('dragover');
     const file = e.dataTransfer.files[0];
-    if (file) handleIconSelect(file);
+    if (file) await handleIconSelect(file);
   });
 
   // Remove image
@@ -400,9 +400,9 @@ function initializeMultipleImageUpload() {
   uploadArea.addEventListener('click', () => fileInput.click());
   
   // File input change
-  fileInput.addEventListener('change', (e) => {
+  fileInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
-    if (files.length > 0) handleMultipleFilesSelect(files);
+    if (files.length > 0) await handleMultipleFilesSelect(files);
   });
 
   // Drag and drop
@@ -415,16 +415,16 @@ function initializeMultipleImageUpload() {
     uploadArea.classList.remove('dragover');
   });
 
-  uploadArea.addEventListener('drop', (e) => {
+  uploadArea.addEventListener('drop', async (e) => {
     e.preventDefault();
     uploadArea.classList.remove('dragover');
     const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) handleMultipleFilesSelect(files);
+    if (files.length > 0) await handleMultipleFilesSelect(files);
   });
 }
 
 // Handle icon selection
-function handleIconSelect(file) {
+async function handleIconSelect(file) {
   // Validate file
   const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   const maxSize = 2 * 1024 * 1024; // 2MB
@@ -439,14 +439,24 @@ function handleIconSelect(file) {
     return;
   }
 
-  // Store file and show preview
-  uploadedIconFile = file;
-  showIconPreview(file);
-  clearFieldError('icon');
+  try {
+    // Optimize image before storing
+    const optimizedFile = await optimizeImage(file, 512, 0.8);
+    
+    // Store optimized file and show preview
+    uploadedIconFile = optimizedFile;
+    showIconPreview(optimizedFile);
+    clearFieldError('icon');
+    
+    console.log(`📸 Icon optimized: ${file.size} → ${optimizedFile.size} bytes`);
+  } catch (error) {
+    console.error('Error optimizing icon:', error);
+    showFieldError('icon', 'Failed to process image. Please try again.');
+  }
 }
 
 // Handle multiple files selection
-function handleMultipleFilesSelect(files) {
+async function handleMultipleFilesSelect(files) {
   const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   const maxSize = 5 * 1024 * 1024; // 5MB
   const maxFiles = 5;
@@ -470,10 +480,29 @@ function handleMultipleFilesSelect(files) {
     }
   }
 
-  // Add files to array and show previews
-  uploadedScreenshots.push(...files);
-  updateScreenshotsPreview();
-  clearFieldError('screenshots');
+  try {
+    // Show processing indicator
+    showProcessingIndicator(files.length);
+    
+    // Optimize all files
+    const optimizedFiles = [];
+    for (const file of files) {
+      const optimizedFile = await optimizeImage(file, 1920, 0.8);
+      optimizedFiles.push(optimizedFile);
+      console.log(`📸 Screenshot optimized: ${file.size} → ${optimizedFile.size} bytes`);
+    }
+    
+    // Add optimized files to array and show previews
+    uploadedScreenshots.push(...optimizedFiles);
+    updateScreenshotsPreview();
+    clearFieldError('screenshots');
+    hideProcessingIndicator();
+    
+  } catch (error) {
+    console.error('Error optimizing screenshots:', error);
+    showFieldError('screenshots', 'Failed to process images. Please try again.');
+    hideProcessingIndicator();
+  }
 }
 
 // Show icon preview
@@ -724,6 +753,86 @@ async function handleSubmit(e) {
   }
 }
 
+// Optimize image before upload
+function optimizeImage(file, maxWidth = 1920, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = () => {
+      try {
+        // Calculate new dimensions
+        let { width, height } = img;
+        
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to blob with specified quality
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              // Create new file with optimized data
+              const optimizedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve(optimizedFile);
+            } else {
+              reject(new Error('Failed to optimize image'));
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      } catch (error) {
+        reject(error);
+      }
+    };
+    
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// Show processing indicator
+function showProcessingIndicator(count) {
+  const uploadArea = document.getElementById('multipleUploadArea');
+  if (uploadArea) {
+    uploadArea.innerHTML = `
+      <div class="upload-content">
+        <div class="upload-icon">⏳</div>
+        <h4>Processing ${count} image${count > 1 ? 's' : ''}...</h4>
+        <p>Optimizing for web display</p>
+      </div>
+    `;
+  }
+}
+
+// Hide processing indicator
+function hideProcessingIndicator() {
+  const uploadArea = document.getElementById('multipleUploadArea');
+  if (uploadArea) {
+    uploadArea.innerHTML = `
+      <div class="upload-content">
+        <div class="upload-icon">📸</div>
+        <h4>Upload Screenshots</h4>
+        <p>Show your app in action</p>
+        <p class="upload-specs">PNG, JPG up to 5MB each • Max 5 images</p>
+      </div>
+    `;
+  }
+}
+
 // Upload image to Firebase Storage
 async function uploadImage(file, type = 'image') {
   const { storage } = await waitForFb();
@@ -733,7 +842,7 @@ async function uploadImage(file, type = 'image') {
   const fileName = `app-${type}s/${currentUser.uid}-${timestamp}-${sanitizedName}`;
   const storageRef = ref(storage, fileName);
   
-  console.log(`📤 Uploading ${type}: ${fileName}`);
+  console.log(`📤 Uploading ${type}: ${fileName} (${file.size} bytes)`);
   const snapshot = await uploadBytes(storageRef, file);
   const downloadURL = await getDownloadURL(snapshot.ref);
   

@@ -112,6 +112,12 @@ permalink: /pages/app
   color: var(--c-muted);
 }
 
+.app-actions-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .app-actions {
   display: flex;
   flex-direction: column;
@@ -134,26 +140,11 @@ permalink: /pages/app
   min-width: 160px;
 }
 
-/* Action buttons with smaller icons */
+/* Action buttons */
 .action-btn {
-  padding: 0.6rem 1.2rem;
+  padding: 0.75rem 1.5rem;
   min-width: 140px;
-  font-size: 0.9rem;
-  gap: 0.4rem;
-}
-
-.btn-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
-.action-btn .btn-icon {
-  transition: all 0.2s ease;
-}
-
-.action-btn:hover .btn-icon {
-  transform: scale(1.1);
+  font-size: 0.95rem;
 }
 
 /* Pressed/Active states */
@@ -162,22 +153,79 @@ permalink: /pages/app
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.action-btn.saved {
-  background: #f0f9ff !important;
-  border: 1px solid #0ea5e9 !important;
-  color: #0ea5e9 !important;
-  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+/* Save button and Add to List button active/saved state */
+#save-btn.saved,
+#save-btn.active,
+#add-to-list-btn.saved,
+#add-to-list-btn.active {
+  background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 4px 16px rgba(107, 70, 193, 0.3);
+  font-weight: 600;
 }
 
-.action-btn.saved .btn-icon {
-  fill: #0ea5e9 !important;
-  stroke: #0ea5e9 !important;
+#save-btn.saved:hover,
+#save-btn.active:hover,
+#add-to-list-btn.saved:hover,
+#add-to-list-btn.active:hover {
+  background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(107, 70, 193, 0.3);
 }
 
-.action-btn.saved:hover {
-  background: #e0f2fe !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+/* Social Share Inline */
+.social-share-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.share-label {
+  font-size: 0.85rem;
+  color: var(--c-muted);
+  font-weight: 500;
+  margin-right: 0.25rem;
+}
+
+.social-btn-flat {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 0.5;
+}
+
+.social-btn-flat svg {
+  width: 24px;
+  height: 24px;
+  color: var(--c-primary);
+  fill: var(--c-primary);
+}
+
+.social-btn-flat:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.social-btn-flat:active {
+  transform: scale(0.95);
+}
+
+.social-btn-flat.copied {
+  opacity: 1;
+  animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
 }
 
 .btn.primary {
@@ -268,7 +316,14 @@ permalink: /pages/app
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   transition: border-color 0.3s ease;
+}
+
+.form-group textarea::placeholder {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.95rem;
+  color: #94a3b8;
 }
 
 .form-group input:focus,
@@ -292,6 +347,324 @@ permalink: /pages/app
 
 .star.active {
   color: #f59e0b;
+}
+
+/* Image Gallery */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.gallery-image {
+  position: relative;
+  width: 100%;
+  padding-bottom: 75%; /* 4:3 aspect ratio */
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.gallery-image:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.image-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.gallery-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: opacity 0.3s ease;
+}
+
+/* Lazy Loading Styles */
+.lazy-image {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lazy-image.loaded {
+  opacity: 1;
+}
+
+.image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e0e7ff;
+  border-top: 2px solid var(--c-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* App Icon Container */
+.app-icon-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.app-icon-img {
+  transition: opacity 0.3s ease;
+}
+
+/* Responsive Images */
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .gallery-image {
+    padding-bottom: 75%;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+  }
+}
+
+/* Lightbox for full-size images */
+.lightbox {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.lightbox.active {
+  display: flex;
+}
+
+.lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.lightbox-close:hover {
+  transform: scale(1.1);
+}
+
+/* Report Button */
+.btn-report {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-report:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-report:active {
+  transform: translateY(0);
+}
+
+/* Report Modal */
+.report-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.report-modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.report-modal h3 {
+  margin: 0 0 1rem 0;
+  color: var(--c-text);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.report-options {
+  margin-bottom: 1.5rem;
+}
+
+.report-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.report-option:hover {
+  background: #f8fafc;
+  border-color: var(--c-primary);
+}
+
+.report-option.selected {
+  background: rgba(107, 70, 193, 0.05);
+  border-color: var(--c-primary);
+}
+
+.report-option input[type="radio"] {
+  margin: 0;
+  margin-top: 0.1rem;
+}
+
+.report-option label {
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--c-text);
+}
+
+.report-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+  margin-top: 0.5rem;
+}
+
+.report-textarea:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+}
+
+.report-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel {
+  background: #f8fafc;
+  color: var(--c-text);
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: #f1f5f9;
+}
+
+.btn-submit-report {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-submit-report:hover {
+  background: #dc2626;
+}
+
+.btn-submit-report:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
 }
 
 .loading-state,
@@ -337,19 +710,29 @@ permalink: /pages/app
     font-size: 1.5rem;
   }
   
+  .app-actions-wrapper {
+    align-items: stretch;
+  }
+  
   .app-actions {
-    flex-direction: row;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
   }
   
   .btn {
-    min-width: 120px;
-    padding: 0.5rem 1rem;
+    width: 100%;
+    min-width: auto;
+    padding: 0.75rem 1rem;
     font-size: 0.9rem;
   }
   
   .details-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .social-share-inline {
+    justify-content: center;
+    flex-wrap: wrap;
   }
 }
 </style>
@@ -400,31 +783,51 @@ permalink: /pages/app
           </div>
         </div>
         
-        <div class="app-actions">
-          <a id="app-cta" href="#" target="_blank" class="btn primary action-btn">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <polyline points="15,3 21,3 21,9"></polyline>
-              <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
-            <span>Open App</span>
-          </a>
-          <button class="btn secondary action-btn" id="save-btn">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-            <span>Save</span>
-          </button>
-          <button class="btn secondary action-btn" id="add-to-list-btn">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14,2 14,8 20,8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10,9 9,9 8,9"></polyline>
-            </svg>
-            <span>Add to List</span>
-          </button>
+        <div class="app-actions-wrapper">
+          <div class="app-actions">
+            <a id="app-cta" href="#" target="_blank" class="btn primary action-btn">
+              <span>Open App</span>
+            </a>
+            <button class="btn secondary action-btn" id="save-btn">
+              <span>Save</span>
+            </button>
+            <button class="btn secondary action-btn" id="add-to-list-btn">
+              <span>Add to List</span>
+            </button>
+          </div>
+          
+          <!-- Social Share Buttons - Below action buttons -->
+          <div class="social-share-inline">
+            <span class="share-label">Share:</span>
+            <button class="social-btn-flat facebook" id="share-facebook" title="Share on Facebook">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+              </svg>
+            </button>
+            <button class="social-btn-flat twitter" id="share-twitter" title="Share on Twitter/X">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+              </svg>
+            </button>
+            <button class="social-btn-flat linkedin" id="share-linkedin" title="Share on LinkedIn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                <rect x="2" y="9" width="4" height="12"></rect>
+                <circle cx="4" cy="4" r="2"></circle>
+              </svg>
+            </button>
+            <button class="social-btn-flat whatsapp" id="share-whatsapp" title="Share on WhatsApp">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+            </button>
+            <button class="social-btn-flat copy-link" id="share-copy" title="Copy link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -433,6 +836,12 @@ permalink: /pages/app
     <div class="card">
       <h2>About this app</h2>
       <p id="app-full-description">Loading detailed description...</p>
+      
+      <!-- Image Gallery -->
+      <div id="image-gallery" style="display: none; margin-top: 2rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 600; margin: 0 0 1rem 0; color: var(--c-text);">Screenshots</h3>
+        <div id="gallery-images" class="gallery-grid"></div>
+      </div>
     </div>
 
     <!-- App Details -->
@@ -492,6 +901,18 @@ permalink: /pages/app
       </div>
     </div>
 
+  </div>
+  
+  <!-- Report Button -->
+  <div class="report-section" style="text-align: center; margin-top: 3rem; padding: 2rem;">
+    <button id="report-btn" class="btn-report" title="Report this app">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      Report App
+    </button>
   </div>
 </div>
 
@@ -721,15 +1142,40 @@ function renderAppContent(app) {
   if (descEl) descEl.textContent = app.description || 'No description available';
   // Use longDescription if available, otherwise fall back to description
   const longDescription = app.longDescription || app.description || 'No detailed description available';
-  if (fullDescEl) fullDescEl.textContent = longDescription;
+  // Preserve line breaks and formatting
+  if (fullDescEl) {
+    fullDescEl.innerHTML = longDescription.replace(/\n/g, '<br>');
+    fullDescEl.style.whiteSpace = 'pre-wrap';
+  }
   if (categoryEl) categoryEl.textContent = app.category || 'Uncategorized';
   if (platformEl) platformEl.textContent = app.platform || 'Not specified';
   if (nicheEl) nicheEl.textContent = app.niche || 'Not specified';
   
-  // Image
+  // Render image gallery if screenshots exist
+  renderImageGallery(app.screenshots || app.images || []);
+  
+  // Image with lazy loading
   const appImage = document.getElementById('app-icon');
   if (appImage) {
-    appImage.innerHTML = `<img src="${app.image || '/img/placeholder.svg'}" alt="${app.title} Icon" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+    const imageUrl = app.image || '/img/placeholder.svg';
+    appImage.innerHTML = `
+      <div class="app-icon-container">
+        <img 
+          data-src="${imageUrl}" 
+          alt="${app.title} Icon" 
+          class="lazy-image app-icon-img"
+          loading="lazy"
+          onerror="this.src='/img/placeholder.svg'"
+          style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;"
+        >
+        <div class="image-placeholder">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+    `;
+    
+    // Initialize lazy loading for app icon
+    initializeLazyLoading();
   }
   
   // Created date
@@ -814,7 +1260,7 @@ function renderAppContent(app) {
   const ctaButton = document.getElementById('app-cta');
   if (ctaButton) {
     ctaButton.href = app.link || '#';
-    ctaButton.innerHTML = `${getNicheIcon(app.niche)} ${getNicheCTA(app.niche)}`;
+    ctaButton.innerHTML = `<span>${getNicheCTA(app.niche)}</span>`;
   }
 }
 
@@ -838,6 +1284,401 @@ function getNicheCTA(niche) {
     whatsapp: 'Open in WhatsApp'
   };
   return ctas[niche] || 'Open';
+}
+
+// Render image gallery
+function renderImageGallery(images) {
+  const galleryContainer = document.getElementById('image-gallery');
+  const galleryImages = document.getElementById('gallery-images');
+  
+  if (!galleryContainer || !galleryImages) return;
+  
+  // Always show gallery
+  galleryContainer.style.display = 'block';
+  
+  // Filter and limit to 5 images
+  const validImages = (images || []).filter(img => img && typeof img === 'string').slice(0, 5);
+  
+  if (validImages.length === 0) {
+    // Show empty state
+    galleryImages.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted); font-style: italic;">No screenshots available</div>';
+    return;
+  }
+  
+  // Render images with lazy loading and responsive images
+  galleryImages.innerHTML = validImages.map((imageUrl, index) => `
+    <div class="gallery-image" onclick="openLightbox('${imageUrl}')">
+      <div class="image-container">
+        <img 
+          data-src="${imageUrl}" 
+          alt="Screenshot ${index + 1}" 
+          class="lazy-image"
+          loading="lazy"
+          onerror="this.src='/img/placeholder.png'"
+        >
+        <div class="image-placeholder">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  
+  // Initialize lazy loading for gallery images
+  initializeLazyLoading();
+}
+
+// Lightbox functionality
+function openLightbox(imageUrl) {
+  // Create lightbox if it doesn't exist
+  let lightbox = document.getElementById('image-lightbox');
+  
+  if (!lightbox) {
+    lightbox = document.createElement('div');
+    lightbox.id = 'image-lightbox';
+    lightbox.className = 'lightbox';
+    lightbox.innerHTML = `
+      <button class="lightbox-close" onclick="closeLightbox()">×</button>
+      <img src="" alt="Full size image">
+    `;
+    document.body.appendChild(lightbox);
+    
+    // Close on background click
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) {
+        closeLightbox();
+      }
+    });
+    
+    // Close on ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+  }
+  
+  const img = lightbox.querySelector('img');
+  img.src = imageUrl;
+  lightbox.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById('image-lightbox');
+  if (lightbox) {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+// Lazy Loading Implementation
+function initializeLazyLoading() {
+  // Check if IntersectionObserver is supported
+  if (!('IntersectionObserver' in window)) {
+    // Fallback: load all images immediately
+    const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
+    lazyImages.forEach(img => {
+      img.src = img.dataset.src;
+      img.classList.remove('lazy-image');
+    });
+    return;
+  }
+
+  // Create intersection observer
+  const imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        loadImage(img);
+        observer.unobserve(img);
+      }
+    });
+  }, {
+    rootMargin: '50px 0px', // Start loading 50px before image comes into view
+    threshold: 0.01
+  });
+
+  // Observe all lazy images
+  const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
+  lazyImages.forEach(img => {
+    imageObserver.observe(img);
+  });
+}
+
+// Load image with progressive enhancement
+function loadImage(img) {
+  const src = img.dataset.src;
+  if (!src) return;
+
+  // Show loading state
+  const placeholder = img.parentElement.querySelector('.image-placeholder');
+  if (placeholder) {
+    placeholder.style.display = 'flex';
+  }
+
+  // Create new image to preload
+  const newImg = new Image();
+  
+  newImg.onload = () => {
+    // Image loaded successfully
+    img.src = src;
+    img.classList.remove('lazy-image');
+    img.classList.add('loaded');
+    
+    // Hide loading placeholder
+    if (placeholder) {
+      placeholder.style.display = 'none';
+    }
+    
+    // Add fade-in effect
+    img.style.opacity = '0';
+    img.style.transition = 'opacity 0.3s ease';
+    setTimeout(() => {
+      img.style.opacity = '1';
+    }, 10);
+  };
+  
+  newImg.onerror = () => {
+    // Image failed to load
+    img.src = '/img/placeholder.png';
+    img.classList.remove('lazy-image');
+    img.classList.add('error');
+    
+    // Hide loading placeholder
+    if (placeholder) {
+      placeholder.style.display = 'none';
+    }
+    
+    console.warn('Failed to load image:', src);
+  };
+  
+  // Start loading
+  newImg.src = src;
+}
+
+// Responsive Images Helper
+function getResponsiveImageSrc(imageUrl, size = 'medium') {
+  // Check if image has processed versions
+  if (imageUrl.includes('processed/')) {
+    // Extract base URL and add size parameter
+    const baseUrl = imageUrl.split('_')[0];
+    return `${baseUrl}_${size}.jpg`;
+  }
+  
+  // Fallback to original image
+  return imageUrl;
+}
+
+// Progressive Loading for Gallery
+function enableProgressiveLoading() {
+  const galleryImages = document.querySelectorAll('.gallery-image img');
+  
+  galleryImages.forEach((img, index) => {
+    // Add delay for progressive loading
+    setTimeout(() => {
+      if (img.dataset.src) {
+        loadImage(img);
+      }
+    }, index * 100); // 100ms delay between each image
+  });
+}
+
+// Report functionality
+function initializeReportButton() {
+  const reportBtn = document.getElementById('report-btn');
+  if (!reportBtn) return;
+  
+  reportBtn.addEventListener('click', () => {
+    showReportModal();
+  });
+}
+
+function showReportModal() {
+  const modal = document.createElement('div');
+  modal.className = 'report-modal';
+  modal.innerHTML = `
+    <div class="report-modal-content">
+      <h3>Report App</h3>
+      <p style="color: var(--c-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">
+        Help us keep VibeStore safe by reporting issues with this app.
+      </p>
+      
+      <div class="report-options">
+        <div class="report-option" data-type="not-working">
+          <input type="radio" id="not-working" name="report-type" value="not-working">
+          <label for="not-working">
+            <strong>App doesn't work or doesn't match description</strong><br>
+            <span style="color: var(--c-muted); font-size: 0.85rem;">The app is broken, doesn't load, or the description is misleading</span>
+          </label>
+        </div>
+        
+        <div class="report-option" data-type="scam">
+          <input type="radio" id="scam" name="report-type" value="scam">
+          <label for="scam">
+            <strong>App contains fraud or scam</strong><br>
+            <span style="color: var(--c-muted); font-size: 0.85rem;">The app is fraudulent, contains malware, or is a scam</span>
+          </label>
+        </div>
+        
+        <div class="report-option" data-type="other">
+          <input type="radio" id="other" name="report-type" value="other">
+          <label for="other">
+            <strong>Other</strong><br>
+            <span style="color: var(--c-muted); font-size: 0.85rem;">Something else that violates our guidelines</span>
+          </label>
+        </div>
+      </div>
+      
+      <div id="other-details" style="display: none;">
+        <label for="report-details" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--c-text);">
+          Please provide more details:
+        </label>
+        <textarea 
+          id="report-details" 
+          class="report-textarea" 
+          placeholder="Describe the issue in detail..."
+          maxlength="1000"
+        ></textarea>
+        <div style="text-align: right; margin-top: 0.25rem; font-size: 0.8rem; color: var(--c-muted);">
+          <span id="char-count">0</span>/1000 characters
+        </div>
+      </div>
+      
+      <div class="report-actions">
+        <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
+        <button class="btn-submit-report" id="submit-report-btn" onclick="submitReport()" disabled>
+          Submit Report
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+  
+  // Add event listeners
+  const reportOptions = modal.querySelectorAll('.report-option');
+  const otherDetails = modal.querySelector('#other-details');
+  const reportDetails = modal.querySelector('#report-details');
+  const charCount = modal.querySelector('#char-count');
+  const submitBtn = modal.querySelector('#submit-report-btn');
+  
+  reportOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      // Remove selected class from all options
+      reportOptions.forEach(opt => opt.classList.remove('selected'));
+      // Add selected class to clicked option
+      option.classList.add('selected');
+      
+      // Check the radio button
+      const radio = option.querySelector('input[type="radio"]');
+      radio.checked = true;
+      
+      // Show/hide other details
+      if (radio.value === 'other') {
+        otherDetails.style.display = 'block';
+        reportDetails.required = true;
+      } else {
+        otherDetails.style.display = 'none';
+        reportDetails.required = false;
+        reportDetails.value = '';
+        charCount.textContent = '0';
+      }
+      
+      // Enable submit button
+      submitBtn.disabled = false;
+    });
+  });
+  
+  // Character counter for textarea
+  reportDetails.addEventListener('input', () => {
+    const count = reportDetails.value.length;
+    charCount.textContent = count;
+    
+    if (count > 1000) {
+      reportDetails.value = reportDetails.value.substring(0, 1000);
+      charCount.textContent = '1000';
+    }
+  });
+  
+  // Close modal on background click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeReportModal();
+    }
+  });
+  
+  // Close modal on ESC key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeReportModal();
+    }
+  });
+}
+
+function closeReportModal() {
+  const modal = document.querySelector('.report-modal');
+  if (modal) {
+    document.body.removeChild(modal);
+    document.body.style.overflow = '';
+  }
+}
+
+// Make functions globally available
+window.closeReportModal = closeReportModal;
+window.submitReport = submitReport;
+
+async function submitReport() {
+  const modal = document.querySelector('.report-modal');
+  if (!modal) return;
+  
+  const selectedType = modal.querySelector('input[name="report-type"]:checked');
+  const details = modal.querySelector('#report-details').value.trim();
+  
+  if (!selectedType) {
+    alert('Please select a report type');
+    return;
+  }
+  
+  if (selectedType.value === 'other' && !details) {
+    alert('Please provide details for your report');
+    return;
+  }
+  
+  const appId = new URLSearchParams(window.location.search).get('id');
+  if (!appId) {
+    alert('Error: No app selected');
+    return;
+  }
+  
+  try {
+    const { db, storeMod } = await waitForFirebase();
+    const { collection, addDoc, serverTimestamp } = storeMod;
+    
+    const reportData = {
+      appId: appId,
+      appTitle: currentApp?.title || 'Unknown App',
+      reportType: selectedType.value,
+      details: details || null,
+      reportedBy: currentUser?.uid || 'anonymous',
+      reportedByEmail: currentUser?.email || null,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+      reviewedAt: null,
+      reviewedBy: null,
+      adminNotes: null
+    };
+    
+    await addDoc(collection(db, 'reports'), reportData);
+    
+    // Close modal and show success message
+    closeReportModal();
+    alert('Thank you for your report. We will review it and take appropriate action.');
+    
+  } catch (error) {
+    console.error('Error submitting report:', error);
+    alert('Failed to submit report. Please try again.');
+  }
 }
 
 async function loadReviews() {
@@ -911,13 +1752,21 @@ async function checkAuthState() {
         addReviewSection.style.display = 'block';
       }
       
+      // Wait for FavoritesManager to initialize
+      if (window.favoritesManager) {
+        // Add listener for favorites changes
+        window.favoritesManager.addListener(() => {
+          updateButtonStates();
+        });
+      }
+      
       // Update button states
-      await updateButtonStates();
+      updateButtonStates();
     }
   });
 }
 
-// Update button states based on current user data
+// Update button states based on current user data (using FavoritesManager)
 async function updateButtonStates() {
   const appId = new URLSearchParams(window.location.search).get('id');
   if (!appId || !currentUser) return;
@@ -925,18 +1774,55 @@ async function updateButtonStates() {
   try {
     // Update save button state
     const saveButton = document.getElementById('save-btn');
-    if (saveButton) {
-      const isFavorited = await checkIfFavorited(appId);
-      const heartIcon = isFavorited ? 
-        '<svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' :
-        '<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+    if (saveButton && window.favoritesManager && window.favoritesManager.initialized) {
+      const isFavorited = window.favoritesManager.isFavorited(appId);
       
-      saveButton.innerHTML = `${heartIcon}<span>${isFavorited ? 'Saved' : 'Save'}</span>`;
-      saveButton.classList.toggle('active', isFavorited);
-      saveButton.classList.toggle('saved', isFavorited);
+      // Update button classes only (keep text the same)
+      if (isFavorited) {
+        saveButton.classList.add('saved', 'active');
+      } else {
+        saveButton.classList.remove('saved', 'active');
+      }
+      
+      console.log('Save button updated - Favorited:', isFavorited);
+    }
+    
+    // Update "Add to List" button state
+    const addToListButton = document.getElementById('add-to-list-btn');
+    if (addToListButton) {
+      const isInList = await checkIfAppInUserLists(appId);
+      
+      // Update button classes only (keep text the same)
+      if (isInList) {
+        addToListButton.classList.add('saved', 'active');
+      } else {
+        addToListButton.classList.remove('saved', 'active');
+      }
     }
   } catch (error) {
     console.error('Error updating button states:', error);
+  }
+}
+
+// Check if app is in any of user's lists
+async function checkIfAppInUserLists(appId) {
+  try {
+    const { db, storeMod } = await waitForFirebase();
+    const { doc, getDoc } = storeMod;
+    
+    const userRef = doc(db, 'users', currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) return false;
+    
+    const userData = userSnap.data();
+    const lists = userData.lists || [];
+    
+    // Check if app is in any list
+    return lists.some(list => list.apps && list.apps.includes(appId));
+  } catch (error) {
+    console.error('Error checking lists:', error);
+    return false;
   }
 }
 
@@ -1130,6 +2016,7 @@ document.addEventListener('DOMContentLoaded', () => {
   checkAuthState();
   initializeButtons();
   initializeStarRating(); // Initialize star rating system
+  initializeReportButton(); // Initialize report button
   
   // Initialize review form
   const reviewForm = document.getElementById('review-form');
@@ -1195,13 +2082,14 @@ function initializeButtons() {
     });
   }
 
-  // Save button - add to favorites
+  // Save button - add to favorites (using FavoritesManager)
   const saveButton = document.getElementById('save-btn');
   if (saveButton) {
     saveButton.addEventListener('click', async () => {
       // Add pressed state
       saveButton.classList.add('pressed');
       setTimeout(() => saveButton.classList.remove('pressed'), 150);
+      
       if (!currentUser) {
         alert('Please sign in to save apps to favorites');
         return;
@@ -1214,60 +2102,13 @@ function initializeButtons() {
       }
 
       try {
-        // Use the favorites system directly from window object
-        if (window.VibeStoreFavorites && window.VibeStoreFavorites.toggleFavorite) {
-          const success = await window.VibeStoreFavorites.toggleFavorite(appId);
-          
-          if (success) {
-            // Update button text
-            const isFavorited = await checkIfFavorited(appId);
-            saveButton.innerHTML = isFavorited ? '❤️ Saved' : '❤️ Save';
-            saveButton.classList.toggle('active', isFavorited);
-          }
+        // Use the FavoritesManager
+        if (window.favoritesManager && window.favoritesManager.initialized) {
+          await window.favoritesManager.toggleFavorite(appId);
+          // Update button state (will be called automatically via listener, but we can do it immediately too)
+          updateButtonStates();
         } else {
-          // Fallback: direct Firebase operation
-          const { db, storeMod } = await waitForFirebase();
-          const { doc, getDoc, updateDoc, arrayUnion, arrayRemove } = storeMod;
-          
-          const userRef = doc(db, 'users', currentUser.uid);
-          const userSnap = await getDoc(userRef);
-          
-          if (userSnap.exists()) {
-            const userData = userSnap.data();
-            const favorites = userData.favorites || [];
-            const isCurrentlyFavorited = favorites.includes(appId);
-            
-            if (isCurrentlyFavorited) {
-              await updateDoc(userRef, {
-                favorites: arrayRemove(appId),
-                updatedAt: new Date()
-              });
-              const heartIcon = '<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
-              saveButton.innerHTML = `${heartIcon}<span>Save</span>`;
-              saveButton.classList.remove('active', 'saved');
-            } else {
-              await updateDoc(userRef, {
-                favorites: arrayUnion(appId),
-                updatedAt: new Date()
-              });
-              const heartIcon = '<svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
-              saveButton.innerHTML = `${heartIcon}<span>Saved</span>`;
-              saveButton.classList.add('active', 'saved');
-            }
-          } else {
-            // Create user document
-            await updateDoc(userRef, {
-              uid: currentUser.uid,
-              email: currentUser.email,
-              favorites: [appId],
-              lists: [],
-              createdAt: new Date(),
-              updatedAt: new Date()
-            });
-            const heartIcon = '<svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
-            saveButton.innerHTML = `${heartIcon}<span>Saved</span>`;
-            saveButton.classList.add('active', 'saved');
-          }
+          alert('Favorites system not initialized. Please refresh the page.');
         }
       } catch (error) {
         console.error('Error saving to favorites:', error);
@@ -1307,27 +2148,38 @@ function initializeButtons() {
 
 // Show list selection modal
 async function showListSelectionModal(appId) {
-  const { db, storeMod } = await waitForFirebase();
-  const { doc, getDoc, updateDoc, arrayUnion } = storeMod;
-  
-  // Get user's lists
-  const userRef = doc(db, 'users', currentUser.uid);
-  const userSnap = await getDoc(userRef);
-  
-  if (!userSnap.exists()) {
-    alert('Please create a list first in your profile');
-    window.location.href = '/pages/profile';
-    return;
-  }
-  
-  const userData = userSnap.data();
-  const lists = userData.lists || [];
-  
-  if (lists.length === 0) {
-    alert('You have no lists yet. Please create a list first in your profile.');
-    window.location.href = '/pages/profile';
-    return;
-  }
+  try {
+    const { db, storeMod } = await waitForFirebase();
+    const { doc, getDoc, updateDoc, arrayUnion } = storeMod;
+    
+    // Get user's lists with offline support
+    const userRef = doc(db, 'users', currentUser.uid);
+    let userSnap;
+    
+    try {
+      userSnap = await getDoc(userRef);
+    } catch (error) {
+      if (error.code === 'unavailable' || error.message.includes('offline')) {
+        alert('You are currently offline. Please check your internet connection and try again.');
+        return;
+      }
+      throw error;
+    }
+    
+    if (!userSnap.exists()) {
+      alert('Please create a list first in your profile');
+      window.location.href = '/pages/profile';
+      return;
+    }
+    
+    const userData = userSnap.data();
+    const lists = userData.lists || [];
+    
+    if (lists.length === 0) {
+      alert('You have no lists yet. Please create a list first in your profile.');
+      window.location.href = '/pages/profile';
+      return;
+    }
   
   // Create modal
   const modal = document.createElement('div');
@@ -1402,6 +2254,9 @@ async function showListSelectionModal(appId) {
           updatedAt: new Date()
         });
         
+        // Update button state after adding to list
+        await updateButtonStates();
+        
         alert(`Added to "${list.name}" successfully!`);
       } else if (list && list.apps.includes(appId)) {
         alert(`This app is already in "${list.name}"`);
@@ -1431,33 +2286,110 @@ async function showListSelectionModal(appId) {
       document.body.removeChild(modal);
     }
   });
-}
-
-// Helper function to check if app is favorited
-async function checkIfFavorited(appId) {
-  try {
-    if (window.VibeStoreFavorites && window.VibeStoreFavorites.isAppFavorited) {
-      return await window.VibeStoreFavorites.isAppFavorited(appId);
-    } else {
-      // Fallback: direct Firebase check
-      const { db, storeMod } = await waitForFirebase();
-      const { doc, getDoc } = storeMod;
-      
-      if (!currentUser) return false;
-      
-      const userRef = doc(db, 'users', currentUser.uid);
-      const userSnap = await getDoc(userRef);
-      
-      if (userSnap.exists()) {
-        const userData = userSnap.data();
-        const favorites = userData.favorites || [];
-        return favorites.includes(appId);
-      }
-      return false;
-    }
   } catch (error) {
-    console.error('Error checking favorite status:', error);
-    return false;
+    console.error('Error showing list modal:', error);
+    if (error.code === 'unavailable' || error.message.includes('offline')) {
+      alert('You are currently offline. Please check your internet connection and try again.');
+    } else {
+      alert('Error loading lists. Please try again.');
+    }
   }
 }
+
+// Helper function to check if app is favorited (using FavoritesManager)
+function checkIfFavorited(appId) {
+  if (window.favoritesManager && window.favoritesManager.initialized) {
+    return window.favoritesManager.isFavorited(appId);
+  }
+  return false;
+}
+
+// Social sharing functionality
+function initializeSocialSharing() {
+  const appId = new URLSearchParams(window.location.search).get('id');
+  if (!appId) return;
+  
+  // Get app data for sharing
+  const getShareData = () => {
+    const title = currentApp?.title || 'Check out this app';
+    const description = currentApp?.description || '';
+    const url = window.location.href;
+    
+    return { title, description, url };
+  };
+  
+  // Facebook share
+  document.getElementById('share-facebook')?.addEventListener('click', () => {
+    const { url } = getShareData();
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  });
+  
+  // Twitter/X share
+  document.getElementById('share-twitter')?.addEventListener('click', () => {
+    const { title, url } = getShareData();
+    const text = `${title} - Check it out on VibeStore`;
+    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  });
+  
+  // LinkedIn share
+  document.getElementById('share-linkedin')?.addEventListener('click', () => {
+    const { url } = getShareData();
+    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  });
+  
+  // WhatsApp share
+  document.getElementById('share-whatsapp')?.addEventListener('click', () => {
+    const { title, url } = getShareData();
+    const text = `${title} - ${url}`;
+    const shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(shareUrl, '_blank');
+  });
+  
+  // Copy link
+  document.getElementById('share-copy')?.addEventListener('click', async () => {
+    const { url } = getShareData();
+    const btn = document.getElementById('share-copy');
+    
+    try {
+      await navigator.clipboard.writeText(url);
+      
+      // Visual feedback
+      btn.classList.add('copied');
+      const originalTitle = btn.title;
+      btn.title = 'Copied!';
+      
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.title = originalTitle;
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Failed to copy link:', error);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        btn.classList.add('copied');
+        setTimeout(() => btn.classList.remove('copied'), 2000);
+      } catch (err) {
+        alert('Failed to copy link. Please copy manually: ' + url);
+      }
+      document.body.removeChild(textArea);
+    }
+  });
+}
+
+// Initialize social sharing when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  // Wait a bit for app data to load
+  setTimeout(() => {
+    initializeSocialSharing();
+  }, 1000);
+});
 </script>

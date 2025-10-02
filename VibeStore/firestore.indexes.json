@@ -25,7 +25,7 @@
       "fields": [
         {
           "fieldPath": "niche",
-          "order": "ASCENDING"
+          "arrayConfig": "CONTAINS"
         },
         {
           "fieldPath": "status",
@@ -74,6 +74,25 @@
       "fields": [
         {
           "fieldPath": "appId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ],
+      "density": "SPARSE_ALL"
+    },
+    {
+      "collectionGroup": "blog_comments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "blogId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "approved",
           "order": "ASCENDING"
         },
         {

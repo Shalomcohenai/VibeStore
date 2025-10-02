@@ -46,41 +46,14 @@ service cloud.firestore {
     // Reviews: allow creation only if user has verified interaction (clicked on app)
     match /reviews/{reviewId} {
       allow read: if true;
+      allow list: if true; // Allow listing for stats
       allow create: if isAuthed()
         && request.resource.data.appId is string
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.stars >= 1 && request.resource.data.stars <= 5
         && request.resource.data.text is string
-        && request.resource.data.createdAt is timestamp
         && exists(/databases/$(database)/documents/interactions/$(request.auth.uid + '_' + request.resource.data.appId));
-      allow update, delete: if isAdmin() || (isAuthed() && request.resource.data.userId == request.auth.uid);
-    }
-
-    // Interactions: allow users to read their own interactions, write by service account
-    match /interactions/{id} {
-      allow read: if isAuthed() && request.auth.uid == id.split('_')[0]; // Allow users to read their own interactions
-      allow write: if isAuthed(); // Allow authenticated users to write interactions (for Open button clicks)
-    }
-
-    // User documents (private data including favorites and lists)
-    match /users/{uid} {
-      allow read, write: if isAuthed() && request.auth.uid == uid;
-      
-      // Allow creating user document with proper structure
-      allow create: if isAuthed() 
-        && request.auth.uid == uid
-        && request.resource.data.uid == uid
-        && request.resource.data.email is string
-        && request.resource.data.favorites is list
-        && request.resource.data.lists is list
-        && request.resource.data.createdAt is timestamp;
-        
-      // Allow updating user data with proper validation
-      allow update: if isAuthed() 
-        && request.auth.uid == uid
-        && (request.resource.data.favorites is list || !('favorites' in request.resource.data.diff(resource.data).affectedKeys()))
-        && (request.resource.data.lists is list || !('lists' in request.resource.data.diff(resource.data).affectedKeys()))
-        && (request.resource.data.updatedAt is timestamp || !('updatedAt' in request.resource.data.diff(resource.data).affectedKeys()));
+      allow update, delete: if isAdmin() || (isAuthed() && resource.data.userId == request.auth.uid);
     }
 
     // Promotions (Stripe webhook writes)
@@ -103,16 +76,65 @@ service cloud.firestore {
         && request.resource.data.content is string
         && request.resource.data.content.size() > 0
         && request.resource.data.content.size() <= 1000
-        && request.resource.data.blogId is string
-        && request.resource.data.createdAt is timestamp;
+        && request.resource.data.blogId is string;
       allow update, delete: if isAdmin() || 
-        (isAuthed() && request.resource.data.userId == request.auth.uid);
+        (isAuthed() && resource.data.userId == request.auth.uid);
     }
 
     // Blog categories - read for everyone, write for admins
     match /blog_categories/{categoryId} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+    
+    // Newsletter subscriptions - create for everyone, read for admins
+    match /newsletter_subscriptions/{subscriptionId} {
+      allow create: if true; // Anyone can subscribe
+      allow read: if isAdmin(); // Admin can read all
+      allow list: if isAdmin(); // Admin can list all
+      allow update, delete: if isAdmin();
+    }
+    
+    // Reports - create for authenticated users, read for admins
+    match /reports/{reportId} {
+      allow create: if isAuthed() 
+        && request.resource.data.email is string
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 1000;
+      allow read: if isAdmin();
+      allow list: if isAdmin(); // Admin can list all
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Allow admin to read users collection for statistics
+    match /users/{uid} {
+      allow read, write: if isAuthed() && request.auth.uid == uid;
+      allow list: if isAdmin(); // Admin can list all users for stats
+      
+      // Allow creating user document with proper structure
+      allow create: if isAuthed() 
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.email is string
+        && request.resource.data.favorites is list
+        && request.resource.data.lists is list
+        && request.resource.data.createdAt is timestamp;
+        
+      // Allow updating user data with proper validation
+      allow update: if isAuthed() 
+        && request.auth.uid == uid
+        && (request.resource.data.favorites is list || !('favorites' in request.resource.data.diff(resource.data).affectedKeys()))
+        && (request.resource.data.lists is list || !('lists' in request.resource.data.diff(resource.data).affectedKeys()))
+        && (request.resource.data.updatedAt is timestamp || !('updatedAt' in request.resource.data.diff(resource.data).affectedKeys()));
+    }
+    
+    // Allow admin to list interactions for statistics
+    match /interactions/{id} {
+      allow read: if isAuthed() && request.auth.uid == id.split('_')[0];
+      allow list: if isAdmin(); // Admin can list all for stats
+      allow write: if isAuthed();
     }
   }
 }
