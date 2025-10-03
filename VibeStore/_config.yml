@@ -5,7 +5,7 @@ baseurl: ""
 url: ""
 theme: minima
 markdown: kramdown
-version: "v6.11"
+version: "v6.12"
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
