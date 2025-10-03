@@ -529,6 +529,24 @@ permalink: /pages/app
   .gallery-image {
     padding-bottom: 75%;
   }
+  
+  .gallery-nav {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .gallery-nav svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .gallery-nav.prev {
+    left: -20px;
+  }
+  
+  .gallery-nav.next {
+    right: -20px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -916,7 +934,19 @@ permalink: /pages/app
       <!-- Image Gallery -->
       <div id="image-gallery" style="display: none; margin-top: 2rem;">
         <h3 style="font-size: 1.2rem; font-weight: 600; margin: 0 0 1rem 0; color: var(--c-text);">Screenshots</h3>
-        <div id="gallery-images" class="gallery-grid"></div>
+        <div class="gallery-container">
+          <button class="gallery-nav prev" id="gallery-prev" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15,18 9,12 15,6"></polyline>
+            </svg>
+          </button>
+          <div id="gallery-images" class="gallery-grid"></div>
+          <button class="gallery-nav next" id="gallery-next" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9,18 15,12 9,6"></polyline>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1366,6 +1396,8 @@ function getNicheCTA(niche) {
 function renderImageGallery(images) {
   const galleryContainer = document.getElementById('image-gallery');
   const galleryImages = document.getElementById('gallery-images');
+  const prevButton = document.getElementById('gallery-prev');
+  const nextButton = document.getElementById('gallery-next');
   
   if (!galleryContainer || !galleryImages) return;
   
@@ -1378,12 +1410,26 @@ function renderImageGallery(images) {
   if (validImages.length === 0) {
     // Show empty state
     galleryImages.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted); font-style: italic;">No screenshots available</div>';
+    // Hide navigation buttons
+    if (prevButton) prevButton.style.display = 'none';
+    if (nextButton) nextButton.style.display = 'none';
     return;
+  }
+  
+  // Show navigation buttons if there are multiple images
+  if (validImages.length > 1) {
+    if (prevButton) prevButton.style.display = 'flex';
+    if (nextButton) nextButton.style.display = 'flex';
+    initializeGalleryNavigation(validImages);
+  } else {
+    // Hide navigation buttons for single image
+    if (prevButton) prevButton.style.display = 'none';
+    if (nextButton) nextButton.style.display = 'none';
   }
   
   // Render images with lazy loading and responsive images
   galleryImages.innerHTML = validImages.map((imageUrl, index) => `
-    <div class="gallery-image" onclick="openLightbox('${imageUrl}')">
+    <div class="gallery-image" onclick="openLightbox('${imageUrl}')" style="display: ${index === 0 ? 'block' : 'none'};">
       <div class="image-container">
         <img 
           data-src="${imageUrl}" 
@@ -1401,6 +1447,75 @@ function renderImageGallery(images) {
   
   // Initialize lazy loading for gallery images
   initializeLazyLoading();
+}
+
+// Gallery Navigation
+let currentImageIndex = 0;
+let galleryImages = [];
+
+function initializeGalleryNavigation(images) {
+  galleryImages = images;
+  currentImageIndex = 0;
+  
+  const prevButton = document.getElementById('gallery-prev');
+  const nextButton = document.getElementById('gallery-next');
+  const galleryImagesEl = document.getElementById('gallery-images');
+  
+  if (!prevButton || !nextButton || !galleryImagesEl) return;
+  
+  // Remove existing event listeners by cloning elements
+  const newPrevButton = prevButton.cloneNode(true);
+  const newNextButton = nextButton.cloneNode(true);
+  prevButton.parentNode.replaceChild(newPrevButton, prevButton);
+  nextButton.parentNode.replaceChild(newNextButton, nextButton);
+  
+  // Add event listeners to new buttons
+  newPrevButton.addEventListener('click', () => navigateGallery(-1));
+  newNextButton.addEventListener('click', () => navigateGallery(1));
+  
+  // Update button states
+  updateGalleryButtons();
+}
+
+function navigateGallery(direction) {
+  currentImageIndex += direction;
+  
+  // Wrap around if needed
+  if (currentImageIndex < 0) {
+    currentImageIndex = galleryImages.length - 1;
+  } else if (currentImageIndex >= galleryImages.length) {
+    currentImageIndex = 0;
+  }
+  
+  // Update the displayed image
+  updateGalleryDisplay();
+  updateGalleryButtons();
+}
+
+function updateGalleryDisplay() {
+  const galleryImagesEl = document.getElementById('gallery-images');
+  if (!galleryImagesEl || galleryImages.length === 0) return;
+  
+  // Hide all images
+  const images = galleryImagesEl.querySelectorAll('.gallery-image');
+  images.forEach(img => img.style.display = 'none');
+  
+  // Show current image
+  if (images[currentImageIndex]) {
+    images[currentImageIndex].style.display = 'block';
+  }
+}
+
+function updateGalleryButtons() {
+  const prevButton = document.getElementById('gallery-prev');
+  const nextButton = document.getElementById('gallery-next');
+  
+  if (!prevButton || !nextButton) return;
+  
+  // For carousel-style navigation, we always show both buttons
+  // but we could disable them at boundaries if needed
+  prevButton.disabled = false;
+  nextButton.disabled = false;
 }
 
 // Lightbox functionality
