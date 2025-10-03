@@ -839,7 +839,17 @@ async function uploadImage(file, type = 'image') {
   const timestamp = Date.now();
   // Sanitize filename to avoid issues with spaces and special characters
   const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-  const fileName = `app-${type}s/${currentUser.uid}-${timestamp}-${sanitizedName}`;
+  
+  // Use correct path structure based on type
+  let fileName;
+  if (type === 'icon') {
+    fileName = `app-icons/${currentUser.uid}/${timestamp}-${sanitizedName}`;
+  } else if (type === 'screenshot') {
+    fileName = `app-screenshots/${currentUser.uid}/${timestamp}-${sanitizedName}`;
+  } else {
+    fileName = `app-${type}s/${currentUser.uid}/${timestamp}-${sanitizedName}`;
+  }
+  
   const storageRef = ref(storage, fileName);
   
   console.log(`📤 Uploading ${type}: ${fileName} (${file.size} bytes)`);

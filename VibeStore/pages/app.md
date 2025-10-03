@@ -31,13 +31,14 @@ permalink: /pages/app
   width: 120px;
   height: 120px;
   background: var(--c-primary);
-  border-radius: 16px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 3rem;
   color: white;
   box-shadow: 0 8px 24px rgba(107,70,193,0.3);
+  overflow: hidden;
 }
 
 .app-info {
@@ -73,6 +74,9 @@ permalink: /pages/app
   font-size: 1.1rem;
   line-height: 1.6;
   margin: 0 0 1.5rem 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .app-tags {
@@ -266,6 +270,13 @@ permalink: /pages/app
   color: var(--c-text);
 }
 
+#app-full-description {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: pre-wrap;
+}
+
 .details-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -435,7 +446,7 @@ permalink: /pages/app
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
 }
 
@@ -1126,7 +1137,7 @@ function updatePageSEO(app) {
   if (ogDesc) ogDesc.content = truncatedDescription;
   
   const ogImage = document.querySelector('meta[property="og:image"]');
-  if (ogImage) ogImage.content = app.image || '/img/placeholder.svg';
+  if (ogImage) ogImage.content = app.imageUrl || app.image || '/img/placeholder.svg';
 }
 
 function renderAppContent(app) {
@@ -1157,7 +1168,7 @@ function renderAppContent(app) {
   // Image with lazy loading
   const appImage = document.getElementById('app-icon');
   if (appImage) {
-    const imageUrl = app.image || '/img/placeholder.svg';
+    const imageUrl = app.imageUrl || app.image || '/img/placeholder.svg';
     appImage.innerHTML = `
       <div class="app-icon-container">
         <img 
@@ -1166,7 +1177,7 @@ function renderAppContent(app) {
           class="lazy-image app-icon-img"
           loading="lazy"
           onerror="this.src='/img/placeholder.svg'"
-          style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;"
+          style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;"
         >
         <div class="image-placeholder">
           <div class="loading-spinner"></div>
@@ -1328,7 +1339,7 @@ function renderImageGallery(images) {
 }
 
 // Lightbox functionality
-function openLightbox(imageUrl) {
+window.openLightbox = function(imageUrl) {
   // Create lightbox if it doesn't exist
   let lightbox = document.getElementById('image-lightbox');
   
@@ -1363,7 +1374,7 @@ function openLightbox(imageUrl) {
   document.body.style.overflow = 'hidden';
 }
 
-function closeLightbox() {
+window.closeLightbox = function() {
   const lightbox = document.getElementById('image-lightbox');
   if (lightbox) {
     lightbox.classList.remove('active');

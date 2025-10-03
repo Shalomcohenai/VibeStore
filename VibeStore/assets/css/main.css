@@ -518,6 +518,7 @@ img{max-width:100%;height:auto;display:block}
   justify-content: center;
   color: white;
   transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 /* App Icon Container for Images */

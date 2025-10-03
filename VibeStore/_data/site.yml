@@ -1,8 +1,12 @@
 # Site-wide data for VibeStore
-version: "4.0.7"
+version: "4.0.8"
 last_updated: "2025-01-27"
-cache_bust: "20250127-006-v407"
+cache_bust: "20250127-007-v408"
 features:
+  - "Version 4.0.8 - Latest Deployment Update"
+  - "🚀 All updated files deployed successfully"
+  - "✅ Version tracking updated in development section"
+  - "🔧 Enhanced deployment process and version management"
   - "Version 4.0.7 - Updated Deployment"
   - "🚀 Latest version deployment with enhanced tracking"
   - "✅ Improved version management system"

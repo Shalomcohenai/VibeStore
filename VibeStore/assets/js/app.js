@@ -157,7 +157,7 @@
     const heartTitle = isFavorited ? 'Remove from favorites' : 'Add to favorites';
     
     // Use app image if available, otherwise fallback to emoji
-    const appImageUrl = app.image || app.imageUrl;
+    const appImageUrl = app.imageUrl || app.image;
     const iconContent = appImageUrl 
       ? `<div class="app-icon-container">
            <img 

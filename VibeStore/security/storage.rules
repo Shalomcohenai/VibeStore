@@ -1,7 +1,7 @@
 rules_version = '2';
 
-// Craft rules based on data in your Firestore database
-// and write the rules in such a way that other security rules use them.
+// VibeStore Firebase Storage Rules
+// Comprehensive security rules for image uploads and file management
 service firebase.storage {
   match /b/{bucket}/o {
     // Helper functions
@@ -13,20 +13,101 @@ service firebase.storage {
       return isAuthed() && (request.auth.token.admin == true || request.auth.token.email == 'shalom.cohen.111@gmail.com');
     }
 
-    // App icons and screenshots - allow authenticated users to upload
-    match /app-icons/{allPaths=**} {
-      allow read: if true; // Anyone can read app icons
-      allow write: if isAuthed(); // Only authenticated users can upload
+    function isValidImage() {
+      return request.resource.contentType.matches('image/(jpeg|jpg|png|webp)');
     }
 
+    function isValidSize() {
+      return request.resource.size < 5 * 1024 * 1024; // 5MB limit
+    }
+
+    function isValidFileName() {
+      return request.resource.name.matches('.*\\.(jpg|jpeg|png|webp)$');
+    }
+
+    // App icons - allow authenticated users to upload
+    match /app-icons/{userId}/{allPaths=**} {
+      allow read: if true; // Anyone can read app icons
+      allow write: if isAuthed() 
+        && request.auth.uid == userId 
+        && isValidImage() 
+        && isValidSize() 
+        && isValidFileName();
+      allow delete: if isAuthed() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // App icons - legacy path support (temporary)
+    match /app-icons/{allPaths=**} {
+      allow read: if true; // Anyone can read app icons
+      allow write: if isAuthed() 
+        && isValidImage() 
+        && isValidSize() 
+        && isValidFileName();
+      allow delete: if isAuthed() && isAdmin();
+    }
+
+    // App screenshots - allow authenticated users to upload
+    match /app-screenshots/{userId}/{allPaths=**} {
+      allow read: if true; // Anyone can read screenshots
+      allow write: if isAuthed() 
+        && request.auth.uid == userId 
+        && isValidImage() 
+        && isValidSize() 
+        && isValidFileName();
+      allow delete: if isAuthed() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // App screenshots - legacy path support (temporary)
     match /app-screenshots/{allPaths=**} {
       allow read: if true; // Anyone can read screenshots
-      allow write: if isAuthed(); // Only authenticated users can upload
+      allow write: if isAuthed() 
+        && isValidImage() 
+        && isValidSize() 
+        && isValidFileName();
+      allow delete: if isAuthed() && isAdmin();
+    }
+
+    // Processed images - created by Cloud Functions
+    match /processed/{appId}/{allPaths=**} {
+      allow read: if true; // Anyone can read processed images
+      allow write: if false; // Only Cloud Functions can write
+      allow delete: if isAdmin(); // Only admins can delete
+    }
+
+    // Thumbnails - created by Cloud Functions
+    match /thumbnails/{appId}/{allPaths=**} {
+      allow read: if true; // Anyone can read thumbnails
+      allow write: if false; // Only Cloud Functions can write
+      allow delete: if isAdmin(); // Only admins can delete
+    }
+
+    // User profile images
+    match /profile-images/{userId}/{allPaths=**} {
+      allow read: if true; // Anyone can read profile images
+      allow write: if isAuthed() 
+        && request.auth.uid == userId 
+        && isValidImage() 
+        && isValidSize() 
+        && isValidFileName();
+      allow delete: if isAuthed() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Blog images - admin only
+    match /blog-images/{allPaths=**} {
+      allow read: if true; // Anyone can read blog images
+      allow write: if isAdmin() && isValidImage() && isValidSize();
+      allow delete: if isAdmin();
     }
 
     // Admin-only uploads
     match /admin/{allPaths=**} {
       allow read, write: if isAdmin();
+    }
+
+    // Temporary uploads - for processing
+    match /temp/{userId}/{allPaths=**} {
+      allow read, write: if isAuthed() && request.auth.uid == userId;
+      allow delete: if isAuthed() && (request.auth.uid == userId || isAdmin());
     }
 
     // Default rule - deny all other access

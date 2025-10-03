@@ -108,14 +108,17 @@
     <div class="development-info" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem; margin: 1rem 0; font-size: 0.85rem;">
       <h3 style="margin: 0 0 0.5rem 0; color: #495057;">Development Information</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
-        <div><strong>Version:</strong> 4.0.0-free</div>
-        <div><strong>Last Updated:</strong> 2025-01-10</div>
-        <div><strong>Cache Bust:</strong> 20250110-002-v40</div>
+        <div><strong>Version:</strong> 4.0.8</div>
+        <div><strong>Last Updated:</strong> 2025-01-27</div>
+        <div><strong>Cache Bust:</strong> 20250127-007-v408</div>
         <div><strong>Build Status:</strong> <span style="color: #28a745;">✓ Free Tier</span></div>
       </div>
       <div style="margin-top: 0.5rem;">
         <strong>Latest Features:</strong>
         <ul style="margin: 0.25rem 0 0 1rem; font-size: 0.8rem;">
+          <li>🚀 Version 4.0.8 - Latest Deployment Update</li>
+          <li>✅ All updated files deployed successfully</li>
+          <li>🔧 Enhanced version tracking and management</li>
           <li>📊 Advanced Statistics Dashboard (Direct Firestore)</li>
           <li>📧 Newsletter Management with CSV Export</li>
           <li>⚠️ User Reports Management System</li>
@@ -1879,6 +1882,15 @@ async function handleAppAction(event) {
   const action = event.target.dataset.action;
   const appId = event.target.dataset.appId;
   
+  // Debug logging to help identify the issue
+  console.log('🔍 Action:', action, 'AppId:', appId, 'Event target:', event.target);
+  
+  if (!appId) {
+    console.error('❌ No appId found in dataset');
+    alert('Error: Could not identify the app. Please try again.');
+    return;
+  }
+  
   try {
     if (action === 'view-details') {
       openAppDetailsModal(appId);
@@ -1902,6 +1914,17 @@ async function handleAppAction(event) {
 
 // Update app status
 async function updateAppStatus(appId, status, reason = null) {
+  // Validate input parameters
+  if (!appId) {
+    throw new Error('App ID is required to update app status');
+  }
+  
+  if (!status) {
+    throw new Error('Status is required to update app status');
+  }
+  
+  console.log(`🔄 Updating app ${appId} to status: ${status}`);
+  
   const { db } = await waitForFirebase();
   const appRef = doc(db, 'apps', appId);
   
@@ -1915,6 +1938,7 @@ async function updateAppStatus(appId, status, reason = null) {
   }
   
   await updateDoc(appRef, updateData);
+  console.log(`✅ Successfully updated app ${appId} to status: ${status}`);
 }
 
 // Initialize app details modal
@@ -1983,18 +2007,35 @@ function initializeAppDetailsModal() {
     const appItem = e.target.closest('.clickable-app');
     if (appItem && !e.target.closest('.app-actions')) {
       const appId = appItem.dataset.appId;
-      openAppDetailsModal(appId);
+      
+      // Debug logging
+      console.log('🔍 Clicked app item, AppId:', appId, 'AppItem:', appItem);
+      
+      if (appId) {
+        openAppDetailsModal(appId);
+      } else {
+        console.error('❌ No appId found in app item dataset');
+      }
     }
   });
 }
 
 // Open app details modal
 async function openAppDetailsModal(appId) {
+  // Validate input
+  if (!appId) {
+    console.error('❌ No appId provided to openAppDetailsModal');
+    alert('Error: No app ID provided');
+    return;
+  }
+  
+  console.log(`🔍 Opening details modal for app: ${appId}`);
   currentAppForDetails = appId;
   
   // Find the app data using firestoreId
   const app = appsData.find(a => a.firestoreId === appId);
   if (!app) {
+    console.error(`❌ App not found in appsData for ID: ${appId}`);
     alert('App not found');
     return;
   }
@@ -2115,7 +2156,13 @@ async function saveAppChanges() {
 
 // Approve app from modal
 async function approveAppFromModal() {
-  if (!currentAppForDetails) return;
+  console.log('🔍 approveAppFromModal called, currentAppForDetails:', currentAppForDetails);
+  
+  if (!currentAppForDetails) {
+    console.error('❌ currentAppForDetails is null/undefined in approveAppFromModal');
+    alert('Error: No app selected for approval. Please close and reopen the app details.');
+    return;
+  }
   
   try {
     // First save any changes
@@ -2124,10 +2171,14 @@ async function approveAppFromModal() {
     // Then approve
     await updateAppStatus(currentAppForDetails, 'approved');
     loadAppStats();
+    
+    // Get app title before closing modal (which clears currentAppForDetails)
+    const app = appsData.find(a => a.firestoreId === currentAppForDetails);
+    const appTitle = app?.title || 'Unknown App';
+    
     closeAppDetailsModal();
     
-    const app = appsData.find(a => a.firestoreId === currentAppForDetails);
-    alert(`App "${app?.title}" approved successfully`);
+    alert(`App "${appTitle}" approved successfully`);
     
   } catch (error) {
     console.error('Error approving app:', error);
@@ -2137,7 +2188,13 @@ async function approveAppFromModal() {
 
 // Reject app from modal
 async function rejectAppFromModal() {
-  if (!currentAppForDetails) return;
+  console.log('🔍 rejectAppFromModal called, currentAppForDetails:', currentAppForDetails);
+  
+  if (!currentAppForDetails) {
+    console.error('❌ currentAppForDetails is null/undefined in rejectAppFromModal');
+    alert('Error: No app selected for rejection. Please close and reopen the app details.');
+    return;
+  }
   
   try {
     // Get rejection reason
@@ -2155,10 +2212,14 @@ async function rejectAppFromModal() {
     // Then reject
     await updateAppStatus(currentAppForDetails, 'rejected', rejectionReason);
     loadAppStats();
+    
+    // Get app title before closing modal (which clears currentAppForDetails)
+    const app = appsData.find(a => a.firestoreId === currentAppForDetails);
+    const appTitle = app?.title || 'Unknown App';
+    
     closeAppDetailsModal();
     
-    const app = appsData.find(a => a.firestoreId === currentAppForDetails);
-    alert(`App "${app?.title}" rejected successfully`);
+    alert(`App "${appTitle}" rejected successfully`);
     
   } catch (error) {
     console.error('Error rejecting app:', error);
