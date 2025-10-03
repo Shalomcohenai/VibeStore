@@ -39,6 +39,7 @@ permalink: /pages/app
   color: white;
   box-shadow: 0 8px 24px rgba(107,70,193,0.3);
   overflow: hidden;
+  border: 3px solid #8B5CF6; /* Purple stroke */
 }
 
 .app-info {
@@ -361,10 +362,73 @@ permalink: /pages/app
 }
 
 /* Image Gallery */
+.gallery-container {
+  position: relative;
+}
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
+}
+
+/* Gallery Navigation Buttons */
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #8B5CF6;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-nav:hover {
+  background: #8B5CF6;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+}
+
+.gallery-nav:hover svg {
+  color: white;
+}
+
+.gallery-nav svg {
+  width: 24px;
+  height: 24px;
+  color: #8B5CF6;
+  transition: color 0.3s ease;
+}
+
+.gallery-nav.prev {
+  left: -24px;
+}
+
+.gallery-nav.next {
+  right: -24px;
+}
+
+.gallery-nav:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gallery-nav:disabled:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-50%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-nav:disabled:hover svg {
+  color: #8B5CF6;
 }
 
 .gallery-image {
@@ -448,6 +512,7 @@ permalink: /pages/app
   height: 100%;
   border-radius: 20px;
   overflow: hidden;
+  border: 3px solid #8B5CF6; /* Purple stroke for image icons */
 }
 
 .app-icon-img {
