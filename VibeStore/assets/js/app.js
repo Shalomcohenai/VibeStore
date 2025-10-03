@@ -63,6 +63,112 @@
 
   // All data now comes from Firestore - no more demo data!
 
+  // Lazy Loading Implementation - Define BEFORE renderApps
+  window.initializeLazyLoading = function() {
+    // Check if IntersectionObserver is supported
+    if (!('IntersectionObserver' in window)) {
+      // Fallback: load all images immediately
+      const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
+      lazyImages.forEach(img => {
+        img.src = img.dataset.src;
+        img.classList.remove('lazy-image');
+      });
+      return;
+    }
+
+    // Create intersection observer
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          loadImage(img);
+          observer.unobserve(img);
+        }
+      });
+    }, {
+      rootMargin: '50px 0px', // Start loading 50px before image comes into view
+      threshold: 0.01
+    });
+
+    // Observe all lazy images
+    const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
+    lazyImages.forEach(img => {
+      imageObserver.observe(img);
+    });
+  }
+
+  // Load image with progressive enhancement - Define BEFORE renderApps
+  window.loadImage = function(img) {
+    const src = img.dataset.src;
+    if (!src) return;
+
+    // Show loading state
+    const placeholder = img.parentElement.querySelector('.image-placeholder');
+    if (placeholder) {
+      placeholder.style.display = 'flex';
+    }
+
+    // Create new image to preload
+    const newImg = new Image();
+    
+    // Set timeout for image loading (5 seconds)
+    const timeoutId = setTimeout(() => {
+      // Timeout reached - replace with emoji icon
+      const container = img.parentElement;
+      const niche = container.closest('.card-v2')?.dataset.niche || 'web';
+      let appIcon = '📱';
+      if (niche.includes('whatsapp')) appIcon = '💬';
+      else if (niche.includes('mobile')) appIcon = '📱';
+      else if (niche.includes('web')) appIcon = '🌐';
+      
+      container.innerHTML = `<div class="app-icon-v2">${appIcon}</div>`;
+      
+      console.warn('Image loading timeout:', src);
+    }, 5000);
+    
+    newImg.onload = () => {
+      // Clear timeout
+      clearTimeout(timeoutId);
+      
+      // Image loaded successfully
+      img.src = src;
+      img.classList.remove('lazy-image');
+      img.classList.add('loaded');
+      
+      // Hide loading placeholder
+      if (placeholder) {
+        placeholder.style.display = 'none';
+      }
+      
+      // Add fade-in effect
+      img.style.opacity = '0';
+      img.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => {
+        img.style.opacity = '1';
+      }, 10);
+    };
+    
+    newImg.onerror = () => {
+      // Clear timeout
+      clearTimeout(timeoutId);
+      
+      // Image failed to load - replace with emoji icon
+      const container = img.parentElement;
+      const niche = container.closest('.card-v2')?.dataset.niche || 'web';
+      let appIcon = '📱';
+      if (niche.includes('whatsapp')) appIcon = '💬';
+      else if (niche.includes('mobile')) appIcon = '📱';
+      else if (niche.includes('web')) appIcon = '🌐';
+      
+      container.innerHTML = `<div class="app-icon-v2">${appIcon}</div>`;
+      
+      console.warn('Failed to load image:', src);
+    };
+    
+    // Start loading
+    newImg.src = src;
+  }
+
   async function renderApps(filter) {
     if (!marketplaceGrid) return;
     
@@ -74,23 +180,62 @@
       
       // Fetch apps from Firestore based on filter
       if (window.VibeStoreFirestore) {
-        if (filter === 'featured') {
-          apps = await window.VibeStoreFirestore.fetchFeaturedApps();
-        } else if (filter === 'popular') {
-          apps = await window.VibeStoreFirestore.fetchPopularApps();
-        } else if (filter === 'editors-choice') {
-          apps = await window.VibeStoreFirestore.fetchEditorsChoice();
+        try {
+          if (filter === 'featured') {
+            apps = await window.VibeStoreFirestore.fetchFeaturedApps();
+          } else if (filter === 'popular') {
+            apps = await window.VibeStoreFirestore.fetchPopularApps();
+          } else if (filter === 'editors-choice') {
+            apps = await window.VibeStoreFirestore.fetchEditorsChoice();
+          }
+        } catch (error) {
+          console.warn('Error fetching apps from Firestore:', error);
+          apps = [];
         }
       } else {
         console.warn('VibeStoreFirestore not available - check Firebase connection');
+        apps = [];
       }
       
       // Clear loading and render apps
       marketplaceGrid.innerHTML = '';
       
       if (apps.length === 0) {
-        marketplaceGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted);">No apps found for this category.</div>';
-        return;
+        // Show demo apps when no real apps are available
+        const demoApps = [
+          {
+            id: 'demo-1',
+            title: 'Work Attendance Reminder',
+            description: 'Mini web app to remind employees to clock in/out on time.',
+            niche: 'web',
+            category: 'Productivity',
+            rating: 4.7,
+            usersCount: 32,
+            imageUrl: null
+          },
+          {
+            id: 'demo-2',
+            title: 'Budget Buddy',
+            description: 'Simple personal budget tracker for weekly expenses.',
+            niche: 'mobile',
+            category: 'Finance',
+            rating: 4.5,
+            usersCount: 48,
+            imageUrl: null
+          },
+          {
+            id: 'demo-3',
+            title: 'Support Agent on WhatsApp',
+            description: 'AI assistant that answers common support requests in WhatsApp.',
+            niche: 'whatsapp',
+            category: 'Support',
+            rating: 4.2,
+            usersCount: 21,
+            imageUrl: null
+          }
+        ];
+        
+        apps = demoApps;
       }
       
       apps.forEach(app => {
@@ -165,7 +310,7 @@
              alt="${title} Icon" 
              class="lazy-image app-icon-img"
              loading="lazy"
-             onerror="this.parentElement.innerHTML='${appIcon}'"
+             onerror="this.parentElement.innerHTML='<div class=\\"app-icon-v2\\">${appIcon}</div>'"
            >
            <div class="image-placeholder">
              <div class="loading-spinner"></div>
@@ -292,90 +437,9 @@
     });
   }
 
-  // Lazy Loading Implementation
-  window.initializeLazyLoading = function() {
-    // Check if IntersectionObserver is supported
-    if (!('IntersectionObserver' in window)) {
-      // Fallback: load all images immediately
-      const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
-      lazyImages.forEach(img => {
-        img.src = img.dataset.src;
-        img.classList.remove('lazy-image');
-      });
-      return;
-    }
 
-    // Create intersection observer
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          loadImage(img);
-          observer.unobserve(img);
-        }
-      });
-    }, {
-      rootMargin: '50px 0px', // Start loading 50px before image comes into view
-      threshold: 0.01
-    });
-
-    // Observe all lazy images
-    const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
-    lazyImages.forEach(img => {
-      imageObserver.observe(img);
-    });
-  }
-
-  // Load image with progressive enhancement
-  window.loadImage = function(img) {
-    const src = img.dataset.src;
-    if (!src) return;
-
-    // Show loading state
-    const placeholder = img.parentElement.querySelector('.image-placeholder');
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-    }
-
-    // Create new image to preload
-    const newImg = new Image();
-    
-    newImg.onload = () => {
-      // Image loaded successfully
-      img.src = src;
-      img.classList.remove('lazy-image');
-      img.classList.add('loaded');
-      
-      // Hide loading placeholder
-      if (placeholder) {
-        placeholder.style.display = 'none';
-      }
-      
-      // Add fade-in effect
-      img.style.opacity = '0';
-      img.style.transition = 'opacity 0.3s ease';
-      setTimeout(() => {
-        img.style.opacity = '1';
-      }, 10);
-    };
-    
-    newImg.onerror = () => {
-      // Image failed to load
-      img.src = '/img/placeholder.png';
-      img.classList.remove('lazy-image');
-      img.classList.add('error');
-      
-      // Hide loading placeholder
-      if (placeholder) {
-        placeholder.style.display = 'none';
-      }
-      
-      console.warn('Failed to load image:', src);
-    };
-    
-    // Start loading
-    newImg.src = src;
-  }
+  // Make renderApps globally available
+  window.renderApps = renderApps;
 
   // Initialize with featured apps
   if (marketplaceGrid) {
@@ -700,4 +764,84 @@
       </div>
     `;
   }
+
+  // Initialize filter buttons
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active class from all buttons
+      filterButtons.forEach(b => b.classList.remove('active'));
+      // Add active class to clicked button
+      btn.classList.add('active');
+      // Render apps with selected filter
+      const filter = btn.dataset.filter;
+      renderApps(filter);
+    });
+  });
+
+  // Initialize category buttons (duplicate - already initialized above)
+  // const categoryButtons = document.querySelectorAll('.category-btn');
+  // categoryButtons.forEach(btn => {
+  //   btn.addEventListener('click', () => {
+  //     const category = btn.dataset.category;
+  //     // For now, just show featured apps when category is clicked
+  //     // Later this can be enhanced to filter by category
+  //     renderApps('featured');
+  //   });
+  // });
+
 })();
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing app...');
+  
+  // Re-initialize if elements weren't found earlier
+  const marketplaceGrid = document.getElementById('marketplace-grid');
+  if (marketplaceGrid && marketplaceGrid.innerHTML.trim() === '') {
+    console.log('Marketplace grid found, rendering featured apps...');
+    if (window.renderApps) {
+      window.renderApps('featured');
+    } else {
+      // Fallback: render demo apps directly
+      const demoApps = [
+        {
+          id: 'demo-1',
+          title: 'Work Attendance Reminder',
+          description: 'Mini web app to remind employees to clock in/out on time.',
+          niche: 'web',
+          category: 'Productivity',
+          rating: 4.7,
+          usersCount: 32,
+          imageUrl: null
+        },
+        {
+          id: 'demo-2',
+          title: 'Budget Buddy',
+          description: 'Simple personal budget tracker for weekly expenses.',
+          niche: 'mobile',
+          category: 'Finance',
+          rating: 4.5,
+          usersCount: 48,
+          imageUrl: null
+        },
+        {
+          id: 'demo-3',
+          title: 'Support Agent on WhatsApp',
+          description: 'AI assistant that answers common support requests in WhatsApp.',
+          niche: 'whatsapp',
+          category: 'Support',
+          rating: 4.2,
+          usersCount: 21,
+          imageUrl: null
+        }
+      ];
+      
+      demoApps.forEach(app => {
+        if (window.createCardHTML) {
+          const cardHTML = window.createCardHTML(app);
+          marketplaceGrid.insertAdjacentHTML('beforeend', cardHTML);
+        }
+      });
+    }
+  }
+});

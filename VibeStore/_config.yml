@@ -1,11 +1,11 @@
-title: VibeStore
+title: VibeAppStore
 tagline: Find a ready-made app for your problem
 description: Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.
 baseurl: ""
 url: ""
 theme: minima
 markdown: kramdown
-version: "v4.1.3"
+version: "v6.11"
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

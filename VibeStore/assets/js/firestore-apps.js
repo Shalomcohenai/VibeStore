@@ -4,17 +4,29 @@
  */
 
 // Wait for Firebase to initialize
-const waitForFirebaseApps = () => {
-  return new Promise(resolve => {
-    const check = () => {
-      if (window.waitForFirebase) {
-        resolve(window.waitForFirebase());
-      } else {
-        setTimeout(check, 100);
-      }
+const waitForFirebaseApps = async () => {
+  if (window.waitForFirebase) {
+    const fb = await window.waitForFirebase();
+    return {
+      db: fb.db,
+      storeMod: fb.storeMod
     };
-    check();
-  });
+  } else {
+    // Fallback: wait for $fb to be available
+    return new Promise(resolve => {
+      const check = () => {
+        if (window.$fb && window.$fb.db && window.$fb.storeMod) {
+          resolve({
+            db: window.$fb.db,
+            storeMod: window.$fb.storeMod
+          });
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
+    });
+  }
 };
 
 // Fetch apps from Firestore

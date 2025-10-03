@@ -1,93 +1,8 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-
-<!-- Dynamic SEO meta tags -->
-<title>Admin Panel | VibeStore</title>
-
-<meta name="description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.">
-
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="http://0.0.0.0:4000/pages/admin">
-<meta property="og:title" content="Admin Panel | VibeStore">
-<meta property="og:description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.">
-<meta property="og:image" content="http://0.0.0.0:4000/img/placeholder.svg">
-
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="http://0.0.0.0:4000/pages/admin">
-<meta property="twitter:title" content="Admin Panel | VibeStore">
-<meta property="twitter:description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.">
-<meta property="twitter:image" content="http://0.0.0.0:4000/img/placeholder.svg">
-
-<!-- Additional SEO -->
-<meta name="robots" content="index, follow">
-<meta name="author" content="VibeStore">
-<link rel="canonical" href="http://0.0.0.0:4000/pages/admin">
-
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-<link rel="icon" href="/img/favicon.svg?v=20241219-007-v32" type="image/svg+xml">
-<link rel="stylesheet" href="/assets/css/main.css?v=20241219-007-v32">
-
-    <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Admin Panel | VibeStore</title>
-<meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Admin Panel" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community." />
-<meta property="og:description" content="Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community." />
-<link rel="canonical" href="http://0.0.0.0:4000/pages/admin" />
-<meta property="og:url" content="http://0.0.0.0:4000/pages/admin" />
-<meta property="og:site_name" content="VibeStore" />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Admin Panel" />
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.","headline":"Admin Panel","url":"http://0.0.0.0:4000/pages/admin"}</script>
-<!-- End Jekyll SEO tag -->
-
-  </head>
-  <body class="body">
-    <!-- Dynamic background -->
-    <div class="dynamic-bg" aria-hidden="true">
-      <div class="floating-shape"></div>
-      <div class="floating-shape"></div>
-      <div class="floating-shape"></div>
-    </div>
-    
-    <header class="site-header">
-  <div class="wrap">
-    <a class="site-title hover-lift" href="/">
-      <span class="logo-dot" aria-hidden="true"></span>
-      VibeStore
-    </a>
-    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
-      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-    </button>
-    <nav class="site-nav" data-nav id="main-nav">
-      <!-- Dynamic content based on auth state -->
-      <div id="nav-guest" class="nav-state">
-        <a class="btn small" href="/pages/auth">Sign in</a>
-      </div>
-      
-      <div id="nav-authenticated" class="nav-state" style="display: none;">
-        <a href="/pages/submit-form" class="nav-link">Submit App</a>
-        <div class="user-circle" id="user-circle" title="Go to Profile">
-          <span id="user-name"></span>
-        </div>
-      </div>
-    </nav>
-  </div>
-</header>
-
-    <main class="container">
-      <section class="page">
+---
+layout: page
+title: "Admin Panel"
+permalink: /pages/admin/
+---
   <h1 class="page-title">Admin Panel</h1>
   <div class="page-content">
     <div class="admin-panel">
@@ -95,7 +10,7 @@
   <div class="admin-header">
     <h1 class="page-title">Admin Panel</h1>
     <div style="text-align: right; color: var(--c-muted); font-size: 0.9rem; margin-top: 0.5rem;">
-      Version: 4.0-free - Advanced Statistics (No Cloud Functions)
+      Version: {{ site.version }} - User Analytics Dashboard with Cloud Functions
     </div>
     
     <!-- Admin Welcome -->
@@ -108,22 +23,22 @@
     <div class="development-info" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem; margin: 1rem 0; font-size: 0.85rem;">
       <h3 style="margin: 0 0 0.5rem 0; color: #495057;">Development Information</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
-        <div><strong>Version:</strong> 4.0.8</div>
+        <div><strong>Version:</strong> {{ site.version }}</div>
         <div><strong>Last Updated:</strong> 2025-01-27</div>
-        <div><strong>Cache Bust:</strong> 20250127-007-v408</div>
-        <div><strong>Build Status:</strong> <span style="color: #28a745;">✓ Free Tier</span></div>
+        <div><strong>Cache Bust:</strong> 20250127-008-v413</div>
+        <div><strong>Build Status:</strong> <span style="color: #28a745;">✓ Cloud Functions Enabled</span></div>
       </div>
       <div style="margin-top: 0.5rem;">
         <strong>Latest Features:</strong>
         <ul style="margin: 0.25rem 0 0 1rem; font-size: 0.8rem;">
-          <li>🚀 Version 4.0.8 - Latest Deployment Update</li>
-          <li>✅ All updated files deployed successfully</li>
-          <li>🔧 Enhanced version tracking and management</li>
-          <li>📊 Advanced Statistics Dashboard (Direct Firestore)</li>
-          <li>📧 Newsletter Management with CSV Export</li>
-          <li>⚠️ User Reports Management System</li>
-          <li>🔒 Enhanced Security & Access Control</li>
-          <li>✨ NO Cloud Functions - 100% Free Tier</li>
+          <li>🚀 Version {{ site.version }} - User Analytics Dashboard</li>
+          <li>📈 New Analytics Tab with User Interaction Tracking</li>
+          <li>📊 Click Analytics with Timeline Visualization</li>
+          <li>👥 User Activity Details and Behavior Analysis</li>
+          <li>📥 CSV Export for All Analytics Data</li>
+          <li>⏰ Time-based Filtering (7/30/90 days)</li>
+          <li>🔍 App-specific Analytics Filtering</li>
+          <li>✨ Full Cloud Functions Integration</li>
         </ul>
       </div>
     </div>
@@ -132,6 +47,7 @@
     <div class="management-tabs" style="margin: 2rem 0;">
       <button class="management-tab active" data-tab="apps">📱 Apps Approval</button>
       <button class="management-tab" data-tab="statistics">📊 Statistics</button>
+      <button class="management-tab" data-tab="analytics">📈 User Analytics</button>
       <button class="management-tab" data-tab="blog">✍️ Blog</button>
     </div>
   </div>
@@ -277,6 +193,93 @@
               <div class="spinner"></div>
               <p>Loading reports...</p>
             </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- Analytics Management Section -->
+  <div class="management-content" id="analytics-management" style="display: none;">
+    <div class="admin-content">
+      
+      <!-- User Interactions Overview -->
+      <div style="margin-bottom: 2rem;">
+        <h2 style="margin: 0 0 1rem 0; color: #111827;">📈 User Interactions Analytics</h2>
+        
+        <!-- Analytics Filters -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+          <select id="analytics-app-filter" class="form-select" style="min-width: 200px;">
+            <option value="">All Apps</option>
+          </select>
+          <select id="analytics-time-filter" class="form-select">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="all">All time</option>
+          </select>
+          <button id="refresh-analytics" class="btn primary">🔄 Refresh Data</button>
+          <button id="export-interactions-csv" class="btn secondary">📥 Export CSV</button>
+        </div>
+        
+        <!-- Analytics Stats Cards -->
+        <div class="admin-stats">
+          <div class="stat-card">
+            <div class="stat-number" id="analytics-total-clicks">-</div>
+            <div class="stat-label">Total Clicks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="analytics-unique-users">-</div>
+            <div class="stat-label">Unique Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="analytics-most-clicked">-</div>
+            <div class="stat-label">Most Clicked App</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="analytics-avg-clicks">-</div>
+            <div class="stat-label">Avg Clicks per User</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Top Apps by Clicks -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 1rem 0;">🏆 Top Apps by Clicks</h3>
+        <div class="analytics-list-container" style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.05); overflow: hidden;">
+          <div id="top-apps-list" style="max-height: 400px; overflow-y: auto;">
+            <div style="text-align: center; padding: 2rem;">
+              <div class="spinner"></div>
+              <p>Loading top apps...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- User Activity Details -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 1rem 0;">👥 User Activity Details</h3>
+        <div class="analytics-list-container" style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.05); overflow: hidden;">
+          <div id="user-activity-list" style="max-height: 500px; overflow-y: auto;">
+            <div style="text-align: center; padding: 2rem;">
+              <div class="spinner"></div>
+              <p>Loading user activity...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Click Timeline -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 1rem 0;">📅 Click Timeline (Last 30 Days)</h3>
+        <div class="timeline-container" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,.05);">
+          <div id="click-timeline" style="height: 300px; display: flex; align-items: end; gap: 2px; padding: 1rem 0;">
+            <!-- Timeline bars will be generated here -->
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.8rem; color: var(--c-muted);">
+            <span>30 days ago</span>
+            <span>Today</span>
           </div>
         </div>
       </div>
@@ -1568,6 +1571,109 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* Analytics Styling */
+.analytics-list-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+  overflow: hidden;
+}
+
+.analytics-item {
+  transition: background-color 0.2s ease;
+}
+
+.analytics-item:hover {
+  background-color: var(--c-bg);
+}
+
+.timeline-container {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+}
+
+#click-timeline {
+  height: 300px;
+  display: flex;
+  align-items: end;
+  gap: 2px;
+  padding: 1rem 0;
+}
+
+.timeline-bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.timeline-bar:hover {
+  background: var(--c-primary) !important;
+  transform: scaleY(1.1);
+}
+
+.form-select {
+  padding: 0.75rem;
+  border: 2px solid var(--c-line);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: white;
+  transition: border-color 0.3s ease;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--c-primary);
+}
+
+.btn.secondary {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn.secondary:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+.btn.small {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .analytics-filters {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .analytics-filters select,
+  .analytics-filters button {
+    width: 100%;
+  }
+  
+  #click-timeline {
+    height: 200px;
+    gap: 1px;
+  }
+  
+  .analytics-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
 </style>
 
 <script type="module">
@@ -1649,6 +1755,9 @@ async function initializeAdminPanel() {
   // Load apps
   loadApps(currentFilter);
   
+  // Populate app filter for analytics
+  await populateAppFilter();
+  
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1673,6 +1782,9 @@ async function initializeAdminPanel() {
   
   // Setup statistics event listeners
   setupStatisticsEventListeners();
+  
+  // Setup analytics event listeners
+  setupAnalyticsEventListeners();
 }
 
 // Initialize management tabs (Apps, Statistics, Blog)
@@ -1681,6 +1793,7 @@ function initializeManagementTabs() {
   const contents = {
     'apps': document.getElementById('apps-management'),
     'statistics': document.getElementById('statistics-management'),
+    'analytics': document.getElementById('analytics-management'),
     'blog': document.getElementById('blog-management')
   };
   
@@ -1700,9 +1813,11 @@ function initializeManagementTabs() {
       if (contents[selectedTab]) {
         contents[selectedTab].style.display = 'block';
         
-        // If opening statistics tab, populate the stats if not already done
+        // Load data when opening specific tabs
         if (selectedTab === 'statistics' && adminStats) {
           populateStatisticsTab();
+        } else if (selectedTab === 'analytics') {
+          loadAnalyticsData();
         }
       }
     });
@@ -2096,7 +2211,7 @@ function closeAppDetailsModal() {
 }
 
 // Save app changes
-async function saveAppChanges() {
+async function saveAppChanges(closeModal = true) {
   if (!currentAppForDetails) return;
   
   const saveBtn = document.getElementById('save-app-changes');
@@ -2137,13 +2252,17 @@ async function saveAppChanges() {
     
     await updateDoc(appRef, updateData);
     
-    // Refresh stats and close modal
+    // Refresh stats
     loadAppStats();
-    closeAppDetailsModal();
     
-    // Show success message
-    const app = appsData.find(a => a.firestoreId === currentAppForDetails);
-    alert(`App "${app?.title}" updated successfully`);
+    // Only close modal if explicitly requested (default behavior)
+    if (closeModal) {
+      closeAppDetailsModal();
+      
+      // Show success message
+      const app = appsData.find(a => a.firestoreId === currentAppForDetails);
+      alert(`App "${app?.title}" updated successfully`);
+    }
     
   } catch (error) {
     console.error('Error saving app changes:', error);
@@ -2165,8 +2284,8 @@ async function approveAppFromModal() {
   }
   
   try {
-    // First save any changes
-    await saveAppChanges();
+    // First save any changes (without closing modal)
+    await saveAppChanges(false);
     
     // Then approve
     await updateAppStatus(currentAppForDetails, 'approved');
@@ -2205,9 +2324,9 @@ async function rejectAppFromModal() {
       return;
     }
     
-    // First save any changes (including rejection reason)
+    // First save any changes (including rejection reason, without closing modal)
     document.getElementById('edit-status').value = 'rejected';
-    await saveAppChanges();
+    await saveAppChanges(false);
     
     // Then reject
     await updateAppStatus(currentAppForDetails, 'rejected', rejectionReason);
@@ -2504,6 +2623,9 @@ async function confirmDeleteApp() {
 
 // Global variable for admin stats
 let adminStats = null;
+
+// Analytics variables
+let analyticsData = null;
 
 // Load and render all statistics (including extended stats)
 async function loadAndRenderAllStats() {
@@ -2826,6 +2948,373 @@ function setupStatisticsEventListeners() {
   });
 }
 
+// Analytics functions
+// Load analytics data
+async function loadAnalyticsData() {
+  try {
+    const { db } = await waitForFirebase();
+    
+    console.log('Loading analytics data...');
+    
+    // Get time filter
+    const timeFilter = document.getElementById('analytics-time-filter').value;
+    const appFilter = document.getElementById('analytics-app-filter').value;
+    
+    let startDate = null;
+    if (timeFilter !== 'all') {
+      const days = parseInt(timeFilter);
+      startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    }
+    
+    // Fetch interactions
+    let interactionsQuery = collection(db, 'interactions');
+    const interactionsSnap = await getDocs(interactionsQuery);
+    
+    // Filter by date
+    let interactions = interactionsSnap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      clickDate: doc.data().lastClickAt?.toDate?.() || new Date(0)
+    }));
+    
+    if (startDate) {
+      interactions = interactions.filter(i => i.clickDate >= startDate);
+    }
+    
+    // Filter by app if selected
+    if (appFilter) {
+      interactions = interactions.filter(i => i.appId === appFilter);
+    }
+    
+    // Fetch apps for names
+    const appsSnap = await getDocs(collection(db, 'apps'));
+    const appsMap = {};
+    appsSnap.docs.forEach(doc => {
+      appsMap[doc.id] = doc.data();
+    });
+    
+    // Fetch users for names
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const usersMap = {};
+    usersSnap.docs.forEach(doc => {
+      usersMap[doc.id] = doc.data();
+    });
+    
+    // Process analytics data
+    analyticsData = {
+      interactions: interactions,
+      apps: appsMap,
+      users: usersMap,
+      timeFilter: timeFilter,
+      appFilter: appFilter
+    };
+    
+    // Render analytics
+    renderAnalyticsData();
+    
+    console.log('✅ Analytics data loaded:', analyticsData);
+    
+  } catch (error) {
+    console.error('Error loading analytics data:', error);
+  }
+}
+
+// Render analytics data
+function renderAnalyticsData() {
+  if (!analyticsData) return;
+  
+  const { interactions, apps, users } = analyticsData;
+  
+  // Calculate stats
+  const totalClicks = interactions.length;
+  const uniqueUsers = new Set(interactions.map(i => i.uid)).size;
+  
+  // Most clicked app
+  const appClickCounts = {};
+  interactions.forEach(i => {
+    appClickCounts[i.appId] = (appClickCounts[i.appId] || 0) + 1;
+  });
+  const mostClickedAppId = Object.keys(appClickCounts).reduce((a, b) => 
+    appClickCounts[a] > appClickCounts[b] ? a : b, '');
+  const mostClickedAppName = apps[mostClickedAppId]?.title || 'Unknown';
+  
+  const avgClicksPerUser = uniqueUsers > 0 ? (totalClicks / uniqueUsers).toFixed(1) : '0';
+  
+  // Update stats cards
+  document.getElementById('analytics-total-clicks').textContent = totalClicks;
+  document.getElementById('analytics-unique-users').textContent = uniqueUsers;
+  document.getElementById('analytics-most-clicked').textContent = mostClickedAppName;
+  document.getElementById('analytics-avg-clicks').textContent = avgClicksPerUser;
+  
+  // Render top apps
+  renderTopApps(appClickCounts, apps);
+  
+  // Render user activity
+  renderUserActivity(interactions, apps, users);
+  
+  // Render timeline
+  renderClickTimeline(interactions);
+}
+
+// Render top apps by clicks
+function renderTopApps(appClickCounts, apps) {
+  const container = document.getElementById('top-apps-list');
+  
+  const sortedApps = Object.entries(appClickCounts)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 10);
+  
+  if (sortedApps.length === 0) {
+    container.innerHTML = '<p style="color: var(--c-muted); text-align: center; padding: 2rem;">No clicks recorded yet.</p>';
+    return;
+  }
+  
+  container.innerHTML = sortedApps.map(([appId, clicks]) => {
+    const app = apps[appId];
+    const appName = app?.title || 'Unknown App';
+    const category = app?.category || 'Unknown';
+    
+    return `
+      <div class="analytics-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--c-line);">
+        <div>
+          <div style="font-weight: 600; color: var(--c-text);">${appName}</div>
+          <div style="font-size: 0.85rem; color: var(--c-muted);">${category}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 1.5rem; font-weight: 700; color: var(--c-primary);">${clicks}</div>
+          <div style="font-size: 0.8rem; color: var(--c-muted);">clicks</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Render user activity details
+function renderUserActivity(interactions, apps, users) {
+  const container = document.getElementById('user-activity-list');
+  
+  // Group interactions by user
+  const userActivity = {};
+  interactions.forEach(i => {
+    if (!userActivity[i.uid]) {
+      userActivity[i.uid] = {
+        uid: i.uid,
+        user: users[i.uid],
+        clicks: [],
+        totalClicks: 0
+      };
+    }
+    userActivity[i.uid].clicks.push(i);
+    userActivity[i.uid].totalClicks++;
+  });
+  
+  // Sort by total clicks
+  const sortedUsers = Object.values(userActivity)
+    .sort((a, b) => b.totalClicks - a.totalClicks)
+    .slice(0, 20);
+  
+  if (sortedUsers.length === 0) {
+    container.innerHTML = '<p style="color: var(--c-muted); text-align: center; padding: 2rem;">No user activity recorded yet.</p>';
+    return;
+  }
+  
+  container.innerHTML = sortedUsers.map(userData => {
+    const userEmail = userData.user?.email || 'Anonymous';
+    const userName = userData.user?.displayName || userEmail;
+    const lastClick = userData.clicks.sort((a, b) => b.clickDate - a.clickDate)[0];
+    const lastClickApp = apps[lastClick?.appId];
+    const lastClickDate = lastClick?.clickDate?.toLocaleDateString() || 'Unknown';
+    
+    return `
+      <div class="analytics-item" style="padding: 1rem; border-bottom: 1px solid var(--c-line);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <div style="font-weight: 600; color: var(--c-text);">${userName}</div>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--c-primary);">${userData.totalClicks}</div>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--c-muted);">
+          Last clicked: ${lastClickApp?.title || 'Unknown App'} on ${lastClickDate}
+        </div>
+        <div style="margin-top: 0.5rem;">
+          <button class="btn small secondary" onclick="viewUserDetails('${userData.uid}')">
+            View Details
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Render click timeline
+function renderClickTimeline(interactions) {
+  const container = document.getElementById('click-timeline');
+  
+  // Create timeline data for last 30 days
+  const timelineData = {};
+  const today = new Date();
+  
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateKey = date.toISOString().split('T')[0];
+    timelineData[dateKey] = 0;
+  }
+  
+  // Count clicks per day
+  interactions.forEach(i => {
+    const clickDate = i.clickDate.toISOString().split('T')[0];
+    if (timelineData.hasOwnProperty(clickDate)) {
+      timelineData[clickDate]++;
+    }
+  });
+  
+  const maxClicks = Math.max(...Object.values(timelineData));
+  
+  // Generate timeline bars
+  container.innerHTML = Object.entries(timelineData).map(([date, clicks]) => {
+    const height = maxClicks > 0 ? (clicks / maxClicks) * 100 : 0;
+    const isToday = date === today.toISOString().split('T')[0];
+    
+    return `
+      <div style="
+        flex: 1; 
+        height: ${height}%; 
+        background: ${isToday ? 'var(--c-primary)' : '#e5e7eb'}; 
+        border-radius: 2px 2px 0 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      " 
+      title="${date}: ${clicks} clicks"
+      onmouseover="this.style.background='var(--c-primary)'"
+      onmouseout="this.style.background='${isToday ? 'var(--c-primary)' : '#e5e7eb'}'"
+      >
+      </div>
+    `;
+  }).join('');
+}
+
+// View user details
+function viewUserDetails(userId) {
+  if (!analyticsData) return;
+  
+  const userInteractions = analyticsData.interactions.filter(i => i.uid === userId);
+  const user = analyticsData.users[userId];
+  const userEmail = user?.email || 'Anonymous';
+  
+  let detailsHtml = `
+    <div style="padding: 1rem;">
+      <h3>User Activity: ${userEmail}</h3>
+      <p><strong>Total Clicks:</strong> ${userInteractions.length}</p>
+      <p><strong>First Click:</strong> ${userInteractions.sort((a,b) => a.clickDate - b.clickDate)[0]?.clickDate?.toLocaleDateString() || 'Unknown'}</p>
+      <p><strong>Last Click:</strong> ${userInteractions.sort((a,b) => b.clickDate - a.clickDate)[0]?.clickDate?.toLocaleDateString() || 'Unknown'}</p>
+      
+      <h4>Clicked Apps:</h4>
+      <ul>
+  `;
+  
+  const appClickCounts = {};
+  userInteractions.forEach(i => {
+    appClickCounts[i.appId] = (appClickCounts[i.appId] || 0) + 1;
+  });
+  
+  Object.entries(appClickCounts).forEach(([appId, clicks]) => {
+    const app = analyticsData.apps[appId];
+    detailsHtml += `<li>${app?.title || 'Unknown App'}: ${clicks} clicks</li>`;
+  });
+  
+  detailsHtml += '</ul></div>';
+  
+  // Show in modal or alert
+  alert(detailsHtml.replace(/<[^>]*>/g, '')); // Simple text version for alert
+}
+
+// Export interactions to CSV
+function exportInteractionsToCSV() {
+  if (!analyticsData) {
+    alert('No analytics data to export');
+    return;
+  }
+  
+  const { interactions, apps, users } = analyticsData;
+  
+  const csv = [
+    ['Date', 'User Email', 'App Name', 'App Category', 'Click Time'],
+    ...interactions.map(i => {
+      const user = users[i.uid];
+      const app = apps[i.appId];
+      return [
+        i.clickDate?.toLocaleDateString() || 'Unknown',
+        user?.email || 'Anonymous',
+        app?.title || 'Unknown App',
+        app?.category || 'Unknown',
+        i.clickDate?.toLocaleTimeString() || 'Unknown'
+      ];
+    })
+  ].map(row => row.join(',')).join('\n');
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `user-interactions-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+
+// Setup analytics event listeners
+function setupAnalyticsEventListeners() {
+  // Refresh button
+  const refreshBtn = document.getElementById('refresh-analytics');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', loadAnalyticsData);
+  }
+  
+  // Export CSV button
+  const exportBtn = document.getElementById('export-interactions-csv');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportInteractionsToCSV);
+  }
+  
+  // Time filter
+  const timeFilter = document.getElementById('analytics-time-filter');
+  if (timeFilter) {
+    timeFilter.addEventListener('change', loadAnalyticsData);
+  }
+  
+  // App filter
+  const appFilter = document.getElementById('analytics-app-filter');
+  if (appFilter) {
+    appFilter.addEventListener('change', loadAnalyticsData);
+  }
+}
+
+// Populate app filter dropdown
+async function populateAppFilter() {
+  try {
+    const { db } = await waitForFirebase();
+    const appsSnap = await getDocs(collection(db, 'apps'));
+    const select = document.getElementById('analytics-app-filter');
+    
+    if (!select) return;
+    
+    // Clear existing options except "All Apps"
+    select.innerHTML = '<option value="">All Apps</option>';
+    
+    appsSnap.docs.forEach(doc => {
+      const app = doc.data();
+      if (app.status === 'approved') {
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = app.title;
+        select.appendChild(option);
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error populating app filter:', error);
+  }
+}
+
 // Initialize when page loads
 checkAdminAccess();
 </script>
@@ -2838,7 +3327,7 @@ checkAdminAccess();
   <div class="wrap">
     <div class="footer-main">
       <p class="muted">© VibeStore — Find a ready-made app for your problem</p>
-      <p class="version-info">v3.3 | Built: 2024-12-19 22:25</p>
+      <p class="version-info">v6.11 | Built: 2025-01-27 22:30</p>
     </div>
     <nav class="foot-nav">
       <a href="/pages/newsletter">Newsletter</a>
@@ -2852,22 +3341,3 @@ checkAdminAccess();
   </div>
 </footer>
 
-        <!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-59FYNPQGEP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-59FYNPQGEP', { 'anonymize_ip': true });
-</script>
-
-        <!-- Firebase config must load first -->
-        <script type="module" src="/assets/js/firebaseConfig.js?v=20241219-007-v32"></script>
-        <!-- Other scripts load after Firebase is ready -->
-        <script src="/assets/js/firestore-apps.js?v=20241219-007-v32" defer></script>
-        <script src="/assets/js/favorites.js?v=20241219-007-v32" defer></script>
-        
-        
-        <script src="/assets/js/app.js?v=20241219-007-v32" defer></script>
-    </body>
-</html>

@@ -39,7 +39,7 @@ permalink: /pages/app
   color: white;
   box-shadow: 0 8px 24px rgba(107,70,193,0.3);
   overflow: hidden;
-  border: 3px solid #8B5CF6; /* Purple stroke */
+  border: 1.5px solid #8B5CF6; /* Purple stroke - reduced by half */
 }
 
 .app-info {
@@ -57,9 +57,12 @@ permalink: /pages/app
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 0.5rem;
   margin-bottom: 0.25rem;
+  text-align: center;
 }
 
 .app-title {
@@ -121,12 +124,17 @@ permalink: /pages/app
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  align-items: flex-end;
+  justify-content: flex-start;
 }
 
 .app-actions {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  align-items: stretch;
+  min-width: 160px;
+  width: 100%;
 }
 
 .btn {
@@ -512,7 +520,7 @@ permalink: /pages/app
   height: 100%;
   border-radius: 20px;
   overflow: hidden;
-  border: 3px solid #8B5CF6; /* Purple stroke for image icons */
+  border: 1.5px solid #8B5CF6; /* Purple stroke for image icons - reduced by half */
 }
 
 .app-icon-img {
@@ -601,6 +609,49 @@ permalink: /pages/app
 
 .lightbox-close:hover {
   transform: scale(1.1);
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #8B5CF6;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.lightbox-nav:hover {
+  background: #8B5CF6;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+}
+
+.lightbox-nav:hover svg {
+  color: white;
+}
+
+.lightbox-nav svg {
+  width: 24px;
+  height: 24px;
+  color: #8B5CF6;
+  transition: color 0.3s ease;
+}
+
+.lightbox-prev {
+  left: 2rem;
+}
+
+.lightbox-next {
+  right: 2rem;
 }
 
 /* Report Button */
@@ -974,6 +1025,18 @@ permalink: /pages/app
           <strong>Users:</strong>
           <span id="app-users-count">Loading...</span>
         </div>
+        <div class="detail-item" id="demo-item" style="display: none;">
+          <strong>Demo Video:</strong>
+          <span id="app-demo">Loading...</span>
+        </div>
+        <div class="detail-item" id="languages-item" style="display: none;">
+          <strong>Languages:</strong>
+          <span id="app-languages">Loading...</span>
+        </div>
+        <div class="detail-item" id="notes-item" style="display: none;">
+          <strong>Additional Notes:</strong>
+          <span id="app-notes">Loading...</span>
+        </div>
       </div>
     </div>
 
@@ -1055,6 +1118,10 @@ permalink: /pages/app
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .badge.web {
@@ -1144,7 +1211,8 @@ async function loadAppDetails() {
   const appContent = document.getElementById('app-content');
 
   if (!appId) {
-    showError('No app ID provided');
+    // Show demo content if no app ID provided
+    showDemoContent();
     return;
   }
 
@@ -1209,6 +1277,32 @@ function showError(message) {
   }
 }
 
+function showDemoContent() {
+  const loadingState = document.getElementById('loading-state');
+  const appContent = document.getElementById('app-content');
+  
+  if (loadingState) loadingState.style.display = 'none';
+  if (appContent) {
+    appContent.style.display = 'block';
+    
+    // Show demo app content
+    renderAppContent({
+      title: 'Demo App',
+      description: 'This is a demo app to show the interface',
+      longDescription: 'This is a demo app to show the interface. The buttons should be visible below.',
+      category: 'Demo',
+      platform: 'Web',
+      niche: 'web',
+      rating_avg: 4.5,
+      rating_count: 10,
+      usersCount: 100,
+      createdAt: { toDate: () => new Date() },
+      tags: ['demo', 'example'],
+      link: '#'
+    });
+  }
+}
+
 function updatePageSEO(app) {
   // Update document title
   document.title = `${app.title || 'Untitled App'} - VibeStore`;
@@ -1256,6 +1350,43 @@ function renderAppContent(app) {
   if (categoryEl) categoryEl.textContent = app.category || 'Uncategorized';
   if (platformEl) platformEl.textContent = app.platform || 'Not specified';
   if (nicheEl) nicheEl.textContent = app.niche || 'Not specified';
+  
+  // Additional information fields
+  const demoEl = document.getElementById('app-demo');
+  const demoItem = document.getElementById('demo-item');
+  if (app.demo && app.demo.trim()) {
+    if (demoEl) {
+      // Check if it's a YouTube, Vimeo, or Loom URL and create appropriate link
+      const demoUrl = app.demo.trim();
+      if (demoUrl.includes('youtube.com') || demoUrl.includes('youtu.be')) {
+        demoEl.innerHTML = `<a href="${demoUrl}" target="_blank" rel="noopener">Watch Demo Video</a>`;
+      } else if (demoUrl.includes('vimeo.com')) {
+        demoEl.innerHTML = `<a href="${demoUrl}" target="_blank" rel="noopener">Watch Demo Video</a>`;
+      } else if (demoUrl.includes('loom.com')) {
+        demoEl.innerHTML = `<a href="${demoUrl}" target="_blank" rel="noopener">Watch Demo Video</a>`;
+      } else {
+        demoEl.innerHTML = `<a href="${demoUrl}" target="_blank" rel="noopener">View Demo</a>`;
+      }
+    }
+    if (demoItem) demoItem.style.display = 'block';
+  }
+  
+  const languagesEl = document.getElementById('app-languages');
+  const languagesItem = document.getElementById('languages-item');
+  if (app.languages && app.languages.trim()) {
+    if (languagesEl) languagesEl.textContent = app.languages.trim();
+    if (languagesItem) languagesItem.style.display = 'block';
+  }
+  
+  const notesEl = document.getElementById('app-notes');
+  const notesItem = document.getElementById('notes-item');
+  if (app.notes && app.notes.trim()) {
+    if (notesEl) {
+      // Preserve line breaks in notes
+      notesEl.innerHTML = app.notes.trim().replace(/\n/g, '<br>');
+    }
+    if (notesItem) notesItem.style.display = 'block';
+  }
   
   // Render image gallery if screenshots exist
   renderImageGallery(app.screenshots || app.images || []);
@@ -1416,20 +1547,18 @@ function renderImageGallery(images) {
     return;
   }
   
-  // Show navigation buttons if there are multiple images
+  // Hide navigation buttons by default - they will only show in full-screen mode
+  if (prevButton) prevButton.style.display = 'none';
+  if (nextButton) nextButton.style.display = 'none';
+  
+  // Initialize gallery navigation for full-screen mode
   if (validImages.length > 1) {
-    if (prevButton) prevButton.style.display = 'flex';
-    if (nextButton) nextButton.style.display = 'flex';
     initializeGalleryNavigation(validImages);
-  } else {
-    // Hide navigation buttons for single image
-    if (prevButton) prevButton.style.display = 'none';
-    if (nextButton) nextButton.style.display = 'none';
   }
   
-  // Render images with lazy loading and responsive images
+  // Render images with lazy loading and responsive images - show all images
   galleryImages.innerHTML = validImages.map((imageUrl, index) => `
-    <div class="gallery-image" onclick="openLightbox('${imageUrl}')" style="display: ${index === 0 ? 'block' : 'none'};">
+    <div class="gallery-image" onclick="openLightbox('${imageUrl}')">
       <div class="image-container">
         <img 
           data-src="${imageUrl}" 
@@ -1529,7 +1658,17 @@ window.openLightbox = function(imageUrl) {
     lightbox.className = 'lightbox';
     lightbox.innerHTML = `
       <button class="lightbox-close" onclick="closeLightbox()">×</button>
+      <button class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15,18 9,12 15,6"></polyline>
+        </svg>
+      </button>
       <img src="" alt="Full size image">
+      <button class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+      </button>
     `;
     document.body.appendChild(lightbox);
     
@@ -1548,6 +1687,22 @@ window.openLightbox = function(imageUrl) {
     });
   }
   
+  // Find current image index
+  const currentIndex = galleryImages.findIndex(img => img === imageUrl);
+  window.currentLightboxIndex = currentIndex;
+  
+  // Show navigation buttons if there are multiple images
+  const prevBtn = lightbox.querySelector('.lightbox-prev');
+  const nextBtn = lightbox.querySelector('.lightbox-next');
+  
+  if (galleryImages.length > 1) {
+    prevBtn.style.display = 'flex';
+    nextBtn.style.display = 'flex';
+  } else {
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+  }
+  
   const img = lightbox.querySelector('img');
   img.src = imageUrl;
   lightbox.classList.add('active');
@@ -1559,6 +1714,26 @@ window.closeLightbox = function() {
   if (lightbox) {
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
+  }
+}
+
+window.navigateLightbox = function(direction) {
+  if (!galleryImages || galleryImages.length <= 1) return;
+  
+  window.currentLightboxIndex += direction;
+  
+  // Wrap around if needed
+  if (window.currentLightboxIndex < 0) {
+    window.currentLightboxIndex = galleryImages.length - 1;
+  } else if (window.currentLightboxIndex >= galleryImages.length) {
+    window.currentLightboxIndex = 0;
+  }
+  
+  // Update the image
+  const lightbox = document.getElementById('image-lightbox');
+  if (lightbox) {
+    const img = lightbox.querySelector('img');
+    img.src = galleryImages[window.currentLightboxIndex];
   }
 }
 
