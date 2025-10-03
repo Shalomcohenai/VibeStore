@@ -292,6 +292,91 @@
     });
   }
 
+  // Lazy Loading Implementation
+  window.initializeLazyLoading = function() {
+    // Check if IntersectionObserver is supported
+    if (!('IntersectionObserver' in window)) {
+      // Fallback: load all images immediately
+      const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
+      lazyImages.forEach(img => {
+        img.src = img.dataset.src;
+        img.classList.remove('lazy-image');
+      });
+      return;
+    }
+
+    // Create intersection observer
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          loadImage(img);
+          observer.unobserve(img);
+        }
+      });
+    }, {
+      rootMargin: '50px 0px', // Start loading 50px before image comes into view
+      threshold: 0.01
+    });
+
+    // Observe all lazy images
+    const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
+    lazyImages.forEach(img => {
+      imageObserver.observe(img);
+    });
+  }
+
+  // Load image with progressive enhancement
+  window.loadImage = function(img) {
+    const src = img.dataset.src;
+    if (!src) return;
+
+    // Show loading state
+    const placeholder = img.parentElement.querySelector('.image-placeholder');
+    if (placeholder) {
+      placeholder.style.display = 'flex';
+    }
+
+    // Create new image to preload
+    const newImg = new Image();
+    
+    newImg.onload = () => {
+      // Image loaded successfully
+      img.src = src;
+      img.classList.remove('lazy-image');
+      img.classList.add('loaded');
+      
+      // Hide loading placeholder
+      if (placeholder) {
+        placeholder.style.display = 'none';
+      }
+      
+      // Add fade-in effect
+      img.style.opacity = '0';
+      img.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => {
+        img.style.opacity = '1';
+      }, 10);
+    };
+    
+    newImg.onerror = () => {
+      // Image failed to load
+      img.src = '/img/placeholder.png';
+      img.classList.remove('lazy-image');
+      img.classList.add('error');
+      
+      // Hide loading placeholder
+      if (placeholder) {
+        placeholder.style.display = 'none';
+      }
+      
+      console.warn('Failed to load image:', src);
+    };
+    
+    // Start loading
+    newImg.src = src;
+  }
+
   // Initialize with featured apps
   if (marketplaceGrid) {
     renderApps('featured');

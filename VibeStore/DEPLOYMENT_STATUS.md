@@ -225,5 +225,30 @@ Comprehensive test suite is deployed and ready for use:
 ---
 
 *Deployment completed on: 2025-01-27*  
-*Version: 4.0*  
+*Version: 4.0.8*  
 *Status: Production Ready* ✅
+
+## v4.0.8 - App Icon & UI Fixes (2025-01-27)
+
+### 🎯 **Fixed Issues:**
+- **App Icon Display**: Fixed app icons to display uploaded images in rounded square format
+- **Text Overflow**: Fixed text overflow in app descriptions with proper word wrapping
+- **Lightbox Gallery**: Fixed screenshot gallery lightbox functionality
+- **Image Field**: Corrected image field name from `app.image` to `app.imageUrl`
+
+### 🎨 **UI Improvements:**
+- **Icon Styling**: Updated to iOS-style rounded squares (20px radius)
+- **Responsive Design**: Ensured icons display properly in both cards and app detail pages
+- **Loading States**: Improved image loading with proper fallbacks
+
+### 🔧 **Technical Changes:**
+- Updated `app.js` to prioritize `app.imageUrl` over `app.image`
+- Enhanced CSS for proper text wrapping and overflow handling
+- Made lightbox functions globally available
+- Improved lazy loading for app icons
+
+### 📱 **User Experience:**
+- App icons now display correctly in all contexts
+- Long descriptions no longer overflow containers
+- Screenshot gallery works properly with lightbox
+- Consistent rounded square icon design across the platform
