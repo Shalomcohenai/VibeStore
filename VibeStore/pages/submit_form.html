@@ -152,27 +152,12 @@ permalink: /pages/submit-form
         <div class="form-group">
           <label class="form-label">App Icon <span class="optional">(Optional)</span></label>
           <div class="icon-upload-container">
-            <div class="icon-upload-area" id="iconUploadArea">
-              <div class="upload-content">
-                <div class="upload-icon">🎯</div>
-                <h4>Upload App Icon</h4>
-                <p class="upload-description">Your app's main icon that will appear in search results and app cards</p>
-                <div class="upload-recommendations">
-                  <div class="recommendation-item">
-                    <span class="recommendation-icon">📐</span>
-                    <span class="recommendation-text"><strong>Optimal size:</strong> 512×512px (square)</span>
-                  </div>
-                  <div class="recommendation-item">
-                    <span class="recommendation-icon">🎨</span>
-                    <span class="recommendation-text"><strong>Format:</strong> PNG with transparent background</span>
-                  </div>
-                  <div class="recommendation-item">
-                    <span class="recommendation-icon">💾</span>
-                    <span class="recommendation-text"><strong>File size:</strong> Up to 2MB</span>
-                  </div>
-                </div>
-                <p class="upload-specs">Click to upload or drag & drop</p>
-              </div>
+            <div class="upload-button-container">
+              <button type="button" class="upload-btn icon-upload-btn" id="iconUploadBtn">
+                <span class="upload-btn-icon">🎯</span>
+                <span class="upload-btn-text">Upload App Icon</span>
+                <span class="upload-btn-specs">512×512px, PNG, up to 2MB</span>
+              </button>
               <input 
                 type="file" 
                 id="iconInput" 
@@ -196,31 +181,12 @@ permalink: /pages/submit-form
         <div class="form-group">
           <label class="form-label">Screenshots & Additional Images <span class="optional">(Optional - Up to 5 images)</span></label>
           <div class="multiple-upload-container">
-            <div class="upload-area" id="multipleUploadArea">
-              <div class="upload-content">
-                <div class="upload-icon">📸</div>
-                <h4>Upload Screenshots</h4>
-                <p class="upload-description">Show your app in action with screenshots, demos, or feature highlights</p>
-                <div class="upload-recommendations">
-                  <div class="recommendation-item">
-                    <span class="recommendation-icon">📐</span>
-                    <span class="recommendation-text"><strong>Optimal size:</strong> 1920×1080px or similar</span>
-                  </div>
-                  <div class="recommendation-item">
-                    <span class="recommendation-icon">🎨</span>
-                    <span class="recommendation-text"><strong>Format:</strong> PNG or JPG</span>
-                  </div>
-                  <div class="recommendation-item">
-                    <span class="recommendation-icon">💾</span>
-                    <span class="recommendation-text"><strong>File size:</strong> Up to 5MB each</span>
-                  </div>
-                  <div class="recommendation-item">
-                    <span class="recommendation-icon">🔢</span>
-                    <span class="recommendation-text"><strong>Quantity:</strong> Maximum 5 images</span>
-                  </div>
-                </div>
-                <p class="upload-specs">Click to upload or drag & drop multiple files</p>
-              </div>
+            <div class="upload-button-container">
+              <button type="button" class="upload-btn screenshots-upload-btn" id="screenshotsUploadBtn">
+                <span class="upload-btn-icon">📸</span>
+                <span class="upload-btn-text">Upload Screenshots</span>
+                <span class="upload-btn-specs">1920×1080px, PNG/JPG, up to 5MB each, max 5 images</span>
+              </button>
               <input 
                 type="file" 
                 id="multipleImageInput" 
@@ -382,7 +348,7 @@ function initializeImageUpload() {
 
 // Icon upload
 function initializeIconUpload() {
-  const uploadArea = document.getElementById('iconUploadArea');
+  const uploadBtn = document.getElementById('iconUploadBtn');
   const fileInput = document.getElementById('iconInput');
   const imagePreview = document.getElementById('iconPreview');
   const previewImg = document.getElementById('previewIcon');
@@ -390,7 +356,7 @@ function initializeIconUpload() {
   const changeBtn = document.getElementById('changeIcon');
 
   // Click to upload
-  uploadArea.addEventListener('click', () => fileInput.click());
+  uploadBtn.addEventListener('click', () => fileInput.click());
   
   // File input change
   fileInput.addEventListener('change', async (e) => {
@@ -398,28 +364,11 @@ function initializeIconUpload() {
     if (file) await handleIconSelect(file);
   });
 
-  // Drag and drop
-  uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.classList.add('dragover');
-  });
-
-  uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('dragover');
-  });
-
-  uploadArea.addEventListener('drop', async (e) => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file) await handleIconSelect(file);
-  });
-
   // Remove image
   removeBtn.addEventListener('click', () => {
     uploadedIconFile = null;
     fileInput.value = '';
-    uploadArea.classList.remove('hidden');
+    uploadBtn.style.display = 'block';
     imagePreview.classList.add('hidden');
     clearFieldError('icon');
   });
@@ -430,33 +379,16 @@ function initializeIconUpload() {
 
 // Multiple images upload
 function initializeMultipleImageUpload() {
-  const uploadArea = document.getElementById('multipleUploadArea');
+  const uploadBtn = document.getElementById('screenshotsUploadBtn');
   const fileInput = document.getElementById('multipleImageInput');
   const previewGrid = document.getElementById('imagesPreviewGrid');
 
   // Click to upload
-  uploadArea.addEventListener('click', () => fileInput.click());
+  uploadBtn.addEventListener('click', () => fileInput.click());
   
   // File input change
   fileInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
-    if (files.length > 0) await handleMultipleFilesSelect(files);
-  });
-
-  // Drag and drop
-  uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.classList.add('dragover');
-  });
-
-  uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('dragover');
-  });
-
-  uploadArea.addEventListener('drop', async (e) => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) await handleMultipleFilesSelect(files);
   });
 }
@@ -545,14 +477,14 @@ async function handleMultipleFilesSelect(files) {
 
 // Show icon preview
 function showIconPreview(file) {
-  const uploadArea = document.getElementById('iconUploadArea');
+  const uploadBtn = document.getElementById('iconUploadBtn');
   const imagePreview = document.getElementById('iconPreview');
   const previewImg = document.getElementById('previewIcon');
 
   const reader = new FileReader();
   reader.onload = (e) => {
     previewImg.src = e.target.result;
-    uploadArea.classList.add('hidden');
+    uploadBtn.style.display = 'none';
     imagePreview.classList.remove('hidden');
   };
   reader.readAsDataURL(file);
@@ -857,30 +789,27 @@ function optimizeImage(file, maxWidth = 1920, quality = 0.8) {
 
 // Show processing indicator
 function showProcessingIndicator(count) {
-  const uploadArea = document.getElementById('multipleUploadArea');
-  if (uploadArea) {
-    uploadArea.innerHTML = `
-      <div class="upload-content">
-        <div class="upload-icon">⏳</div>
-        <h4>Processing ${count} image${count > 1 ? 's' : ''}...</h4>
-        <p>Optimizing for web display</p>
-      </div>
+  const uploadBtn = document.getElementById('screenshotsUploadBtn');
+  if (uploadBtn) {
+    uploadBtn.innerHTML = `
+      <span class="upload-btn-icon">⏳</span>
+      <span class="upload-btn-text">Processing ${count} image${count > 1 ? 's' : ''}...</span>
+      <span class="upload-btn-specs">Optimizing for web display</span>
     `;
+    uploadBtn.disabled = true;
   }
 }
 
 // Hide processing indicator
 function hideProcessingIndicator() {
-  const uploadArea = document.getElementById('multipleUploadArea');
-  if (uploadArea) {
-    uploadArea.innerHTML = `
-      <div class="upload-content">
-        <div class="upload-icon">📸</div>
-        <h4>Upload Screenshots</h4>
-        <p>Show your app in action</p>
-        <p class="upload-specs">PNG, JPG up to 5MB each • Max 5 images</p>
-      </div>
+  const uploadBtn = document.getElementById('screenshotsUploadBtn');
+  if (uploadBtn) {
+    uploadBtn.innerHTML = `
+      <span class="upload-btn-icon">📸</span>
+      <span class="upload-btn-text">Upload Screenshots</span>
+      <span class="upload-btn-specs">1920×1080px, PNG/JPG, up to 5MB each, max 5 images</span>
     `;
+    uploadBtn.disabled = false;
   }
 }
 
@@ -1278,11 +1207,15 @@ function showPreviewModal() {
     id: 'preview',
     title: formData.title || 'Your App Title',
     description: formData.description || 'Your app description will appear here...',
+    longDescription: formData.longDescription || 'Detailed description of your app will appear here...',
     category: formData.category || 'App',
+    platform: formData.platform || 'Web',
+    link: formData.link || 'https://example.com',
     niche: selectedTypes.length > 0 ? selectedTypes : ['web'],
     imageUrl: uploadedIconFile ? URL.createObjectURL(uploadedIconFile) : null,
-    rating_avg: 0,
-    usersCount: 0
+    screenshots: uploadedScreenshots.map(file => URL.createObjectURL(file)),
+    rating_avg: 4.5,
+    usersCount: 1234
   };
   
   // Create preview modal
@@ -1291,23 +1224,57 @@ function showPreviewModal() {
   modal.innerHTML = `
     <div class="preview-modal">
       <div class="preview-header">
-        <h3>App Card Preview</h3>
+        <h3>App Preview</h3>
         <button class="preview-close" type="button">×</button>
       </div>
       <div class="preview-content">
-        <p class="preview-description">This is how your app will appear in the marketplace:</p>
-        <div class="preview-card-container">
-          ${createCardHTML(previewApp)}
+        <div class="preview-tabs">
+          <button class="preview-tab active" data-tab="card">App Card</button>
+          <button class="preview-tab" data-tab="page">App Page</button>
         </div>
+        
+        <div class="preview-tab-content" id="card-preview">
+          <p class="preview-description">This is how your app will appear in the marketplace:</p>
+          <div class="preview-card-container">
+            ${createCardHTML(previewApp)}
+          </div>
+        </div>
+        
+        <div class="preview-tab-content hidden" id="page-preview">
+          <p class="preview-description">This is how your app page will look:</p>
+          <div class="preview-page-container">
+            ${createAppPageHTML(previewApp)}
+          </div>
+        </div>
+        
         <div class="preview-actions">
-          <button class="btn secondary" onclick="closePreviewModal()">Close Preview</button>
-          <button class="btn primary" onclick="closePreviewModal()">Looks Good!</button>
+          <button class="btn primary" onclick="closePreviewModal()">Close Preview</button>
         </div>
       </div>
     </div>
   `;
   
   document.body.appendChild(modal);
+  
+  // Add tab functionality
+  const tabs = modal.querySelectorAll('.preview-tab');
+  const tabContents = modal.querySelectorAll('.preview-tab-content');
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetTab = tab.dataset.tab;
+      
+      // Update active tab
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      // Show corresponding content
+      tabContents.forEach(content => {
+        content.classList.add('hidden');
+      });
+      document.getElementById(`${targetTab}-preview`).classList.remove('hidden');
+    });
+  });
   
   // Add close functionality
   const closeBtn = modal.querySelector('.preview-close');
@@ -1343,6 +1310,77 @@ function closePreviewModal() {
   }
 }
 
+// Create app page HTML for preview
+function createAppPageHTML(app) {
+  const rating = app.rating_avg || 0;
+  const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+  const nicheArray = Array.isArray(app.niche) ? app.niche : [app.niche];
+  const appIcon = nicheArray.includes('whatsapp') ? '💬' : 
+                  nicheArray.includes('mobile') ? '📱' : '🌐';
+  
+  const screenshotsHTML = app.screenshots && app.screenshots.length > 0 
+    ? app.screenshots.map(url => `<img src="${url}" alt="Screenshot" class="app-screenshot" />`).join('')
+    : '<div class="no-screenshots">No screenshots uploaded</div>';
+  
+  return `
+    <div class="app-page-preview">
+      <div class="app-page-header">
+        <div class="app-page-icon">
+          ${app.imageUrl ? `<img src="${app.imageUrl}" alt="${app.title}" />` : `<div class="app-icon-placeholder">${appIcon}</div>`}
+        </div>
+        <div class="app-page-info">
+          <h1 class="app-page-title">${app.title}</h1>
+          <div class="app-page-meta">
+            <span class="app-category">${app.category}</span>
+            <div class="app-rating">
+              <span class="stars">${stars}</span>
+              <span class="rating-number">${rating.toFixed(1)}</span>
+              <span class="users-count">(${app.usersCount} users)</span>
+            </div>
+          </div>
+          <p class="app-page-description">${app.description}</p>
+          <div class="app-page-actions">
+            <a href="${app.link}" class="btn primary" target="_blank">Open App</a>
+            <button class="btn secondary">Add to Favorites</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="app-page-content">
+        <div class="app-details-section">
+          <h3>About this app</h3>
+          <p>${app.longDescription}</p>
+        </div>
+        
+        <div class="app-screenshots-section">
+          <h3>Screenshots</h3>
+          <div class="screenshots-grid">
+            ${screenshotsHTML}
+          </div>
+        </div>
+        
+        <div class="app-info-section">
+          <h3>App Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Platform:</span>
+              <span class="info-value">${app.platform}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Category:</span>
+              <span class="info-value">${app.category}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Type:</span>
+              <span class="info-value">${nicheArray.join(', ')}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // Reset form
 function resetForm() {
   const form = document.getElementById('submitAppForm');
@@ -1358,10 +1396,10 @@ function resetForm() {
   uploadedScreenshots = [];
   
   // Reset icon upload area
-  const iconUploadArea = document.getElementById('iconUploadArea');
+  const iconUploadBtn = document.getElementById('iconUploadBtn');
   const iconPreview = document.getElementById('iconPreview');
-  if (iconUploadArea && iconPreview) {
-    iconUploadArea.classList.remove('hidden');
+  if (iconUploadBtn && iconPreview) {
+    iconUploadBtn.style.display = 'block';
     iconPreview.classList.add('hidden');
   }
   
