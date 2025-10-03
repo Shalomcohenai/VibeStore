@@ -225,7 +225,7 @@ Comprehensive test suite is deployed and ready for use:
 ---
 
 *Deployment completed on: 2025-01-27*  
-*Version: 4.0.8*  
+*Version: 4.0.9*  
 *Status: Production Ready* ✅
 
 ## v4.0.8 - App Icon & UI Fixes (2025-01-27)
@@ -252,3 +252,22 @@ Comprehensive test suite is deployed and ready for use:
 - Long descriptions no longer overflow containers
 - Screenshot gallery works properly with lightbox
 - Consistent rounded square icon design across the platform
+
+## v4.0.9 - Lazy Loading Fix for Cards (2025-01-27)
+
+### 🎯 **Fixed Issues:**
+- **Card Icons**: Fixed app icons not loading in external cards (homepage, results page)
+- **Lazy Loading**: Added missing lazy loading functionality to app.js
+- **Dynamic Cards**: Ensured lazy loading works for dynamically rendered cards
+
+### 🔧 **Technical Changes:**
+- Added `initializeLazyLoading` and `loadImage` functions to app.js
+- Made lazy loading functions globally available
+- Fixed image loading for cards rendered after page load
+- Maintained consistent image loading behavior across all pages
+
+### 📱 **User Experience:**
+- App icons now load properly in all card contexts
+- No more loading spinners stuck in cards
+- Smooth image loading with proper fallbacks
+- Consistent behavior between app detail page and cards

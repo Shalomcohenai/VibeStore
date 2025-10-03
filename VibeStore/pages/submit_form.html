@@ -156,8 +156,22 @@ permalink: /pages/submit-form
               <div class="upload-content">
                 <div class="upload-icon">🎯</div>
                 <h4>Upload App Icon</h4>
-                <p>Square icon, preferably 512x512px</p>
-                <p class="upload-specs">PNG, JPG up to 2MB</p>
+                <p class="upload-description">Your app's main icon that will appear in search results and app cards</p>
+                <div class="upload-recommendations">
+                  <div class="recommendation-item">
+                    <span class="recommendation-icon">📐</span>
+                    <span class="recommendation-text"><strong>Optimal size:</strong> 512×512px (square)</span>
+                  </div>
+                  <div class="recommendation-item">
+                    <span class="recommendation-icon">🎨</span>
+                    <span class="recommendation-text"><strong>Format:</strong> PNG with transparent background</span>
+                  </div>
+                  <div class="recommendation-item">
+                    <span class="recommendation-icon">💾</span>
+                    <span class="recommendation-text"><strong>File size:</strong> Up to 2MB</span>
+                  </div>
+                </div>
+                <p class="upload-specs">Click to upload or drag & drop</p>
               </div>
               <input 
                 type="file" 
@@ -186,8 +200,26 @@ permalink: /pages/submit-form
               <div class="upload-content">
                 <div class="upload-icon">📸</div>
                 <h4>Upload Screenshots</h4>
-                <p>Show your app in action</p>
-                <p class="upload-specs">PNG, JPG up to 5MB each • Max 5 images</p>
+                <p class="upload-description">Show your app in action with screenshots, demos, or feature highlights</p>
+                <div class="upload-recommendations">
+                  <div class="recommendation-item">
+                    <span class="recommendation-icon">📐</span>
+                    <span class="recommendation-text"><strong>Optimal size:</strong> 1920×1080px or similar</span>
+                  </div>
+                  <div class="recommendation-item">
+                    <span class="recommendation-icon">🎨</span>
+                    <span class="recommendation-text"><strong>Format:</strong> PNG or JPG</span>
+                  </div>
+                  <div class="recommendation-item">
+                    <span class="recommendation-icon">💾</span>
+                    <span class="recommendation-text"><strong>File size:</strong> Up to 5MB each</span>
+                  </div>
+                  <div class="recommendation-item">
+                    <span class="recommendation-icon">🔢</span>
+                    <span class="recommendation-text"><strong>Quantity:</strong> Maximum 5 images</span>
+                  </div>
+                </div>
+                <p class="upload-specs">Click to upload or drag & drop multiple files</p>
               </div>
               <input 
                 type="file" 
@@ -272,13 +304,18 @@ permalink: /pages/submit-form
         </ul>
       </div>
 
-      <!-- Submit Button -->
+      <!-- Form Actions -->
       <div class="form-actions">
-        <button class="btn primary submit-btn" type="submit" id="submitBtn">
-          <span class="btn-text">Submit for Review</span>
-          <span class="btn-loading hidden">Submitting...</span>
-        </button>
-        <p class="help">Your submission will be reviewed by our team within 24-48 hours.</p>
+        <div class="action-buttons">
+          <button class="btn secondary preview-btn" type="button" id="previewBtn">
+            <span class="btn-text">👁️ Preview App Card</span>
+          </button>
+          <button class="btn primary submit-btn" type="submit" id="submitBtn">
+            <span class="btn-text">Submit for Review</span>
+            <span class="btn-loading hidden">Submitting...</span>
+          </button>
+        </div>
+        <p class="help">Preview your app card before submitting. Your submission will be reviewed by our team within 24-48 hours.</p>
       </div>
     </form>
   </div>
@@ -318,6 +355,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initializeImageUpload();
   initializeCharacterCounters();
   initializeAppTypeValidation(); // Safe to call - does nothing in dev mode
+  initializePreviewButton();
 });
 
 // Form initialization
@@ -702,15 +740,28 @@ async function handleSubmit(e) {
     let iconUrl = formData.imageUrl;
     let screenshotUrls = [];
     
+    // Show upload progress
+    const totalImages = (uploadedIconFile ? 1 : 0) + uploadedScreenshots.length;
+    if (totalImages > 0) {
+      showUploadProgress(totalImages);
+    }
+    
     if (uploadedIconFile) {
+      updateUploadProgress('Uploading app icon...', 1, totalImages);
       iconUrl = await uploadImage(uploadedIconFile, 'icon');
     }
     
     if (uploadedScreenshots.length > 0) {
-      for (const screenshot of uploadedScreenshots) {
-        const url = await uploadImage(screenshot, 'screenshot');
+      for (let i = 0; i < uploadedScreenshots.length; i++) {
+        updateUploadProgress(`Uploading screenshot ${i + 1} of ${uploadedScreenshots.length}...`, i + 2, totalImages);
+        const url = await uploadImage(uploadedScreenshots[i], 'screenshot');
         screenshotUrls.push(url);
       }
+    }
+    
+    // Hide upload progress
+    if (totalImages > 0) {
+      hideUploadProgress();
     }
 
     // Prepare submission payload
@@ -1151,6 +1202,146 @@ window.closeSuccessModal = function() {
     modal.remove();
   }
 };
+
+// Upload progress functions
+function showUploadProgress(totalImages) {
+  const progressOverlay = document.createElement('div');
+  progressOverlay.className = 'upload-progress-overlay';
+  progressOverlay.innerHTML = `
+    <div class="upload-progress-modal">
+      <div class="upload-progress-icon">📤</div>
+      <h3>Uploading Images</h3>
+      <p class="upload-progress-text">Preparing upload...</p>
+      <div class="upload-progress-bar">
+        <div class="upload-progress-fill" style="width: 0%"></div>
+      </div>
+      <div class="upload-progress-stats">
+        <span class="upload-current">0</span> / <span class="upload-total">${totalImages}</span> images
+      </div>
+      <div class="upload-progress-note">
+        Please don't leave this page while images are uploading...
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(progressOverlay);
+  
+  // Prevent page navigation
+  window.addEventListener('beforeunload', preventNavigation);
+}
+
+function updateUploadProgress(text, current, total) {
+  const progressText = document.querySelector('.upload-progress-text');
+  const progressFill = document.querySelector('.upload-progress-fill');
+  const progressCurrent = document.querySelector('.upload-current');
+  
+  if (progressText) progressText.textContent = text;
+  if (progressCurrent) progressCurrent.textContent = current;
+  
+  const percentage = (current / total) * 100;
+  if (progressFill) {
+    progressFill.style.width = `${percentage}%`;
+  }
+}
+
+function hideUploadProgress() {
+  const progressOverlay = document.querySelector('.upload-progress-overlay');
+  if (progressOverlay) {
+    progressOverlay.remove();
+  }
+  
+  // Re-enable page navigation
+  window.removeEventListener('beforeunload', preventNavigation);
+}
+
+function preventNavigation(e) {
+  e.preventDefault();
+  e.returnValue = 'Images are still uploading. Are you sure you want to leave?';
+  return e.returnValue;
+}
+
+// Preview functionality
+function initializePreviewButton() {
+  const previewBtn = document.getElementById('previewBtn');
+  if (previewBtn) {
+    previewBtn.addEventListener('click', showPreviewModal);
+  }
+}
+
+function showPreviewModal() {
+  // Get form data
+  const formData = getFormData();
+  const selectedTypes = getSelectedAppTypes();
+  
+  // Create preview app object
+  const previewApp = {
+    id: 'preview',
+    title: formData.title || 'Your App Title',
+    description: formData.description || 'Your app description will appear here...',
+    category: formData.category || 'App',
+    niche: selectedTypes.length > 0 ? selectedTypes : ['web'],
+    imageUrl: uploadedIconFile ? URL.createObjectURL(uploadedIconFile) : null,
+    rating_avg: 0,
+    usersCount: 0
+  };
+  
+  // Create preview modal
+  const modal = document.createElement('div');
+  modal.className = 'preview-modal-overlay';
+  modal.innerHTML = `
+    <div class="preview-modal">
+      <div class="preview-header">
+        <h3>App Card Preview</h3>
+        <button class="preview-close" type="button">×</button>
+      </div>
+      <div class="preview-content">
+        <p class="preview-description">This is how your app will appear in the marketplace:</p>
+        <div class="preview-card-container">
+          ${createCardHTML(previewApp)}
+        </div>
+        <div class="preview-actions">
+          <button class="btn secondary" onclick="closePreviewModal()">Close Preview</button>
+          <button class="btn primary" onclick="closePreviewModal()">Looks Good!</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Add close functionality
+  const closeBtn = modal.querySelector('.preview-close');
+  closeBtn.addEventListener('click', closePreviewModal);
+  
+  // Close on overlay click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closePreviewModal();
+    }
+  });
+  
+  // Close on Escape key
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      closePreviewModal();
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+  
+  // Store handler for cleanup
+  modal._escapeHandler = handleEscape;
+}
+
+function closePreviewModal() {
+  const modal = document.querySelector('.preview-modal-overlay');
+  if (modal) {
+    // Remove escape key listener
+    if (modal._escapeHandler) {
+      document.removeEventListener('keydown', modal._escapeHandler);
+    }
+    modal.remove();
+  }
+}
 
 // Reset form
 function resetForm() {
