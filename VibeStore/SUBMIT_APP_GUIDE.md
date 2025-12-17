@@ -138,7 +138,7 @@ The Submit App page (`/pages/submit-form`) is a comprehensive form that allows a
 ## File Structure
 ```
 VibeStore/
-├── pages/submit_form.html          # Main form page
+├── pages/submit-form          # Main form page
 ├── assets/css/main.css             # Styling (lines 946-1280)
 ├── assets/js/firebaseConfig.js     # Firebase configuration
 ├── _includes/header.html           # Navigation links

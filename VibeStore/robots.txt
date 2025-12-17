@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://vibestore-7af1e.firebaseapp.com/sitemap.xml
+
+# Disallow admin and debug pages
+Disallow: /admin/
+Disallow: /debug-*
+Disallow: /test-*
+
+# Allow all other content
+Allow: /blog/
+Allow: /pages/
+Allow: /assets/
+Allow: /img/
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

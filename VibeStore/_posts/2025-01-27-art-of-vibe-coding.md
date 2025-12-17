@@ -5,7 +5,6 @@ slug: "art-of-vibe-coding"
 category: "vibe-coding-fundamentals"
 tags: ["coding", "mindfulness", "productivity", "developer-wellness"]
 author: "VibeStore Team"
-featured_image: "/img/blog/vibe-coding.jpg"
 meta_description: "Discover how to code with positive vibes and create better software through mindful programming practices"
 meta_keywords: ["vibe coding", "mindful programming", "developer wellness", "positive coding"]
 published: true

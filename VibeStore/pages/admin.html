@@ -3,12 +3,10 @@ layout: page
 title: "Admin Panel"
 permalink: /pages/admin/
 ---
-  <h1 class="page-title">Admin Panel</h1>
   <div class="page-content">
     <div class="admin-panel">
   <!-- Admin Header -->
   <div class="admin-header">
-    <h1 class="page-title">Admin Panel</h1>
     <div style="text-align: right; color: var(--c-muted); font-size: 0.9rem; margin-top: 0.5rem;">
       Version: {{ site.version }} - User Analytics Dashboard with Cloud Functions
     </div>
@@ -25,7 +23,7 @@ permalink: /pages/admin/
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
         <div><strong>Version:</strong> {{ site.version }}</div>
         <div><strong>Last Updated:</strong> 2025-01-27</div>
-        <div><strong>Cache Bust:</strong> 20250127-008-v413</div>
+        <div><strong>Cache Bust:</strong> {{ site.data.site.cache_bust }}</div>
         <div><strong>Build Status:</strong> <span style="color: #28a745;">✓ Cloud Functions Enabled</span></div>
       </div>
       <div style="margin-top: 0.5rem;">
@@ -1713,25 +1711,19 @@ async function checkAdminAccess() {
         return;
       }
       
-      // Admin access with manual Claims setup button
-      if (user.email === 'shalom.cohen.111@gmail.com') {
-        console.log('✅ Admin user detected:', user.email);
+      // Check admin claims from Firebase Auth
+      try {
+        const idTokenResult = await user.getIdTokenResult();
+        const isAdmin = idTokenResult.claims.admin === true;
         
-        // Debug: Check token claims
-        user.getIdTokenResult().then(idTokenResult => {
-          console.log('🔍 Token claims:', idTokenResult.claims);
-          console.log('🔍 Admin claim:', idTokenResult.claims.admin);
-          console.log('🔍 Email claim:', idTokenResult.claims.email);
-        });
-        
-        // Admin verified - initialize panel
-        console.log('✅ Admin access granted');
-        initializeAdminPanel();
-      } else {
-        // Not the admin user
-        document.querySelector('.admin-panel').innerHTML = `
-          <div style="text-align: center; padding: 4rem;">
-            <h2>🔒 Access Denied</h2>
+        if (isAdmin) {
+          // Admin verified - initialize panel
+          initializeAdminPanel();
+        } else {
+          // Not admin
+          document.querySelector('.admin-panel').innerHTML = `
+            <div style="text-align: center; padding: 4rem;">
+              <h2>🔒 Access Denied</h2>
             <p>This admin panel is restricted to authorized users only.</p>
             <p style="color: var(--c-muted); font-size: 0.9rem;">Current user: ${user.email}</p>
             <div style="margin-top: 2rem;">
@@ -1740,9 +1732,17 @@ async function checkAdminAccess() {
             </div>
           </div>
         `;
-        return;
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        document.querySelector('.admin-panel').innerHTML = `
+          <div style="text-align: center; padding: 4rem;">
+            <h2>❌ Error</h2>
+            <p>Unable to verify admin access. Please try again.</p>
+            <a href="/" class="btn primary">Go to Homepage</a>
+          </div>
+        `;
       }
-      resolve(true);
     });
   });
 }
@@ -1882,7 +1882,6 @@ async function loadApps(status = 'pending') {
         };
         
         // Debug logging
-        console.log(`📱 App loaded: "${appData.title}" - Firestore ID: ${appData.firestoreId}, Internal ID: ${appData.id}`);
         
         // Filter promoted apps client-side
         if (status === 'promoted') {
@@ -1896,7 +1895,6 @@ async function loadApps(status = 'pending') {
         }
       });
       
-      console.log(`📊 Total apps loaded for status "${status}":`, appsData.length);
       renderApps();
     });
     
@@ -1998,7 +1996,6 @@ async function handleAppAction(event) {
   const appId = event.target.dataset.appId;
   
   // Debug logging to help identify the issue
-  console.log('🔍 Action:', action, 'AppId:', appId, 'Event target:', event.target);
   
   if (!appId) {
     console.error('❌ No appId found in dataset');
@@ -2038,7 +2035,6 @@ async function updateAppStatus(appId, status, reason = null) {
     throw new Error('Status is required to update app status');
   }
   
-  console.log(`🔄 Updating app ${appId} to status: ${status}`);
   
   const { db } = await waitForFirebase();
   const appRef = doc(db, 'apps', appId);
@@ -2053,7 +2049,6 @@ async function updateAppStatus(appId, status, reason = null) {
   }
   
   await updateDoc(appRef, updateData);
-  console.log(`✅ Successfully updated app ${appId} to status: ${status}`);
 }
 
 // Initialize app details modal
@@ -2124,7 +2119,6 @@ function initializeAppDetailsModal() {
       const appId = appItem.dataset.appId;
       
       // Debug logging
-      console.log('🔍 Clicked app item, AppId:', appId, 'AppItem:', appItem);
       
       if (appId) {
         openAppDetailsModal(appId);
@@ -2144,7 +2138,6 @@ async function openAppDetailsModal(appId) {
     return;
   }
   
-  console.log(`🔍 Opening details modal for app: ${appId}`);
   currentAppForDetails = appId;
   
   // Find the app data using firestoreId
@@ -2275,7 +2268,6 @@ async function saveAppChanges(closeModal = true) {
 
 // Approve app from modal
 async function approveAppFromModal() {
-  console.log('🔍 approveAppFromModal called, currentAppForDetails:', currentAppForDetails);
   
   if (!currentAppForDetails) {
     console.error('❌ currentAppForDetails is null/undefined in approveAppFromModal');
@@ -2307,7 +2299,6 @@ async function approveAppFromModal() {
 
 // Reject app from modal
 async function rejectAppFromModal() {
-  console.log('🔍 rejectAppFromModal called, currentAppForDetails:', currentAppForDetails);
   
   if (!currentAppForDetails) {
     console.error('❌ currentAppForDetails is null/undefined in rejectAppFromModal');
@@ -2443,7 +2434,6 @@ async function savePromotions() {
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving...';
     
-    console.log('🔍 Attempting to update app with Firestore ID:', currentAppForPromotion);
     
     const { db } = await waitForFirebase();
     const appRef = doc(db, 'apps', currentAppForPromotion);
@@ -2456,7 +2446,6 @@ async function savePromotions() {
       throw new Error(`Document does not exist: ${currentAppForPromotion}. Please refresh the page and try again.`);
     }
     
-    console.log('✅ Document exists, proceeding with update...');
     
     // Get current states
     const isFeaturedActive = document.getElementById('featured-switch').classList.contains('active');
@@ -2592,7 +2581,6 @@ async function confirmDeleteApp() {
       appId: currentAppForDeletion 
     });
     
-    console.log('Delete result:', result.data);
     
     // Close modal and refresh data
     closeDeleteConfirmationModal();
@@ -2632,7 +2620,6 @@ async function loadAndRenderAllStats() {
   try {
     const { db } = await waitForFirebase();
     
-    console.log('Loading all statistics from Firestore...');
     
     // Fetch all collections in parallel
     const [appsSnap, usersSnap, reviewsSnap, interactionsSnap, newsletterSnap, reportsSnap] = await Promise.all([
@@ -2644,13 +2631,6 @@ async function loadAndRenderAllStats() {
       getDocs(collection(db, 'reports')).catch(() => ({ docs: [] }))
     ]);
     
-    console.log('📊 Firebase Data Loaded:');
-    console.log('  Apps:', appsSnap.size);
-    console.log('  Users:', usersSnap.size);
-    console.log('  Reviews:', reviewsSnap.size);
-    console.log('  Interactions:', interactionsSnap.size);
-    console.log('  Newsletter:', newsletterSnap.docs ? newsletterSnap.docs.length : 0);
-    console.log('  Reports:', reportsSnap.docs ? reportsSnap.docs.length : 0);
     
     // Calculate app statistics
     let appStats = {
@@ -2753,7 +2733,6 @@ async function loadAndRenderAllStats() {
     // Render all stats
     renderAllStats();
     
-    console.log('✅ All statistics loaded successfully', adminStats);
     
   } catch (error) {
     console.error('Error loading statistics:', error);
@@ -2954,7 +2933,6 @@ async function loadAnalyticsData() {
   try {
     const { db } = await waitForFirebase();
     
-    console.log('Loading analytics data...');
     
     // Get time filter
     const timeFilter = document.getElementById('analytics-time-filter').value;
@@ -3012,7 +2990,6 @@ async function loadAnalyticsData() {
     // Render analytics
     renderAnalyticsData();
     
-    console.log('✅ Analytics data loaded:', analyticsData);
     
   } catch (error) {
     console.error('Error loading analytics data:', error);
@@ -3323,21 +3300,4 @@ checkAdminAccess();
 </section>
 
     </main>
-    <footer class="site-footer">
-  <div class="wrap">
-    <div class="footer-main">
-      <p class="muted">© VibeStore — Find a ready-made app for your problem</p>
-      <p class="version-info">v6.11 | Built: 2025-01-27 22:30</p>
-    </div>
-    <nav class="foot-nav">
-      <a href="/pages/newsletter">Newsletter</a>
-      <a href="/pages/guidelines">Guidelines</a>
-      <a href="/pages/terms">Terms</a>
-      <a href="/pages/privacy">Privacy</a>
-      <a href="/pages/report">Report</a>
-      <a href="/pages/blog">Blog</a>
-      <a href="/pages/submit_form.html">Submit App</a>
-    </nav>
-  </div>
-</footer>
 

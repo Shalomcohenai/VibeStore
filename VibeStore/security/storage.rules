@@ -10,7 +10,7 @@ service firebase.storage {
     }
 
     function isAdmin() {
-      return isAuthed() && (request.auth.token.admin == true || request.auth.token.email == 'shalom.cohen.111@gmail.com');
+      return isAuthed() && request.auth.token.admin == true;
     }
 
     function isValidImage() {

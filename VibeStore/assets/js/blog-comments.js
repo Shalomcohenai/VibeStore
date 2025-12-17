@@ -26,15 +26,14 @@ class VibeStoreComments {
           attempts++;
         }
       }
-      
+
       this.blogId = this.extractBlogId();
       this.comments = [];
-      
+
       await this.loadComments();
       this.renderComments();
       this.setupEventListeners();
-      
-      console.log('Blog comments initialized for:', this.blogId);
+
     } catch (error) {
       console.error('Error initializing comments:', error);
       this.showError('Failed to load comments. Please try again later.');
@@ -44,7 +43,6 @@ class VibeStoreComments {
   async loadComments() {
     try {
       if (!window.$fb || !window.$fb.db) {
-        console.log('Firebase not available, using static comments');
         this.loadStaticComments();
         return;
       }
@@ -72,7 +70,6 @@ class VibeStoreComments {
         };
       });
 
-      console.log(`Loaded ${this.comments.length} comments for blog ${this.blogId}`);
     } catch (error) {
       console.error('Error loading comments from Firestore:', error);
       this.loadStaticComments();
@@ -202,11 +199,6 @@ class VibeStoreComments {
 
     // Check if user is authenticated
     if (!this.isUserAuthenticated()) {
-      console.log('User not authenticated. Firebase auth state:', {
-        $fb: !!window.$fb,
-        auth: !!(window.$fb && window.$fb.auth),
-        currentUser: window.$fb && window.$fb.auth ? window.$fb.auth.currentUser : null
-      });
       this.showError('Please sign in to post a comment.');
       return;
     }
@@ -231,20 +223,19 @@ class VibeStoreComments {
         };
 
         const docRef = await window.$fb.storeMod.addDoc(window.$fb.storeMod.collection(db, 'blog_comments'), commentData);
-        
+
         // Add to local comments array
         const newComment = {
           id: docRef.id,
           ...commentData,
           created_at: new Date().toISOString()
         };
-        
+
         this.comments.unshift(newComment);
         this.renderComments();
         contentTextarea.value = '';
         this.showSuccess('Comment posted successfully!');
-        
-        console.log('Comment saved to Firestore:', docRef.id);
+
       } else {
         // Fallback to local storage if Firestore is not available
         const newComment = {
@@ -277,8 +268,8 @@ class VibeStoreComments {
   isUserAuthenticated() {
     // Check if user is logged in
     try {
-      return window.$fb && 
-             window.$fb.auth && 
+      return window.$fb &&
+             window.$fb.auth &&
              window.$fb.auth.currentUser !== null;
     } catch (error) {
       console.error('Error checking authentication:', error);
@@ -334,7 +325,7 @@ class VibeStoreComments {
       margin: 1rem 0;
       border-radius: 8px;
       font-weight: 500;
-      ${type === 'error' 
+      ${type === 'error'
         ? 'background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;'
         : 'background: #d1fae5; color: #059669; border: 1px solid #a7f3d0;'
       }
@@ -343,7 +334,7 @@ class VibeStoreComments {
     const commentForm = document.getElementById('comment-form');
     if (commentForm) {
       commentForm.parentNode.insertBefore(messageDiv, commentForm);
-      
+
       // Auto-remove after 5 seconds
       setTimeout(() => {
         if (messageDiv.parentNode) {

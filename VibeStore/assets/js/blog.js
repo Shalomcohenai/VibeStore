@@ -25,7 +25,7 @@ class VibeStoreBlog {
   showLoadingSpinner() {
     const container = document.getElementById('blog-posts-container');
     if (!container) return;
-    
+
     container.innerHTML = `
       <div class="loading-spinner">
         <div class="spinner"></div>
@@ -89,7 +89,7 @@ class VibeStoreBlog {
       // Load both Firestore posts and static Jekyll posts
       const firestorePosts = await this.loadFirestorePosts();
       const staticPosts = this.getStaticPosts();
-      
+
       // Combine and sort by date
       this.posts = [...firestorePosts, ...staticPosts].sort((a, b) => {
         const dateA = new Date(a.published_at || a.publishDate);
@@ -97,7 +97,6 @@ class VibeStoreBlog {
         return dateB - dateA;
       });
 
-      console.log(`Loaded ${this.posts.length} posts (${firestorePosts.length} from Firestore, ${staticPosts.length} static)`);
     } catch (error) {
       console.error('Error loading posts:', error);
       this.loadStaticPosts();
@@ -114,24 +113,23 @@ class VibeStoreBlog {
         // Fallback: wait for window.$fb to be available
         fb = await this.waitForFirebaseFallback();
       }
-      
+
       if (!fb || !fb.db || !fb.storeMod) {
-        console.log('Firestore not available');
         return [];
       }
 
       // Use Firebase v9+ modular API
       const { collection, query, where, getDocs, orderBy } = fb.storeMod;
-      
+
       const postsRef = collection(fb.db, 'blog_posts');
       const q = query(
-        postsRef, 
+        postsRef,
         where('published', '==', true),
         orderBy('publishDate', 'desc')
       );
-      
+
       const snapshot = await getDocs(q);
-      
+
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -167,7 +165,6 @@ class VibeStoreBlog {
         category: "vibe-coding-fundamentals",
         excerpt: "Learn how to transform your coding experience by embracing positive energy and mindful programming practices that lead to better code and happier developers.",
         author: "VibeStore Team",
-        featured_image: "/img/blog/vibe-coding.jpg",
         published_at: "2025-01-27",
         tags: ["coding", "mindfulness", "productivity", "developer-wellness"],
         url: "/vibe-coding-fundamentals/2025/01/27/art-of-vibe-coding.html",
@@ -180,7 +177,6 @@ class VibeStoreBlog {
         category: "vibe-tools-workflow",
         excerpt: "From mindfulness apps to powerful development tools, here are the essential apps that every vibe coder needs in their toolkit.",
         author: "VibeStore Team",
-        featured_image: "/img/blog/essential-apps.jpg",
         published_at: "2025-01-26",
         tags: ["productivity", "apps", "developer-tools", "mindfulness"],
         url: "/vibe-tools-workflow/2025/01/26/essential-apps-vibe-coder.html",
@@ -193,7 +189,6 @@ class VibeStoreBlog {
         category: "positive-tech-culture",
         excerpt: "Discover how vibe coding principles can transform your development team culture, creating an environment where everyone thrives.",
         author: "VibeStore Team",
-        featured_image: "/img/blog/developer-culture.jpg",
         published_at: "2025-01-25",
         tags: ["team-culture", "leadership", "collaboration", "workplace-wellness"],
         url: "/positive-tech-culture/2025/01/25/positive-developer-culture.html",
@@ -207,7 +202,7 @@ class VibeStoreBlog {
     if (post.source === 'firestore') {
       return `/blog/post/?id=${post.id}`;
     }
-    
+
     // Generate URL based on Jekyll's structure
     const date = new Date(post.publishDate || post.published_at);
     const year = date.getFullYear();
@@ -226,7 +221,6 @@ class VibeStoreBlog {
         category: "vibe-coding-fundamentals",
         excerpt: "Learn how to transform your coding experience by embracing positive energy and mindful programming practices that lead to better code and happier developers.",
         author: "VibeStore Team",
-        featured_image: "/img/blog/vibe-coding.jpg",
         published_at: "2025-01-27",
         tags: ["coding", "mindfulness", "productivity", "developer-wellness"],
         url: "/vibe-coding-fundamentals/2025/01/27/art-of-vibe-coding.html"
@@ -238,7 +232,6 @@ class VibeStoreBlog {
         category: "vibe-tools-workflow",
         excerpt: "From mindfulness apps to powerful development tools, here are the essential apps that every vibe coder needs in their toolkit.",
         author: "VibeStore Team",
-        featured_image: "/img/blog/essential-apps.jpg",
         published_at: "2025-01-26",
         tags: ["productivity", "apps", "developer-tools", "mindfulness"],
         url: "/vibe-tools-workflow/2025/01/26/essential-apps-vibe-coder.html"
@@ -250,7 +243,6 @@ class VibeStoreBlog {
         category: "positive-tech-culture",
         excerpt: "Discover how vibe coding principles can transform your development team culture, creating an environment where everyone thrives.",
         author: "VibeStore Team",
-        featured_image: "/img/blog/developer-culture.jpg",
         published_at: "2025-01-25",
         tags: ["team-culture", "leadership", "collaboration", "workplace-wellness"],
         url: "/positive-tech-culture/2025/01/25/positive-developer-culture.html"
@@ -262,7 +254,7 @@ class VibeStoreBlog {
     const container = document.getElementById('blog-posts-container');
     if (!container) return;
 
-    const filteredPosts = this.currentCategory 
+    const filteredPosts = this.currentCategory
       ? this.posts.filter(post => post.category === this.currentCategory)
       : this.posts;
 
@@ -282,13 +274,11 @@ class VibeStoreBlog {
   createPostCard(post) {
     const category = this.categories.find(cat => cat.id === post.category);
     const categoryColor = category ? category.color : '#6366f1';
-    const featuredImage = post.featured_image || post.featuredImage || '/img/placeholder.png';
     const publishDate = post.published_at || post.publishDate;
-    
+
     return `
       <article class="post-card">
         <a href="${post.url}" class="post-card-link">
-          <img src="${featuredImage}" alt="${post.title}" class="post-card-image" onerror="this.src='/img/placeholder.png'">
           <div class="post-card-content">
             <div class="post-card-meta">
               <span class="post-card-category" style="background-color: ${categoryColor}">
@@ -362,7 +352,7 @@ class VibeStoreBlog {
       return;
     }
 
-    const filteredPosts = this.posts.filter(post => 
+    const filteredPosts = this.posts.filter(post =>
       post.title.toLowerCase().includes(query.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(query.toLowerCase()) ||
       post.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))

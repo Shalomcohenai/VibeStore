@@ -3,15 +3,15 @@
  * Allows admins to create, preview, and publish blog posts to Firestore
  */
 
-import { 
-  collection, 
-  addDoc, 
+import {
+  collection,
+  addDoc,
   updateDoc,
   doc,
   serverTimestamp,
   query,
   where,
-  getDocs 
+  getDocs
 } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js';
 
@@ -77,12 +77,12 @@ async function checkAdminAccess() {
   const { auth: fbAuth, db: fbDb } = await waitForFirebase();
   auth = fbAuth;
   db = fbDb;
-  
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
       isAdmin = await checkIfAdmin(user.uid);
-      
+
       if (isAdmin) {
         adminCheckMsg.style.display = 'none';
         editorForm.style.display = 'block';
@@ -104,8 +104,14 @@ async function checkIfAdmin(userId) {
   try {
     // Simple email-based admin check
     const user = auth.currentUser;
-    if (user && user.email === 'shalom.cohen.111@gmail.com') {
-      return true;
+    if (user) {
+      try {
+        const idTokenResult = await user.getIdTokenResult();
+        return idTokenResult.claims.admin === true;
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
     }
     return false;
   } catch (error) {
@@ -134,7 +140,7 @@ function setupEventListeners() {
   metaDescInput.addEventListener('input', () => {
     const counter = document.getElementById('metaDescCounter');
     counter.textContent = metaDescInput.value.length;
-    
+
     if (metaDescInput.value.length > 160) {
       counter.style.color = '#ef4444';
     } else if (metaDescInput.value.length > 150) {
@@ -149,7 +155,7 @@ function setupEventListeners() {
     const imageUrl = featuredImageInput.value;
     const preview = document.getElementById('imagePreview');
     const container = document.getElementById('imagePreviewContainer');
-    
+
     if (imageUrl) {
       preview.src = imageUrl;
       container.style.display = 'block';
@@ -257,9 +263,9 @@ function insertMarkdown(action) {
       break;
   }
 
-  textarea.value = 
-    textarea.value.substring(0, start) + 
-    replacement + 
+  textarea.value =
+    textarea.value.substring(0, start) +
+    replacement +
     textarea.value.substring(end);
 
   // Set cursor position
@@ -362,7 +368,7 @@ async function savePost(publish) {
     button.textContent = publish ? '🚀 Publishing...' : '💾 Saving...';
 
     const postData = getFormData(publish);
-    
+
     // Add to Firestore
     const docRef = await addDoc(collection(db, 'blog_posts'), postData);
     currentPostId = docRef.id;
@@ -371,17 +377,17 @@ async function savePost(publish) {
     button.textContent = originalText;
 
     // Show success message
-    const message = publish 
+    const message = publish
       ? '✅ Blog post published successfully!'
       : '💾 Blog post saved as draft!';
-    
+
     document.getElementById('successMessage').textContent = message;
     successModal.style.display = 'flex';
 
   } catch (error) {
     console.error('Error saving blog post:', error);
     alert('Error saving blog post: ' + error.message);
-    
+
     const button = publish ? publishBtn : saveDraftBtn;
     button.disabled = false;
     button.textContent = publish ? '🚀 Publish' : '💾 Save Draft';

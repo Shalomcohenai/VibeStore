@@ -43,5 +43,4 @@ const firebaseConfig = {
   // Global auth state management handled in app.js
   // This ensures consistent behavior across all pages
 
-  console.log('Firebase initialized (client). Fill firebaseConfig with your keys.');
 })();

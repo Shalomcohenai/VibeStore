@@ -5,7 +5,6 @@ slug: "essential-apps-vibe-coder"
 category: "vibe-tools-workflow"
 tags: ["productivity", "apps", "developer-tools", "mindfulness"]
 author: "VibeStore Team"
-featured_image: "/img/blog/essential-apps.jpg"
 meta_description: "Discover the must-have apps that will enhance your coding experience and boost your productivity as a developer"
 meta_keywords: ["developer apps", "productivity tools", "coding apps", "developer productivity"]
 published: true

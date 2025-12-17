@@ -10,20 +10,20 @@ function searchApps(apps, searchQuery, options = {}) {
     if (!searchQuery || searchQuery.trim() === '') {
       return apps;
     }
-    
+
     const query = searchQuery.toLowerCase().trim();
     const searchWords = query.split(/\s+/).filter(word => word.length > 0);
-    
+
     if (searchWords.length === 0) {
       return apps;
     }
-    
+
     // Score each app based on search matches
     const scoredApps = apps.map(app => {
       const score = calculateSearchScore(app, searchWords, options);
       return { ...app, searchScore: score };
     }).filter(app => app.searchScore > 0); // Only return apps with matches
-    
+
     // Sort by score (highest first), then by rating
     scoredApps.sort((a, b) => {
       if (b.searchScore !== a.searchScore) {
@@ -31,7 +31,7 @@ function searchApps(apps, searchQuery, options = {}) {
       }
       return (b.rating_avg || 0) - (a.rating_avg || 0);
     });
-    
+
     return scoredApps;
   } catch (error) {
     console.error('Error in search engine:', error);
@@ -42,19 +42,19 @@ function searchApps(apps, searchQuery, options = {}) {
 // Calculate search score for an app
 function calculateSearchScore(app, searchWords, options = {}) {
   let totalScore = 0;
-  
+
   const title = (app.title || '').toLowerCase();
   const description = (app.description || '').toLowerCase();
   const category = (app.category || '').toLowerCase();
   const tags = (app.tags || []).join(' ').toLowerCase();
-  
+
   // Scoring weights (can be customized via options)
   const TITLE_WEIGHT = options.titleWeight || 10;
   const DESCRIPTION_WEIGHT = options.descriptionWeight || 5;
   const CATEGORY_WEIGHT = options.categoryWeight || 8;
   const TAGS_WEIGHT = options.tagsWeight || 6;
   const EXACT_MATCH_BONUS = options.exactMatchBonus || 2;
-  
+
   searchWords.forEach(word => {
     // Title matches
     const titleMatches = countMatches(title, word);
@@ -65,7 +65,7 @@ function calculateSearchScore(app, searchWords, options = {}) {
         totalScore += EXACT_MATCH_BONUS;
       }
     }
-    
+
     // Description matches
     const descMatches = countMatches(description, word);
     if (descMatches > 0) {
@@ -74,7 +74,7 @@ function calculateSearchScore(app, searchWords, options = {}) {
         totalScore += EXACT_MATCH_BONUS;
       }
     }
-    
+
     // Category matches
     const categoryMatches = countMatches(category, word);
     if (categoryMatches > 0) {
@@ -83,7 +83,7 @@ function calculateSearchScore(app, searchWords, options = {}) {
         totalScore += EXACT_MATCH_BONUS;
       }
     }
-    
+
     // Tags matches
     const tagsMatches = countMatches(tags, word);
     if (tagsMatches > 0) {
@@ -93,14 +93,14 @@ function calculateSearchScore(app, searchWords, options = {}) {
       }
     }
   });
-  
+
   return totalScore;
 }
 
 // Count how many times a word appears in text
 function countMatches(text, word) {
   if (!text || !word) return 0;
-  
+
   // Simple word boundary matching
   const regex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
   const matches = text.match(regex);
@@ -110,9 +110,9 @@ function countMatches(text, word) {
 // Check if word appears as exact match (word boundaries)
 function isExactWordMatch(text, word) {
   if (!text || !word) return false;
-  
-  return text.includes(` ${word} `) || 
-         text.startsWith(`${word} `) || 
+
+  return text.includes(` ${word} `) ||
+         text.startsWith(`${word} `) ||
          text.endsWith(` ${word}`) ||
          text === word;
 }
@@ -135,10 +135,10 @@ function filterByScore(scoredApps, minScore = 1) {
 // Get search suggestions based on app data
 function getSearchSuggestions(apps, partialQuery, maxSuggestions = 5) {
   if (!partialQuery || partialQuery.length < 2) return [];
-  
+
   const query = partialQuery.toLowerCase();
   const suggestions = new Set();
-  
+
   apps.forEach(app => {
     // Add title words that start with query
     const titleWords = (app.title || '').toLowerCase().split(/\s+/);
@@ -147,13 +147,13 @@ function getSearchSuggestions(apps, partialQuery, maxSuggestions = 5) {
         suggestions.add(word);
       }
     });
-    
+
     // Add category if it starts with query
     const category = (app.category || '').toLowerCase();
     if (category.startsWith(query)) {
       suggestions.add(category);
     }
-    
+
     // Add tag words that start with query
     const tags = app.tags || [];
     tags.forEach(tag => {
@@ -163,7 +163,7 @@ function getSearchSuggestions(apps, partialQuery, maxSuggestions = 5) {
       }
     });
   });
-  
+
   return Array.from(suggestions).slice(0, maxSuggestions);
 }
 
@@ -178,4 +178,3 @@ window.VibeStoreSearchEngine = {
   getSearchSuggestions
 };
 
-console.log('✅ VibeStore Search Engine loaded');

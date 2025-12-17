@@ -345,11 +345,11 @@ VibeStore is a curated platform for discovering quality applications. We welcome
 <ul>
 <li><strong>General Questions:</strong> vibeappstore@gmail.com</li>
 <li><strong>Report Issues:</strong> Use our <a href="/pages/report">Report Page</a></li>
-<li><strong>Submission Help:</strong> Check our <a href="/pages/submit_form.html">Submit App</a> page</li>
+<li><strong>Submission Help:</strong> Check our <a href="/pages/submit-form">Submit App</a> page</li>
 </ul>
 
 <h3>Ready to Submit?</h3>
-<p><a href="/pages/submit_form.html">Submit Your App Now →</a></p>
+<p><a href="/pages/submit-form">Submit Your App Now →</a></p>
 
 <hr>
 

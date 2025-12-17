@@ -333,6 +333,28 @@ try {
     setTimeout(() => window.location.href = '/', 2000);
   };
 
+  // Show email verification message
+  const showEmailVerificationMessage = (email) => {
+    signinCard.style.display = 'none';
+    signupCard.style.display = 'none';
+    
+    // Create verification message
+    const verificationMessage = document.createElement('div');
+    verificationMessage.className = 'auth-message';
+    verificationMessage.style.display = 'block';
+    verificationMessage.innerHTML = `
+      <div class="message-content success">
+        <h3>🎉 Registration Completed Successfully!</h3>
+        <p>We sent a verification email to: <strong>${email}</strong></p>
+        <p>Please check your email and click the link to verify your account.</p>
+        <p><small>Didn't receive the email? Check your spam folder.</small></p>
+        <button class="auth-btn secondary" onclick="location.reload()">Back to Sign In</button>
+      </div>
+    `;
+    
+    authSuccess.parentNode.insertBefore(verificationMessage, authSuccess);
+  };
+
   // Sign in form
   document.getElementById('signin-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -340,7 +362,22 @@ try {
     const password = document.getElementById('signin-password').value;
     
     try {
-      await authMod.signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await authMod.signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // 🔥 Firebase Built-in - Check if email verification is needed
+      if (!user.emailVerified) {
+        // Unverified user - offer to send verification email
+        const shouldSendVerification = confirm(
+          'Your account is not verified. Would you like us to send a verification email to: ' + email + '?'
+        );
+        
+        if (shouldSendVerification) {
+          await authMod.sendEmailVerification(user);
+          alert('✅ Verification email sent to: ' + email);
+        }
+      }
+      
       showSuccess();
     } catch (error) {
       alert('Sign in failed: ' + error.message);
@@ -357,7 +394,30 @@ try {
     try {
       const userCredential = await authMod.createUserWithEmailAndPassword(auth, email, password);
       await authMod.updateProfile(userCredential.user, { displayName: name });
-      showSuccess();
+      
+      // 🔥 Firebase Built-in - Send verification email
+      await authMod.sendEmailVerification(userCredential.user);
+      
+      // 🔥 Firebase v9+ Modular API - Save user data to Firestore
+      const { db, storeMod } = window.$fb;
+      const { doc, setDoc, serverTimestamp } = storeMod;
+      
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        displayName: name,
+        email: email,
+        emailVerified: false, // ❌ Email verification required
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
+        profileComplete: false,
+        authProvider: 'email', // 📧 Regular registration
+        preferences: {
+          newsletter: false,
+          notifications: true
+        }
+      });
+      
+      // Show special message for email verification
+      showEmailVerificationMessage(email);
     } catch (error) {
       alert('Sign up failed: ' + error.message);
     }
@@ -367,7 +427,40 @@ try {
   const handleGoogleSignIn = async () => {
     try {
       const provider = new authMod.GoogleAuthProvider();
-      await authMod.signInWithPopup(auth, provider);
+      const result = await authMod.signInWithPopup(auth, provider);
+      
+      // 🔥 Firebase v9+ Modular API - Google already verifies email, but we'll save data to Firestore
+      const { db, storeMod } = window.$fb;
+      const { collection, doc, getDoc, setDoc, updateDoc, serverTimestamp } = storeMod;
+      
+      const userRef = doc(db, 'users', result.user.uid);
+      const userDoc = await getDoc(userRef);
+      
+      if (!userDoc.exists()) {
+        // New user - save data
+        await setDoc(userRef, {
+          displayName: result.user.displayName || '',
+          email: result.user.email || '',
+          emailVerified: true, // ✅ Google already verifies
+          createdAt: serverTimestamp(),
+          lastLoginAt: serverTimestamp(),
+          loginCount: 1,
+          profileComplete: false,
+          authProvider: 'google',
+          preferences: {
+            newsletter: false,
+            notifications: true
+          }
+        });
+      } else {
+        // Existing user - update data
+        await updateDoc(userRef, {
+          lastLoginAt: serverTimestamp(),
+          loginCount: (userDoc.data().loginCount || 0) + 1,
+          emailVerified: true // ✅ Google already verifies
+        });
+      }
+      
       showSuccess();
     } catch (error) {
       alert('Google sign in failed: ' + error.message);
@@ -376,15 +469,67 @@ try {
 
   document.getElementById('google-signin-btn')?.addEventListener('click', handleGoogleSignIn);
 
+  // 🔥 Firebase Built-in - Password reset
+  document.getElementById('forgot-password')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('signin-email').value || prompt('Enter your email address:');
+    if (email) {
+      try {
+        // Firebase Built-in - Send password reset email
+        await authMod.sendPasswordResetEmail(auth, email);
+        alert('✅ Password reset email sent to: ' + email + '\nPlease check your email inbox.');
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    }
+  });
+
   // Check if user is already signed in
-  authMod.onAuthStateChanged(auth, (user) => {
+  authMod.onAuthStateChanged(auth, async (user) => {
     if (user && window.location.pathname.includes('/pages/auth')) {
       // User is already signed in, redirect to home
       window.location.href = '/';
     }
+    
+    // 🔥 Firebase v9+ Modular API - Enhanced user tracking
+    if (user) {
+      try {
+        const { db, storeMod } = window.$fb;
+        const { doc, getDoc, updateDoc, setDoc, serverTimestamp } = storeMod;
+        
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
+        
+        if (userDoc.exists()) {
+          // Update last login time
+          await updateDoc(userRef, {
+            lastLoginAt: serverTimestamp(),
+            isOnline: true,
+            loginCount: (userDoc.data().loginCount || 0) + 1
+          });
+        } else {
+          // Create new user if doesn't exist
+          await setDoc(userRef, {
+            displayName: user.displayName || '',
+            email: user.email || '',
+            emailVerified: user.emailVerified || false,
+            createdAt: serverTimestamp(),
+            lastLoginAt: serverTimestamp(),
+            isOnline: true,
+            loginCount: 1,
+            profileComplete: false,
+            preferences: {
+              newsletter: false,
+              notifications: true
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error updating user data:', error);
+      }
+    }
   });
 
 } catch (error) {
-  console.log('Firebase not ready yet, authentication will be limited');
 }
 </script>

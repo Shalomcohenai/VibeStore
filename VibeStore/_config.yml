@@ -2,13 +2,34 @@ title: VibeAppStore
 tagline: Find a ready-made app for your problem
 description: Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.
 baseurl: ""
-url: ""
+url: "https://vibestore-7af1e.firebaseapp.com"
 theme: minima
 markdown: kramdown
-version: "v6.12"
+version: "9.2"
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+
+# SEO Settings
+sitemap:
+  exclude:
+    - /admin/
+    - /debug-*
+    - /test-*
+    - /_site/
+    - /vendor/
+    - /node_modules/
+  include:
+    - /
+    - /blog/
+    - /pages/
+
+# Feed settings
+feed:
+  posts_limit: 20
+  collections:
+    posts:
+      output: true
 defaults:
   - scope:
       path: ""

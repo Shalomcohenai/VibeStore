@@ -47,49 +47,13 @@ function assertAdmin(context){
   }
 }
 
-/**
- * ONE-TIME FUNCTION: Grant admin privileges to Shalom
- * Call this once, then remove it from the code
- */
-export const grantAdminToShalom = onRequest(
-  { cors: true },
-  async (req, res) => {
-    try {
-      const email = 'shalom.cohen.111@gmail.com';
-      
-      // Get user by email
-      const userRecord = await admin.auth().getUserByEmail(email);
-      console.log('Found user:', userRecord.uid);
-      
-      // Set admin claims
-      await admin.auth().setCustomUserClaims(userRecord.uid, { 
-        admin: true,
-        role: 'admin',
-        grantedAt: new Date().toISOString()
-      });
-      
-      res.json({
-        success: true,
-        message: `Admin privileges granted to ${email}`,
-        uid: userRecord.uid,
-        claims: { admin: true, role: 'admin' },
-        note: 'User must sign out and sign back in for changes to take effect'
-      });
-      
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
-  }
-);
+// Debug function removed for production security
 
 /**
  * updateAppUsersCount (callable)
  * - Counts unique users who clicked on an app from interactions collection
- * - Updates the app's usersCount field
+ * - Counts unique sessions from anonymous_clicks collection
+ * - Updates the app's usersCount field with combined count
  */
 export const updateAppUsersCount = onCall(
   { cors: true },
@@ -98,11 +62,10 @@ export const updateAppUsersCount = onCall(
     if (!appId) throw new HttpsError('invalid-argument', 'Missing appId');
 
     try {
-      // Count unique users who clicked on this app
+      // Count unique authenticated users who clicked on this app
       const interactionsQuery = db.collection('interactions').where('appId', '==', String(appId));
       const interactionsSnap = await interactionsQuery.get();
       
-      // Count unique UIDs
       const uniqueUsers = new Set();
       interactionsSnap.docs.forEach(doc => {
         const data = doc.data();
@@ -111,17 +74,34 @@ export const updateAppUsersCount = onCall(
         }
       });
       
-      const usersCount = uniqueUsers.size;
+      // Count unique anonymous sessions who clicked on this app
+      const anonymousQuery = db.collection('anonymous_clicks').where('appId', '==', String(appId));
+      const anonymousSnap = await anonymousQuery.get();
       
-      // Update the app with the users count
+      const uniqueSessions = new Set();
+      anonymousSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.sessionId) {
+          uniqueSessions.add(data.sessionId);
+        }
+      });
+      
+      const totalUsersCount = uniqueUsers.size + uniqueSessions.size;
+      
+      // Update the app with the combined users count
       const appRef = db.collection('apps').doc(String(appId));
       await appRef.update({ 
-        usersCount: usersCount,
+        usersCount: totalUsersCount,
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       });
       
-      logger.info(`Updated users count for app ${appId}: ${usersCount} users`);
-      return { ok: true, usersCount };
+      logger.info(`Updated users count for app ${appId}: ${totalUsersCount} total users (${uniqueUsers.size} authenticated + ${uniqueSessions.size} anonymous)`);
+      return { 
+        ok: true, 
+        usersCount: totalUsersCount,
+        authenticatedUsers: uniqueUsers.size,
+        anonymousSessions: uniqueSessions.size
+      };
       
     } catch (error) {
       logger.error('Error updating app users count:', error);
@@ -132,7 +112,7 @@ export const updateAppUsersCount = onCall(
 
 /**
  * updateAllAppsUsersCount (callable, admin only)
- * - Updates users count for all approved apps
+ * - Updates users count for all approved apps (combined authenticated + anonymous)
  * - Useful for batch updates
  */
 export const updateAllAppsUsersCount = onCall(
@@ -146,9 +126,8 @@ export const updateAllAppsUsersCount = onCall(
       
       const updatePromises = appsSnap.docs.map(async (appDoc) => {
         const appId = appDoc.id;
-        const appData = appDoc.data();
         
-        // Count unique users for this app
+        // Count unique authenticated users for this app
         const interactionsQuery = db.collection('interactions').where('appId', '==', appId);
         const interactionsSnap = await interactionsQuery.get();
         
@@ -160,18 +139,30 @@ export const updateAllAppsUsersCount = onCall(
           }
         });
         
-        const usersCount = uniqueUsers.size;
+        // Count unique anonymous sessions for this app
+        const anonymousQuery = db.collection('anonymous_clicks').where('appId', '==', appId);
+        const anonymousSnap = await anonymousQuery.get();
         
-        // Update the app
+        const uniqueSessions = new Set();
+        anonymousSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.sessionId) {
+            uniqueSessions.add(data.sessionId);
+          }
+        });
+        
+        const totalUsersCount = uniqueUsers.size + uniqueSessions.size;
+        
+        // Update the app with combined count
         return appDoc.ref.update({ 
-          usersCount: usersCount,
+          usersCount: totalUsersCount,
           updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
       });
       
       await Promise.all(updatePromises);
       
-      logger.info(`Updated users count for ${appsSnap.size} apps`);
+      logger.info(`Updated users count for ${appsSnap.size} apps (combined authenticated + anonymous)`);
       return { ok: true, updatedApps: appsSnap.size };
       
     } catch (error) {
@@ -186,6 +177,7 @@ export const updateAllAppsUsersCount = onCall(
  * GET /api/r?appId=...
  * - Fetches app link
  * - If user is authenticated, writes interactions/{uid_appId} with lastClickAt=now
+ * - If anonymous, writes to anonymous_clicks collection with sessionId
  * - 302 redirect to external link
  *
  * NOTE: For static site, authorize via Firebase Web Auth and send ID token header
@@ -196,6 +188,133 @@ export const redirectAndLogClick = onRequest(
     try {
       const appId = req.query.appId;
       if (!appId) return res.status(400).send('Missing appId');
+      const appRef = db.collection('apps').doc(String(appId));
+      const snap = await appRef.get();
+      if (!snap.exists) return res.status(404).send('App not found');
+      const app = snap.data();
+      if (app.status !== 'approved') return res.status(403).send('App not approved');
+
+      // Try to verify user via Firebase token (from query params or headers)
+      const idToken = req.query.token || (req.headers.authorization?.startsWith('Bearer ')
+        ? req.headers.authorization.split('Bearer ')[1]
+        : null);
+
+      let uid = null;
+      if (idToken) {
+        try {
+          const decoded = await admin.auth().verifyIdToken(idToken);
+          uid = decoded.uid;
+        } catch (e) {
+          logger.warn('Invalid ID token for redirect', e.message);
+        }
+      }
+
+      // Get session ID for anonymous users (from query params or headers)
+      const sessionId = req.query.sessionId || req.headers['x-session-id'] || null;
+
+      if (uid) {
+        // Authenticated user - use existing interactions collection
+        const interRef = db.collection('interactions').doc(`${uid}_${appId}`);
+        const interSnap = await interRef.get();
+        
+        let isFirstClick = false;
+        
+        if (!interSnap.exists) {
+          // First time clicking this app
+          isFirstClick = true;
+          await interRef.set({ 
+            uid, 
+            appId, 
+            lastClickAt: admin.firestore.FieldValue.serverTimestamp(),
+            firstClickAt: admin.firestore.FieldValue.serverTimestamp(),
+            clickCount: 1
+          });
+          logger.info(`First interaction logged for user ${uid} and app ${appId}`);
+        } else {
+          // Update existing interaction
+          const existingData = interSnap.data();
+          await interRef.set({ 
+            uid, 
+            appId, 
+            lastClickAt: admin.firestore.FieldValue.serverTimestamp(),
+            firstClickAt: existingData.firstClickAt || admin.firestore.FieldValue.serverTimestamp(),
+            clickCount: (existingData.clickCount || 0) + 1
+          }, { merge: true });
+          logger.info(`Interaction updated for user ${uid} and app ${appId}`);
+        }
+        
+        // Only increment user count if this is the first time clicking
+        if (isFirstClick) {
+          try {
+            await appRef.update({
+              usersCount: admin.firestore.FieldValue.increment(1),
+              updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            logger.info(`User count incremented for app ${appId} (first-time click by user ${uid})`);
+          } catch (error) {
+            logger.error(`Failed to increment user count for app ${appId}:`, error);
+          }
+        } else {
+          logger.info(`User count not incremented for app ${appId} (not a first-time click)`);
+        }
+      } else if (sessionId) {
+        // Anonymous user - check if first click from this session
+        const anonymousQuery = db.collection('anonymous_clicks')
+          .where('sessionId', '==', sessionId)
+          .where('appId', '==', appId);
+        
+        const existingClicks = await anonymousQuery.get();
+        
+        if (existingClicks.empty) {
+          // First time clicking this app from this session
+          await db.collection('anonymous_clicks').add({
+            sessionId,
+            appId,
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent'] || null
+          });
+          
+          // Increment user count for anonymous user
+          try {
+            await appRef.update({
+              usersCount: admin.firestore.FieldValue.increment(1),
+              updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            logger.info(`User count incremented for app ${appId} (first-time click by anonymous session ${sessionId})`);
+          } catch (error) {
+            logger.error(`Failed to increment user count for app ${appId}:`, error);
+          }
+        } else {
+          logger.info(`Anonymous session ${sessionId} already clicked app ${appId}, not incrementing count`);
+        }
+      }
+
+      // 302 redirect
+      return res.redirect(302, app.link);
+    } catch (err) {
+      logger.error('redirectAndLogClick error', err);
+      return res.status(500).send('Internal error');
+    }
+  }
+);
+
+/**
+ * trackClick - POST /api/track-click
+ * - Tracks app clicks for both authenticated and anonymous users
+ * - Used by session tracker for more detailed tracking
+ */
+export const trackClick = onRequest(
+  { cors: true },
+  async (req, res) => {
+    try {
+      if (req.method !== 'POST') {
+        return res.status(405).send('Method not allowed');
+      }
+
+      const { appId, source = 'direct', sessionId } = req.body;
+      if (!appId) return res.status(400).send('Missing appId');
+
       const appRef = db.collection('apps').doc(String(appId));
       const snap = await appRef.get();
       if (!snap.exists) return res.status(404).send('App not found');
@@ -213,20 +332,95 @@ export const redirectAndLogClick = onRequest(
           const decoded = await admin.auth().verifyIdToken(idToken);
           uid = decoded.uid;
         } catch (e) {
-          logger.warn('Invalid ID token for redirect', e.message);
+          logger.warn('Invalid ID token for track click', e.message);
         }
       }
 
+      const currentSessionId = sessionId || req.headers['x-session-id'] || null;
+
       if (uid) {
+        // Authenticated user - use existing interactions collection
         const interRef = db.collection('interactions').doc(`${uid}_${appId}`);
-        await interRef.set({ uid, appId, lastClickAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        const interSnap = await interRef.get();
+        
+        let isFirstClick = false;
+        
+        if (!interSnap.exists) {
+          // First time clicking this app
+          isFirstClick = true;
+          await interRef.set({ 
+            uid, 
+            appId, 
+            lastClickAt: admin.firestore.FieldValue.serverTimestamp(),
+            firstClickAt: admin.firestore.FieldValue.serverTimestamp(),
+            clickCount: 1,
+            source: source
+          });
+          logger.info(`First interaction logged for user ${uid} and app ${appId} from source: ${source}`);
+        } else {
+          // Update existing interaction
+          const existingData = interSnap.data();
+          await interRef.set({ 
+            uid, 
+            appId, 
+            lastClickAt: admin.firestore.FieldValue.serverTimestamp(),
+            firstClickAt: existingData.firstClickAt || admin.firestore.FieldValue.serverTimestamp(),
+            clickCount: (existingData.clickCount || 0) + 1,
+            source: source
+          }, { merge: true });
+          logger.info(`Interaction updated for user ${uid} and app ${appId} from source: ${source}`);
+        }
+        
+        // Only increment user count if this is the first time clicking
+        if (isFirstClick) {
+          try {
+            await appRef.update({
+              usersCount: admin.firestore.FieldValue.increment(1),
+              updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            logger.info(`User count incremented for app ${appId} (first-time click by user ${uid} from source: ${source})`);
+          } catch (error) {
+            logger.error(`Failed to increment user count for app ${appId}:`, error);
+          }
+        }
+      } else if (currentSessionId) {
+        // Anonymous user - check if first click from this session
+        const anonymousQuery = db.collection('anonymous_clicks')
+          .where('sessionId', '==', currentSessionId)
+          .where('appId', '==', appId);
+        
+        const existingClicks = await anonymousQuery.get();
+        
+        if (existingClicks.empty) {
+          // First time clicking this app from this session
+          await db.collection('anonymous_clicks').add({
+            sessionId: currentSessionId,
+            appId,
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent'] || null,
+            source: source
+          });
+          
+          // Increment user count for anonymous user
+          try {
+            await appRef.update({
+              usersCount: admin.firestore.FieldValue.increment(1),
+              updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            logger.info(`User count incremented for app ${appId} (first-time click by anonymous session ${currentSessionId} from source: ${source})`);
+          } catch (error) {
+            logger.error(`Failed to increment user count for app ${appId}:`, error);
+          }
+        } else {
+          logger.info(`Anonymous session ${currentSessionId} already clicked app ${appId}, not incrementing count`);
+        }
       }
 
-      // 302 redirect
-      return res.redirect(302, app.link);
+      res.json({ success: true, appId, source });
     } catch (err) {
-      logger.error('redirectAndLogClick error', err);
-      return res.status(500).send('Internal error');
+      logger.error('trackClick error', err);
+      res.status(500).json({ error: 'Internal error' });
     }
   }
 );

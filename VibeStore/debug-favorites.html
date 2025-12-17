@@ -3,49 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debug Favorites - VibeStore</title>
+    <title>Favorites Debug Page</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
-            padding: 2rem;
-            line-height: 1.6;
+            padding: 20px;
+            background: #f5f5f5;
         }
         .debug-section {
-            background: #f5f5f5;
-            padding: 1.5rem;
-            margin: 1rem 0;
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
             border-radius: 8px;
-            border-left: 4px solid #007acc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .error {
-            border-left-color: #dc3545;
-            background: #ffeaea;
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
         }
-        .success {
-            border-left-color: #28a745;
-            background: #eafaf1;
-        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.warning { background: #fff3cd; color: #856404; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
         button {
-            background: #007acc;
+            background: #007bff;
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
+            padding: 10px 20px;
             border-radius: 4px;
             cursor: pointer;
-            margin: 0.5rem;
+            margin: 5px;
         }
-        button:hover {
-            background: #0056b3;
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .app-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: white;
         }
+        .heart-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .heart-btn.favorited { color: #dc3545; }
+        .heart-btn:not(.favorited) { color: #6c757d; }
         .log {
-            background: #000;
-            color: #0f0;
-            padding: 1rem;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
             border-radius: 4px;
             font-family: monospace;
-            font-size: 0.9rem;
+            font-size: 12px;
             max-height: 300px;
             overflow-y: auto;
             white-space: pre-wrap;
@@ -53,50 +69,67 @@
     </style>
 </head>
 <body>
-    <h1>🔧 VibeStore Favorites Debug</h1>
+    <h1>🔧 Favorites System Debug</h1>
     
     <div class="debug-section">
-        <h3>Firebase Connection Status</h3>
-        <div id="firebase-status">Checking...</div>
-    </div>
-    
-    <div class="debug-section">
-        <h3>Authentication Status</h3>
-        <div id="auth-status">Checking...</div>
-        <button onclick="signInWithGoogle()">Sign In with Google</button>
-        <button onclick="signOut()">Sign Out</button>
-    </div>
-    
-    <div class="debug-section">
-        <h3>Favorites System Test</h3>
-        <button onclick="testCreateUser()">Create/Get User Data</button>
-        <button onclick="testAddFavorite()">Add Test Favorite</button>
-        <button onclick="testRemoveFavorite()">Remove Test Favorite</button>
-        <button onclick="testLoadFavorites()">Load Favorites</button>
-        <div id="favorites-result"></div>
-    </div>
-    
-    <div class="debug-section">
-        <h3>Console Log</h3>
-        <button onclick="clearLog()">Clear Log</button>
-        <div id="console-log" class="log"></div>
+        <h2>System Status</h2>
+        <div id="system-status" class="status info">Checking system status...</div>
+        <button onclick="checkSystemStatus()">Refresh Status</button>
     </div>
 
-    <!-- Firebase Configuration -->
+    <div class="debug-section">
+        <h2>Authentication</h2>
+        <div id="auth-status" class="status info">Checking authentication...</div>
+        <button onclick="signIn()">Sign In</button>
+        <button onclick="signOut()">Sign Out</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>Favorites Manager</h2>
+        <div id="favorites-status" class="status info">Checking favorites manager...</div>
+        <button onclick="checkFavoritesManager()">Check Manager</button>
+        <button onclick="loadFavorites()">Load Favorites</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>Test App Cards</h2>
+        <div id="test-cards">
+            <div class="app-card" data-app-id="test-app-1">
+                <h3>Test App 1</h3>
+                <p>This is a test app for debugging favorites</p>
+                <button class="heart-btn" data-app-id="test-app-1" title="Add to favorites">♡</button>
+            </div>
+            <div class="app-card" data-app-id="test-app-2">
+                <h3>Test App 2</h3>
+                <p>Another test app for debugging favorites</p>
+                <button class="heart-btn" data-app-id="test-app-2" title="Add to favorites">♡</button>
+            </div>
+        </div>
+        <button onclick="updateTestButtons()">Update Test Buttons</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>Debug Log</h2>
+        <div id="debug-log" class="log">Debug log will appear here...\n</div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <!-- Firebase config must load first -->
     <script type="module" src="/assets/js/firebaseConfig.js"></script>
-    <script type="module" src="/assets/js/favorites.js"></script>
-    
-    <script type="module">
-        // Capture console.log
+    <script src="/assets/js/favorites.js" defer></script>
+
+    <script>
+        // Debug logging
         const originalLog = console.log;
         const originalError = console.error;
-        const logDiv = document.getElementById('console-log');
+        const originalWarn = console.warn;
         
         function addToLog(message, type = 'log') {
+            const logElement = document.getElementById('debug-log');
             const timestamp = new Date().toLocaleTimeString();
-            const prefix = type === 'error' ? '❌' : '✅';
-            logDiv.textContent += `[${timestamp}] ${prefix} ${message}\n`;
-            logDiv.scrollTop = logDiv.scrollHeight;
+            const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
         }
         
         console.log = function(...args) {
@@ -109,175 +142,116 @@
             addToLog(args.join(' '), 'error');
         };
         
-        // Check Firebase status
-        async function checkFirebaseStatus() {
-            const statusDiv = document.getElementById('firebase-status');
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToLog(args.join(' '), 'warn');
+        };
+
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+
+        async function checkSystemStatus() {
+            console.log('Checking system status...');
             
+            // Check Firebase
             if (window.$fb && window.$fb.auth && window.$fb.db) {
-                statusDiv.innerHTML = '<span style="color: green;">✅ Firebase Connected</span>';
-                statusDiv.className = 'debug-section success';
+                updateStatus('system-status', '✅ Firebase initialized', 'success');
             } else {
-                statusDiv.innerHTML = '<span style="color: red;">❌ Firebase Not Connected</span>';
-                statusDiv.className = 'debug-section error';
+                updateStatus('system-status', '❌ Firebase not initialized', 'error');
             }
-        }
-        
-        // Check auth status
-        async function checkAuthStatus() {
-            const statusDiv = document.getElementById('auth-status');
             
-            if (window.$fb && window.$fb.auth) {
-                const user = window.$fb.auth.currentUser;
-                if (user) {
-                    statusDiv.innerHTML = `<span style="color: green;">✅ Signed in as ${user.email}</span>`;
-                    statusDiv.className = 'debug-section success';
-                } else {
-                    statusDiv.innerHTML = '<span style="color: orange;">⚠️ Not signed in</span>';
-                    statusDiv.className = 'debug-section';
-                }
+            // Check Favorites Manager
+            if (window.favoritesManager) {
+                updateStatus('favorites-status', '✅ Favorites Manager exists', 'success');
             } else {
-                statusDiv.innerHTML = '<span style="color: red;">❌ Firebase Auth not available</span>';
-                statusDiv.className = 'debug-section error';
+                updateStatus('favorites-status', '❌ Favorites Manager not found', 'error');
             }
         }
-        
-        // Test functions
-        window.signInWithGoogle = async function() {
+
+        async function signIn() {
             try {
-                const { auth, authMod, provider } = window.$fb;
+                const { auth, authMod } = await window.waitForFirebase();
+                const provider = new authMod.GoogleAuthProvider();
                 await authMod.signInWithPopup(auth, provider);
                 console.log('Signed in successfully');
-                await checkAuthStatus();
             } catch (error) {
                 console.error('Sign in error:', error);
             }
-        };
-        
-        window.signOut = async function() {
+        }
+
+        async function signOut() {
             try {
-                const { auth, authMod } = window.$fb;
+                const { auth, authMod } = await window.waitForFirebase();
                 await authMod.signOut(auth);
                 console.log('Signed out successfully');
-                await checkAuthStatus();
             } catch (error) {
                 console.error('Sign out error:', error);
             }
-        };
-        
-        window.testCreateUser = async function() {
-            try {
-                if (!window.VibeStoreFavorites) {
-                    console.error('VibeStoreFavorites not available');
-                    return;
-                }
-                
-                const user = window.$fb.auth.currentUser;
-                if (!user) {
-                    console.error('No user signed in');
-                    return;
-                }
-                
-                const userData = await window.VibeStoreFavorites.getUserData(user.uid);
-                console.log('User data:', userData);
-                document.getElementById('favorites-result').innerHTML = 
-                    `<pre>${JSON.stringify(userData, null, 2)}</pre>`;
-            } catch (error) {
-                console.error('Test create user error:', error);
-            }
-        };
-        
-        window.testAddFavorite = async function() {
-            try {
-                if (!window.VibeStoreFavorites) {
-                    console.error('VibeStoreFavorites not available');
-                    return;
-                }
-                
-                const testAppId = 'test-app-123';
-                const success = await window.VibeStoreFavorites.addToFavorites(testAppId);
-                console.log('Add favorite result:', success);
-                document.getElementById('favorites-result').innerHTML = 
-                    `Add favorite result: ${success}`;
-            } catch (error) {
-                console.error('Test add favorite error:', error);
-            }
-        };
-        
-        window.testRemoveFavorite = async function() {
-            try {
-                if (!window.VibeStoreFavorites) {
-                    console.error('VibeStoreFavorites not available');
-                    return;
-                }
-                
-                const testAppId = 'test-app-123';
-                const success = await window.VibeStoreFavorites.removeFromFavorites(testAppId);
-                console.log('Remove favorite result:', success);
-                document.getElementById('favorites-result').innerHTML = 
-                    `Remove favorite result: ${success}`;
-            } catch (error) {
-                console.error('Test remove favorite error:', error);
-            }
-        };
-        
-        window.testLoadFavorites = async function() {
-            try {
-                if (!window.VibeStoreFavorites) {
-                    console.error('VibeStoreFavorites not available');
-                    return;
-                }
-                
-                const user = window.$fb.auth.currentUser;
-                if (!user) {
-                    console.error('No user signed in');
-                    return;
-                }
-                
-                const userData = await window.VibeStoreFavorites.getUserData(user.uid);
-                const favorites = userData?.favorites || [];
-                console.log('Current favorites:', favorites);
-                document.getElementById('favorites-result').innerHTML = 
-                    `Current favorites: ${JSON.stringify(favorites)}`;
-            } catch (error) {
-                console.error('Test load favorites error:', error);
-            }
-        };
-        
-        window.clearLog = function() {
-            document.getElementById('console-log').textContent = '';
-        };
-        
-        // Initialize
-        const waitForFirebase = () => new Promise(resolve => {
-            const check = () => {
-                if (window.$fb && window.$fb.auth && window.$fb.db) {
-                    resolve(window.$fb);
-                } else {
-                    setTimeout(check, 100);
-                }
-            };
-            check();
-        });
-        
-        async function initialize() {
-            console.log('Initializing debug page...');
-            
-            await waitForFirebase();
-            console.log('Firebase ready');
-            
-            await checkFirebaseStatus();
-            await checkAuthStatus();
-            
-            // Listen for auth state changes
-            window.$fb.authMod.onAuthStateChanged(window.$fb.auth, (user) => {
-                checkAuthStatus();
-            });
-            
-            console.log('Debug page initialized');
         }
-        
-        // Start initialization
-        initialize();
+
+        function checkFavoritesManager() {
+            if (window.favoritesManager) {
+                const status = {
+                    initialized: window.favoritesManager.initialized,
+                    currentUser: window.favoritesManager.currentUser ? window.favoritesManager.currentUser.uid : 'null',
+                    favoritesCount: window.favoritesManager.getFavorites().length,
+                    isLoading: window.favoritesManager.isLoading
+                };
+                
+                updateStatus('favorites-status', 
+                    `✅ Manager Status: ${JSON.stringify(status, null, 2)}`, 'success');
+            } else {
+                updateStatus('favorites-status', '❌ Favorites Manager not found', 'error');
+            }
+        }
+
+        function loadFavorites() {
+            if (window.favoritesManager && window.favoritesManager.initialized) {
+                const favorites = window.favoritesManager.getFavorites();
+                console.log('Current favorites:', favorites);
+                updateStatus('favorites-status', 
+                    `✅ Loaded ${favorites.length} favorites: ${favorites.join(', ')}`, 'success');
+            } else {
+                updateStatus('favorites-status', '❌ Manager not initialized', 'error');
+            }
+        }
+
+        function updateTestButtons() {
+            if (window.updateFavoriteButtons) {
+                window.updateFavoriteButtons();
+                console.log('Updated test buttons');
+            } else {
+                console.error('updateFavoriteButtons function not found');
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('debug-log').textContent = 'Debug log cleared...\n';
+        }
+
+        // Auto-check status when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                checkSystemStatus();
+                checkFavoritesManager();
+            }, 2000);
+        });
+
+        // Listen for auth state changes
+        if (window.waitForFirebase) {
+            window.waitForFirebase().then(async ({ auth, authMod }) => {
+                authMod.onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        updateStatus('auth-status', `✅ Signed in as: ${user.email}`, 'success');
+                    } else {
+                        updateStatus('auth-status', '❌ Not signed in', 'warning');
+                    }
+                });
+            });
+        }
     </script>
 </body>
 </html>

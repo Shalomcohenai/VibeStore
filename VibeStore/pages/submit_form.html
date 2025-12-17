@@ -4,6 +4,29 @@ layout: page
 permalink: /pages/submit-form
 ---
 
+<style>
+.pricing-fields {
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+  overflow: hidden;
+}
+
+.pricing-fields[style*="display: none"] {
+  opacity: 0;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.pricing-option {
+  margin-bottom: 1rem;
+}
+
+.pricing-option .checkbox-label {
+  font-weight: 500;
+  color: var(--c-text);
+}
+</style>
+
 <div class="container">
   <div class="page-content" style="max-width: 800px; margin: 0 auto;">
     <h1 class="page-title center">Submit Your App</h1>
@@ -140,6 +163,55 @@ permalink: /pages/submit-form
               required
             />
             <div class="field-help">Direct link to your app (website, app store, or wa.me link)</div>
+          </div>
+        </div>
+
+        <!-- Pricing Information -->
+        <div class="form-section">
+          <h3 class="section-title">Pricing Information</h3>
+          
+          <!-- Free App Checkbox -->
+          <div class="form-group">
+            <label class="checkbox-item pricing-option">
+              <input type="checkbox" id="isFreeApp" name="isFreeApp">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-label">🎁 This is a free app</span>
+            </label>
+            <div class="field-help">Check this if your app is completely free to use</div>
+          </div>
+
+          <!-- Pricing Fields (hidden when free app is selected) -->
+          <div id="pricingFields" class="pricing-fields">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="pricingAmount" class="form-label">Pricing Amount</label>
+                <div class="pricing-input-group">
+                  <span class="currency-symbol">$</span>
+                  <input 
+                    id="pricingAmount"
+                    class="input pricing-amount" 
+                    name="pricingAmount" 
+                    placeholder="0.00" 
+                    type="number"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+                <div class="field-help">Enter the price in USD</div>
+              </div>
+
+              <div class="form-group">
+                <label for="pricingType" class="form-label">Pricing Type</label>
+                <select class="input" name="pricingType" id="pricingType">
+                  <option value="">Select pricing type</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                  <option value="one-time">One-time</option>
+                  <option value="per-use">Per use/unit</option>
+                </select>
+                <div class="field-help">How is the app priced?</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -321,6 +393,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initializeImageUpload();
   initializeCharacterCounters();
   initializeAppTypeValidation(); // Safe to call - does nothing in dev mode
+  initializeFreeAppToggle();
   initializePreviewButton();
 });
 
@@ -331,7 +404,18 @@ function initializeForm() {
 
   // Real-time validation
   const requiredFields = ['title', 'shortTitle', 'description', 'longDescription', 'category', 'link', 'niche'];
+  const optionalFields = ['pricingAmount', 'pricingType'];
+  
   requiredFields.forEach(field => {
+    const input = document.getElementById(field);
+    if (input) {
+      input.addEventListener('blur', () => validateField(field));
+      input.addEventListener('input', () => clearFieldError(field));
+    }
+  });
+
+  // Add validation for optional pricing fields
+  optionalFields.forEach(field => {
     const input = document.getElementById(field);
     if (input) {
       input.addEventListener('blur', () => validateField(field));
@@ -418,7 +502,6 @@ async function handleIconSelect(file) {
     showIconPreview(optimizedFile);
     clearFieldError('icon');
     
-    console.log(`📸 Icon optimized: ${file.size} → ${optimizedFile.size} bytes`);
   } catch (error) {
     console.error('Error optimizing icon:', error);
     showFieldError('icon', 'Failed to process image. Please try again.');
@@ -459,7 +542,6 @@ async function handleMultipleFilesSelect(files) {
     for (const file of files) {
       const optimizedFile = await optimizeImage(file, 1920, 0.8);
       optimizedFiles.push(optimizedFile);
-      console.log(`📸 Screenshot optimized: ${file.size} → ${optimizedFile.size} bytes`);
     }
     
     // Add optimized files to array and show previews
@@ -593,6 +675,31 @@ function initializeAppTypeValidation() {
   });
 }
 
+// Free app toggle functionality
+function initializeFreeAppToggle() {
+  const freeAppCheckbox = document.getElementById('isFreeApp');
+  const pricingFields = document.getElementById('pricingFields');
+  const pricingAmount = document.getElementById('pricingAmount');
+  const pricingType = document.getElementById('pricingType');
+  
+  if (!freeAppCheckbox || !pricingFields) return;
+  
+  // Handle checkbox change
+  freeAppCheckbox.addEventListener('change', () => {
+    if (freeAppCheckbox.checked) {
+      // Hide pricing fields and clear their values
+      pricingFields.style.display = 'none';
+      pricingAmount.value = '';
+      pricingType.value = '';
+      clearFieldError('pricingAmount');
+      clearFieldError('pricingType');
+    } else {
+      // Show pricing fields
+      pricingFields.style.display = 'block';
+    }
+  });
+}
+
 function validateAppType() {
   const checkboxes = document.querySelectorAll('input[name="niche"]:checked');
   const group = document.getElementById('appTypeGroup');
@@ -716,9 +823,7 @@ async function handleSubmit(e) {
 
     // Submit to Firestore
     const { db } = await waitForFb();
-    console.log('🚀 Submitting app with payload:', payload);
     const docRef = await addDoc(collection(db, 'apps'), payload);
-    console.log('✅ App submitted successfully with ID:', docRef.id);
 
     // Success - show modal instead of inline message
     showSuccessModal();
@@ -832,11 +937,9 @@ async function uploadImage(file, type = 'image') {
   
   const storageRef = ref(storage, fileName);
   
-  console.log(`📤 Uploading ${type}: ${fileName} (${file.size} bytes)`);
   const snapshot = await uploadBytes(storageRef, file);
   const downloadURL = await getDownloadURL(snapshot.ref);
   
-  console.log(`✅ Upload successful: ${downloadURL}`);
   return downloadURL;
 }
 
@@ -851,6 +954,8 @@ function getSelectedAppTypes() {
 // Get form data
 function getFormData() {
   const formData = new FormData(document.getElementById('submitAppForm'));
+  const isFreeApp = formData.get('isFreeApp') === 'on';
+  
   return {
     title: String(formData.get('title') || '').trim(),
     shortTitle: String(formData.get('shortTitle') || '').trim(),
@@ -863,6 +968,9 @@ function getFormData() {
     demo: String(formData.get('demo') || '').trim(),
     languages: String(formData.get('languages') || '').trim(),
     notes: String(formData.get('notes') || '').trim(),
+    isFreeApp: isFreeApp,
+    pricingAmount: isFreeApp ? null : (formData.get('pricingAmount') ? parseFloat(formData.get('pricingAmount')) : null),
+    pricingType: isFreeApp ? '' : String(formData.get('pricingType') || '').trim(),
   };
 }
 
@@ -962,6 +1070,31 @@ function validateField(fieldName) {
 
     case 'platform':
       // Platform remains optional
+      break;
+
+    case 'pricingAmount':
+      // Pricing amount validation - only validate if free app is not checked
+      const isFreeApp = document.getElementById('isFreeApp').checked;
+      if (!isFreeApp) {
+        const amount = parseFloat(field.value);
+        if (field.value && (isNaN(amount) || amount < 0)) {
+          showFieldError(fieldName, 'Please enter a valid positive number');
+          return false;
+        }
+      }
+      break;
+
+    case 'pricingType':
+      // Pricing type validation - if amount is provided, type should be selected
+      const isFreeAppType = document.getElementById('isFreeApp').checked;
+      if (!isFreeAppType) {
+        const amountField = document.getElementById('pricingAmount');
+        const hasAmount = amountField && amountField.value && parseFloat(amountField.value) > 0;
+        if (hasAmount && !value) {
+          showFieldError(fieldName, 'Please select a pricing type when amount is provided');
+          return false;
+        }
+      }
       break;
   }
 
@@ -1216,7 +1349,10 @@ function showPreviewModal() {
     imageUrl: uploadedIconFile ? URL.createObjectURL(uploadedIconFile) : null,
     screenshots: uploadedScreenshots.map(file => URL.createObjectURL(file)),
     rating_avg: 4.5,
-    usersCount: 1234
+    usersCount: 1234,
+    isFreeApp: formData.isFreeApp || false,
+    pricingAmount: formData.pricingAmount,
+    pricingType: formData.pricingType
   };
   
   // Create preview modal
@@ -1325,52 +1461,46 @@ function createPreviewCardHTML(app) {
   
   // Use app image if available, otherwise fallback to emoji
   const appImageUrl = app.imageUrl;
-  const iconContent = appImageUrl 
-    ? `<div class="app-icon-container">
-         <img 
-           src="${appImageUrl}" 
-           alt="${app.title} Icon" 
-           class="app-icon-img"
-           style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;"
-         >
-       </div>`
-    : `<div class="app-icon-v2">${appIcon}</div>`;
+  const hasCustomImage = appImageUrl && appImageUrl.trim() !== '';
 
   return `
-    <article class="card card-v2" data-app-id="${app.id}" data-niche="${Array.isArray(app.niche) ? app.niche.join(',') : app.niche}">
-      <div class="card-header-v2">
-        ${iconContent}
-        <div class="header-info">
-          <span class="category-tag">${app.category}</span>
-          <div class="rating-v2">
-            <span class="stars">${'★'.repeat(Math.floor(rating))}${'☆'.repeat(5 - Math.floor(rating))}</span>
-            <span class="rating-number">${rating.toFixed(1)}</span>
+    <article class="app-card" data-app-id="${app.id}" data-niche="${Array.isArray(app.niche) ? app.niche.join(',') : app.niche}">
+      <div class="card-header">
+        <div class="app-icon">
+          ${hasCustomImage 
+            ? `<img src="${appImageUrl}" alt="${app.title} Icon" class="app-icon-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+               <div class="app-icon-fallback" style="display: none;">${appIcon}</div>`
+            : appIcon
+          }
+        </div>
+        <div class="app-info">
+          <h3 class="app-title">${app.title}</h3>
+          <div class="app-meta">
+            <div class="app-meta-left">
+              <span class="category-tag">${app.category}</span>
+              <div class="rating">
+                <span class="stars">${'★'.repeat(Math.floor(rating))}${'☆'.repeat(5 - Math.floor(rating))}</span>
+                <span class="rating-value">${rating.toFixed(1)}</span>
+              </div>
+            </div>
+            <div class="app-meta-right">
+              <div class="users-count">
+                <div class="number">${usersCount}</div>
+                <div class="label">clicks</div>
+              </div>
+            </div>
           </div>
-          <div class="users-count">${usersCount} users</div>
         </div>
       </div>
       
-      <div class="card-body-v2">
-        <h3 class="app-title-v2">${app.title}</h3>
-        <p class="app-description-v2">${app.description}</p>
+      <div class="card-body">
+        <p class="app-description">${app.description}</p>
       </div>
       
-      <div class="card-footer-v2">
-        <button class="action-btn-v2 heart-btn" data-app-id="${app.id}" title="Add to favorites">
+      <div class="card-footer">
+        <button class="action-btn heart-btn" data-app-id="${app.id}" title="Add to favorites">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-        </button>
-        <button class="action-btn-v2 plus-btn" data-app-id="${app.id}" title="Add to list">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-        </button>
-        <button class="action-btn-v2 more-btn" data-app-id="${app.id}" title="View details">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
           </svg>
         </button>
       </div>
@@ -1391,57 +1521,107 @@ function createAppPageHTML(app) {
     : '<div class="no-screenshots">No screenshots uploaded</div>';
   
   return `
-    <div class="app-page-preview">
-      <div class="app-page-header">
-        <div class="app-page-icon">
-          ${app.imageUrl ? `<img src="${app.imageUrl}" alt="${app.title}" />` : `<div class="app-icon-placeholder">${appIcon}</div>`}
-        </div>
-        <div class="app-page-info">
-          <h1 class="app-page-title">${app.title}</h1>
-          <div class="app-page-meta">
-            <span class="app-category">${app.category}</span>
-            <div class="app-rating">
-              <span class="stars">${stars}</span>
-              <span class="rating-number">${rating.toFixed(1)}</span>
-              <span class="users-count">(${app.usersCount} users)</span>
+    <div class="app-detail">
+      <!-- App Header -->
+      <div class="app-header">
+        <div class="app-meta">
+          <div class="app-icon-section">
+            <div class="app-icon">
+              ${app.imageUrl ? `
+                <div class="app-icon-container">
+                  <img 
+                    src="${app.imageUrl}" 
+                    alt="${app.title} Icon" 
+                    class="app-icon-img"
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;"
+                  >
+                </div>
+              ` : appIcon}
+            </div>
+            <!-- Users Count - Below Icon -->
+            <div class="users-count-prominent">
+              <div class="users-number">${app.usersCount || 0}</div>
+              <div class="users-label">clicks</div>
             </div>
           </div>
-          <p class="app-page-description">${app.description}</p>
-          <div class="app-page-actions">
-            <a href="${app.link}" class="btn primary" target="_blank">Open App</a>
-            <button class="btn secondary">Add to Favorites</button>
+          
+          <div class="app-info">
+            <div class="badges">
+              ${nicheArray.map(niche => `
+                <span class="badge ${niche}">${niche === 'whatsapp' ? '💬' : niche === 'mobile' ? '📱' : '🌐'} ${niche.charAt(0).toUpperCase() + niche.slice(1)}</span>
+              `).join('')}
+            </div>
+            <h1 class="app-title">${app.title}</h1>
+            <p class="app-description">${app.description}</p>
+            
+            <div class="app-tags">
+              <span class="chip">${app.category}</span>
+            </div>
+            
+            <div class="rating">
+              <span class="rating-stars">${stars}</span>
+              <span class="score">${rating.toFixed(1)}/5</span>
+              <span class="reviews">(${app.usersCount || 0} clicks)</span>
+            </div>
+          </div>
+          
+          <div class="app-actions-wrapper">
+            <div class="app-actions">
+              <a href="${app.link}" class="btn primary action-btn" target="_blank">
+                <span>Open App</span>
+              </a>
+              <button class="btn secondary action-btn">
+                <span>Save</span>
+              </button>
+              <button class="btn secondary action-btn">
+                <span>Add to List</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      
-      <div class="app-page-content">
-        <div class="app-details-section">
-          <h3>About this app</h3>
-          <p>${app.longDescription}</p>
-        </div>
+
+      <!-- App Description -->
+      <div class="card">
+        <h2>About this app</h2>
+        <p>${app.longDescription || app.description}</p>
         
-        <div class="app-screenshots-section">
-          <h3>Screenshots</h3>
-          <div class="screenshots-grid">
-            ${screenshotsHTML}
+        <!-- Image Gallery -->
+        ${app.screenshots && app.screenshots.length > 0 ? `
+          <div style="margin-top: 2rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 600; margin: 0 0 1rem 0; color: var(--c-text);">Screenshots</h3>
+            <div class="gallery-grid">
+              ${app.screenshots.map(url => `
+                <div class="gallery-image">
+                  <div class="image-container">
+                    <img src="${url}" alt="Screenshot" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />
+                  </div>
+                </div>
+              `).join('')}
+            </div>
           </div>
-        </div>
-        
-        <div class="app-info-section">
-          <h3>App Information</h3>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="info-label">Platform:</span>
-              <span class="info-value">${app.platform}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Category:</span>
-              <span class="info-value">${app.category}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Type:</span>
-              <span class="info-value">${nicheArray.join(', ')}</span>
-            </div>
+        ` : ''}
+      </div>
+
+      <!-- App Details -->
+      <div class="card">
+        <h2>App Information</h2>
+        <div class="details-grid">
+          <div class="detail-item">
+            <strong>Category:</strong>
+            <span>${app.category}</span>
+          </div>
+          <div class="detail-item">
+            <strong>Platform:</strong>
+            <span>${app.platform || 'Not specified'}</span>
+          </div>
+          <div class="detail-item">
+            <strong>Niche:</strong>
+            <span>${nicheArray.join(', ')}</span>
+          </div>
+          <div class="detail-item">
+            <strong>Clicks:</strong>
+            <span>${app.usersCount || 0} clicks</span>
           </div>
         </div>
       </div>
@@ -1488,6 +1668,16 @@ function resetForm() {
   
   // Uncheck all app type checkboxes
   document.querySelectorAll('input[name="niche"]').forEach(cb => cb.checked = false);
+  
+  // Reset free app checkbox and show pricing fields
+  const freeAppCheckbox = document.getElementById('isFreeApp');
+  const pricingFields = document.getElementById('pricingFields');
+  if (freeAppCheckbox) {
+    freeAppCheckbox.checked = false;
+  }
+  if (pricingFields) {
+    pricingFields.style.display = 'block';
+  }
   
   // Clear app type error
   clearAppTypeError();

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeStore - Debug Instructions</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+        .debug-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #6b46c1;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f8f6ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #6b46c1;
+        }
+        .step h3 {
+            color: #6b46c1;
+            margin-top: 0;
+        }
+        .code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .emoji-guide {
+            background: #e6fffa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #81e6d9;
+        }
+        .emoji-item {
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .warning {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #feb2b2;
+            margin: 20px 0;
+        }
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #9ae6b4;
+            margin: 20px 0;
+        }
+        .keyboard {
+            background: #e2e8f0;
+            color: #2d3748;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔍 VibeStore Debug Instructions</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Important:</strong> This page will help you debug why app icons are not displaying in the cards.
+        </div>
+
+        <div class="step">
+            <h3>Step 1: Open Browser Developer Console</h3>
+            <p>You need to open the browser's developer console to see the debug messages:</p>
+            
+            <h4>Chrome/Edge (Windows/Linux):</h4>
+            <div class="code">Press <span class="keyboard">F12</span> or <span class="keyboard">Ctrl+Shift+I</span></div>
+            
+            <h4>Chrome/Edge (Mac):</h4>
+            <div class="code">Press <span class="keyboard">Cmd+Option+I</span></div>
+            
+            <h4>Firefox:</h4>
+            <div class="code">Press <span class="keyboard">F12</span> or <span class="keyboard">Ctrl+Shift+K</span></div>
+            
+            <h4>Safari (Mac):</h4>
+            <div class="code">Press <span class="keyboard">Cmd+Option+I</span> (first enable Developer menu in Preferences)</div>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Navigate to Console Tab</h3>
+            <p>In the developer tools window that opened, click on the <strong>"Console"</strong> tab.</p>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Go to VibeStore Homepage</h3>
+            <p>Navigate to the VibeStore homepage and watch the console messages.</p>
+            <div class="code">https://vibestore-7af1e.web.app</div>
+        </div>
+
+        <div class="emoji-guide">
+            <h3>📊 Debug Message Guide</h3>
+            <p>All debug messages use emoji prefixes to help you identify different processes:</p>
+            
+            <div class="emoji-item">🔥 <strong>Firebase:</strong> Firebase initialization and connection</div>
+            <div class="emoji-item">📊 <strong>Firestore:</strong> Database queries and app data</div>
+            <div class="emoji-item">🖼️ <strong>Images:</strong> Image loading and processing</div>
+            <div class="emoji-item">🎨 <strong>Cards:</strong> Card creation and rendering</div>
+            <div class="emoji-item">🔄 <strong>Lazy Loading:</strong> Image lazy loading system</div>
+            <div class="emoji-item">👁️ <strong>Observer:</strong> Intersection observer events</div>
+            <div class="emoji-item">✅ <strong>Success:</strong> Successful operations</div>
+            <div class="emoji-item">❌ <strong>Error:</strong> Failed operations</div>
+            <div class="emoji-item">⚠️ <strong>Warning:</strong> Potential issues</div>
+            <div class="emoji-item">⏰ <strong>Timeout:</strong> Timeout events</div>
+            <div class="emoji-item">🚀 <strong>Start:</strong> Process initialization</div>
+            <div class="emoji-item">⏳ <strong>Waiting:</strong> Waiting for resources</div>
+        </div>
+
+        <div class="step">
+            <h3>Step 4: Look for These Key Messages</h3>
+            <p>Watch for these specific messages that will help identify the problem:</p>
+            
+            <div class="code">
+🚀 DEBUG: VibeStore app initialization started<br>
+🔥 DEBUG: Firebase initialization complete<br>
+📊 DEBUG: Firebase services available for Firestore operations<br>
+📊 DEBUG: Query executed, got snapshot with X documents<br>
+🎨 DEBUG: Creating image-based icon for: [App Name]<br>
+🖼️ DEBUG: Starting to load image: [Image URL]<br>
+✅ DEBUG: Image loaded successfully: [Image URL]
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>Step 5: Common Issues to Look For</h3>
+            
+            <h4>❌ Firebase Storage Not Configured:</h4>
+            <div class="code">❌ DEBUG: Storage connection failed</div>
+            <p><strong>Solution:</strong> Enable Firebase Storage in Firebase Console</p>
+            
+            <h4>❌ No Apps with Images:</h4>
+            <div class="code">📊 DEBUG: appsWithImages: 0</div>
+            <p><strong>Solution:</strong> Check if apps in database have imageUrl field populated</p>
+            
+            <h4>❌ Images Failing to Load:</h4>
+            <div class="code">❌ DEBUG: Image failed to load: [URL]</div>
+            <p><strong>Solution:</strong> Check if image URLs are valid and accessible</p>
+            
+            <h4>❌ Firebase Connection Issues:</h4>
+            <div class="code">❌ DEBUG: Firebase services not available after maximum attempts</div>
+            <p><strong>Solution:</strong> Check Firebase configuration and network connection</p>
+        </div>
+
+        <div class="success">
+            <strong>✅ Success Indicators:</strong><br>
+            • Firebase initializes successfully<br>
+            • Apps are fetched from Firestore<br>
+            • Images have valid URLs<br>
+            • Images load without errors<br>
+            • Cards display with proper icons
+        </div>
+
+        <div class="step">
+            <h3>Step 6: Report Findings</h3>
+            <p>Copy the relevant console messages and share them to help diagnose the issue. Look for:</p>
+            <ul>
+                <li>Any ❌ error messages</li>
+                <li>Image URL values (are they null/empty?)</li>
+                <li>Firebase connection status</li>
+                <li>Number of apps with/without images</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Add some debug logging to this page itself
+        console.log('🔍 DEBUG: Debug instructions page loaded');
+        console.log('🔍 DEBUG: Follow the instructions above to debug image loading issues');
+    </script>
+</body>
+</html>
+

@@ -48,19 +48,17 @@ class FavoritesManager {
     try {
       const userData = await this.getUserData(user.uid);
       const favorites = userData?.favorites || [];
-      
+
       // Update the Set
       this.favoritesSet.clear();
       favorites.forEach(appId => this.favoritesSet.add(appId));
-      
+
       this.initialized = true;
       this.isLoading = false;
-      
-      console.log(`✅ FavoritesManager initialized with ${this.favoritesSet.size} favorites`);
-      
+
       // Notify listeners
       this.notifyListeners();
-      
+
     } catch (error) {
       console.error('Error initializing FavoritesManager:', error);
       this.isLoading = false;
@@ -96,29 +94,54 @@ class FavoritesManager {
     // Optimistic update
     const wasAlreadyFavorited = this.favoritesSet.has(appId);
     if (wasAlreadyFavorited) {
-      console.log('App already favorited');
       return false;
     }
 
     this.favoritesSet.add(appId);
-    this.notifyListeners();
+    this.notifyListeners(appId);
 
     try {
       const favorites = this.getFavorites();
-      await this.updateUserData(this.currentUser.uid, { favorites });
+      // Use Firestore transaction to avoid conflicts with other modules
+      const { db, storeMod } = await waitForFirebase();
+      const { doc, runTransaction } = storeMod;
+
+      await runTransaction(db, async (transaction) => {
+        const userRef = doc(db, 'users', this.currentUser.uid);
+        const userDoc = await transaction.get(userRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          transaction.update(userRef, {
+            favorites: favorites,
+            updatedAt: new Date()
+          });
+        } else {
+          // Create user document if it doesn't exist
+          transaction.set(userRef, {
+            uid: this.currentUser.uid,
+            email: this.currentUser.email,
+            displayName: this.currentUser.displayName || this.currentUser.email.split('@')[0],
+            favorites: favorites,
+            lists: [],
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+        }
+      });
+
       await this.incrementAppLikes(appId, 1);
-      
+
       // Cross-tab sync
       this.broadcastUpdate();
-      
-      console.log('✅ Added to favorites:', appId);
+
       return true;
-      
+
     } catch (error) {
       console.error('Error adding to favorites:', error);
       // Rollback
       this.favoritesSet.delete(appId);
-      this.notifyListeners();
+      this.notifyListeners(appId);
       alert('Error adding to favorites. Please try again.');
       return false;
     }
@@ -135,29 +158,42 @@ class FavoritesManager {
     // Optimistic update
     const wasAlreadyFavorited = this.favoritesSet.has(appId);
     if (!wasAlreadyFavorited) {
-      console.log('App was not favorited');
       return false;
     }
 
     this.favoritesSet.delete(appId);
-    this.notifyListeners();
+    this.notifyListeners(appId);
 
     try {
       const favorites = this.getFavorites();
-      await this.updateUserData(this.currentUser.uid, { favorites });
+      // Use Firestore transaction to avoid conflicts with other modules
+      const { db, storeMod } = await waitForFirebase();
+      const { doc, runTransaction } = storeMod;
+
+      await runTransaction(db, async (transaction) => {
+        const userRef = doc(db, 'users', this.currentUser.uid);
+        const userDoc = await transaction.get(userRef);
+
+        if (userDoc.exists()) {
+          transaction.update(userRef, {
+            favorites: favorites,
+            updatedAt: new Date()
+          });
+        }
+      });
+
       await this.incrementAppLikes(appId, -1);
-      
+
       // Cross-tab sync
       this.broadcastUpdate();
-      
-      console.log('✅ Removed from favorites:', appId);
+
       return true;
-      
+
     } catch (error) {
       console.error('Error removing from favorites:', error);
       // Rollback
       this.favoritesSet.add(appId);
-      this.notifyListeners();
+      this.notifyListeners(appId);
       alert('Error removing from favorites. Please try again.');
       return false;
     }
@@ -168,7 +204,6 @@ class FavoritesManager {
    */
   async toggleFavorite(appId) {
     const isFavorited = this.isFavorited(appId);
-    
     if (isFavorited) {
       return await this.removeFromFavorites(appId);
     } else {
@@ -193,10 +228,10 @@ class FavoritesManager {
   /**
    * Notify all listeners of state change
    */
-  notifyListeners() {
+  notifyListeners(changedAppId = null) {
     this.listeners.forEach(callback => {
       try {
-        callback(this.getFavorites());
+        callback(changedAppId);
       } catch (error) {
         console.error('Error in favorites listener:', error);
       }
@@ -209,8 +244,8 @@ class FavoritesManager {
   broadcastUpdate() {
     try {
       localStorage.setItem('vibestore_favorites_updated', Date.now().toString());
-      window.dispatchEvent(new CustomEvent('favoritesUpdated', { 
-        detail: { favorites: this.getFavorites() } 
+      window.dispatchEvent(new CustomEvent('favoritesUpdated', {
+        detail: { favorites: this.getFavorites() }
       }));
     } catch (error) {
       console.error('Error broadcasting favorites update:', error);
@@ -222,17 +257,16 @@ class FavoritesManager {
    */
   async refresh() {
     if (!this.currentUser) return;
-    
+
     try {
       const userData = await this.getUserData(this.currentUser.uid);
       const favorites = userData?.favorites || [];
-      
+
       this.favoritesSet.clear();
       favorites.forEach(appId => this.favoritesSet.add(appId));
-      
+
       this.notifyListeners();
-      console.log('✅ Favorites refreshed from server');
-      
+
     } catch (error) {
       console.error('Error refreshing favorites:', error);
     }
@@ -244,10 +278,10 @@ class FavoritesManager {
   async getUserData(uid) {
     const { db, storeMod } = await waitForFirebase();
     const { doc, getDoc, setDoc } = storeMod;
-    
+
     try {
       const userDoc = await getDoc(doc(db, 'users', uid));
-      
+
       if (userDoc.exists()) {
         return userDoc.data();
       } else {
@@ -274,13 +308,16 @@ class FavoritesManager {
    */
   async updateUserData(uid, data) {
     const { db, storeMod } = await waitForFirebase();
-    const { doc, updateDoc } = storeMod;
-    
+    const { doc, updateDoc, serverTimestamp } = storeMod;
+
     try {
-      await updateDoc(doc(db, 'users', uid), {
+      // Only update specific fields to avoid conflicts with other modules
+      const updateData = {
         ...data,
-        updatedAt: new Date()
-      });
+        updatedAt: serverTimestamp()
+      };
+
+      await updateDoc(doc(db, 'users', uid), updateData);
       return true;
     } catch (error) {
       console.error('Error updating user data:', error);
@@ -294,21 +331,20 @@ class FavoritesManager {
   async incrementAppLikes(appId, increment) {
     const { db, storeMod } = await waitForFirebase();
     const { doc, updateDoc, getDoc, increment: firestoreIncrement } = storeMod;
-    
+
     try {
       const appRef = doc(db, 'apps', appId);
       const appDoc = await getDoc(appRef);
-      
+
       if (!appDoc.exists()) {
-        console.warn('App document does not exist:', appId);
         return true;
       }
-      
+
       await updateDoc(appRef, {
         likes_count: firestoreIncrement(increment),
         updatedAt: new Date()
       });
-      
+
       return true;
     } catch (error) {
       console.error('Error updating app likes counter:', error);
@@ -326,11 +362,11 @@ async function createReview(appId, stars, text = '') {
     alert('Please sign in to create reviews');
     return false;
   }
-  
+
   try {
     const { db, storeMod } = await waitForFirebase();
     const { collection, addDoc, doc, updateDoc, getDoc, runTransaction } = storeMod;
-    
+
     // Create review document
     const reviewRef = await addDoc(collection(db, 'reviews'), {
       appId: appId,
@@ -339,7 +375,7 @@ async function createReview(appId, stars, text = '') {
       text: text,
       createdAt: new Date()
     });
-    
+
     // Update app aggregates
     const appRef = doc(db, 'apps', appId);
     await runTransaction(db, async (transaction) => {
@@ -347,12 +383,12 @@ async function createReview(appId, stars, text = '') {
       if (!appSnap.exists()) {
         throw new Error('App not found');
       }
-      
+
       const appData = appSnap.data();
       const ratingCount = (appData.rating_count || 0) + 1;
       const ratingSum = (appData.rating_sum || 0) + stars;
       const ratingAvg = Math.round((ratingSum / ratingCount) * 10) / 10;
-      
+
       transaction.update(appRef, {
         rating_count: ratingCount,
         rating_sum: ratingSum,
@@ -360,8 +396,7 @@ async function createReview(appId, stars, text = '') {
         updatedAt: new Date()
       });
     });
-    
-    console.log('Review created successfully');
+
     return true;
   } catch (error) {
     console.error('Error creating review:', error);
@@ -383,34 +418,38 @@ window.VibeStoreFavorites = {
   updateFavoriteButtons,
   initializeFavoriteButtons,
   createReview,
-  
+
   // Direct access to manager
   manager: () => window.favoritesManager,
-  
+
   // For backwards compatibility with debug page
   getUserData: (uid) => window.favoritesManager.getUserData(uid),
-  
+
   // Public API for checking if app exists
   appExists: async function(appId) {
     return await appExists(appId);
   }
 };
 
+// Make updateFavoriteButtons globally available
+window.updateFavoriteButtons = updateFavoriteButtons;
+window.updateSpecificFavoriteButtons = updateSpecificFavoriteButtons;
+
 // Initialize favorites system
 async function initializeFavorites() {
   try {
     const { auth, authMod } = await waitForFirebase();
-    
+
     authMod.onAuthStateChanged(auth, async (user) => {
       currentUser = user;
-      
+
       // Initialize the FavoritesManager with the current user
       await window.favoritesManager.initialize(user);
-      
+
       // Update all favorite buttons on the page
       updateFavoriteButtons();
     });
-    
+
   } catch (error) {
     console.error('Error initializing favorites:', error);
   }
@@ -420,7 +459,7 @@ async function initializeFavorites() {
 async function appExists(appId) {
   const { db, storeMod } = await waitForFirebase();
   const { doc, getDoc } = storeMod;
-  
+
   try {
     const appDoc = await getDoc(doc(db, 'apps', appId));
     return appDoc.exists();
@@ -432,8 +471,8 @@ async function appExists(appId) {
 
 // Update all favorite buttons on the page (using FavoritesManager)
 function updateFavoriteButtons() {
-  const favoriteButtons = document.querySelectorAll('.heart-btn');
-  
+  // Update both heart-btn and action-btn with heart-btn class
+  const favoriteButtons = document.querySelectorAll('.heart-btn, .action-btn.heart-btn');
   if (!currentUser || !window.favoritesManager.initialized) {
     // Hide all favorite buttons for non-authenticated users
     favoriteButtons.forEach(btn => {
@@ -441,21 +480,21 @@ function updateFavoriteButtons() {
     });
     return;
   }
-  
+
   try {
     // Get favorites from manager (synchronous after initialization)
     favoriteButtons.forEach(btn => {
       const appId = btn.dataset.appId;
       const isFavorited = window.favoritesManager.isFavorited(appId);
-      
+
       // Show button for authenticated users
       btn.style.display = 'flex';
-      
+
       // Update button appearance - handle both SVG buttons
       if (isFavorited) {
         btn.classList.add('favorited');
         btn.title = 'Remove from favorites';
-        
+
         // Update SVG fill if present
         const svg = btn.querySelector('svg');
         if (svg) {
@@ -464,7 +503,7 @@ function updateFavoriteButtons() {
       } else {
         btn.classList.remove('favorited');
         btn.title = 'Add to favorites';
-        
+
         // Update SVG fill if present
         const svg = btn.querySelector('svg');
         if (svg) {
@@ -472,58 +511,87 @@ function updateFavoriteButtons() {
         }
       }
     });
-  } catch (error) {
+
+    } catch (error) {
     console.error('Error updating favorite buttons:', error);
   }
 }
 
+// Update only specific favorite buttons (for performance)
+function updateSpecificFavoriteButtons(appIds) {
+  if (!currentUser || !window.favoritesManager.initialized) {
+    return;
+  }
+
+  try {
+    appIds.forEach(appId => {
+      const buttons = document.querySelectorAll(`[data-app-id="${appId}"] .heart-btn, [data-app-id="${appId}"] .action-btn.heart-btn`);
+      buttons.forEach(btn => {
+        const isFavorited = window.favoritesManager.isFavorited(appId);
+
+        if (isFavorited) {
+          btn.classList.add('favorited');
+          btn.title = 'Remove from favorites';
+          const svg = btn.querySelector('svg');
+          if (svg) svg.setAttribute('fill', 'currentColor');
+        } else {
+          btn.classList.remove('favorited');
+          btn.title = 'Add to favorites';
+          const svg = btn.querySelector('svg');
+          if (svg) svg.setAttribute('fill', 'none');
+        }
+      });
+    });
+
+    } catch (error) {
+    console.error('Error updating specific favorite buttons:', error);
+  }
+}
 
 // Add event listeners for favorite buttons
 function initializeFavoriteButtons() {
-  console.log('Initializing favorite button event listeners');
-  
   document.addEventListener('click', async (e) => {
     if (e.target.closest('.heart-btn')) {
-      console.log('Favorite button clicked:', e.target);
       e.preventDefault();
       e.stopPropagation();
-      
+
       const btn = e.target.closest('.heart-btn');
       const appId = btn?.dataset.appId;
-      console.log('App ID from button:', appId);
-      
+
       if (appId) {
         await window.favoritesManager.toggleFavorite(appId);
       } else {
-        console.error('No app ID found on favorite button');
+        console.error('Favorites: No app ID found on favorite button');
       }
     }
   });
-  
-  console.log('Favorite button event listeners initialized');
-}
+
+  }
 
 // Auto-initialize when loaded
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('✅ VibeStore Favorites system loaded');
   initializeFavorites();
   initializeFavoriteButtons();
-  
+
   // Register listener for favorites changes
-  window.favoritesManager.addListener(() => {
-    updateFavoriteButtons();
+  window.favoritesManager.addListener((changedAppId) => {
+    if (changedAppId) {
+      // Update only the specific app's buttons
+      updateSpecificFavoriteButtons([changedAppId]);
+    } else {
+      // Update all buttons if no specific app
+      updateFavoriteButtons();
+    }
   });
-  
+
   // Listen for cross-page favorites updates
   window.addEventListener('favoritesUpdated', (event) => {
-    console.log('Favorites updated event received:', event.detail);
     updateFavoriteButtons();
   });
-  
+
   // Cross-tab synchronization via localStorage
   window.addEventListener('storage', async (e) => {
     if (e.key === 'vibestore_favorites_updated') {
-      console.log('Favorites updated in another tab, refreshing...');
       await window.favoritesManager.refresh();
     }
   });

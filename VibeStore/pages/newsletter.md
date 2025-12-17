@@ -305,7 +305,7 @@ import { collection, addDoc, serverTimestamp, query, where, getDocs, getCountFro
 // Load subscriber count
 async function loadSubscriberCount() {
   try {
-    const subscribersRef = collection(db, 'newsletter_subscribers');
+    const subscribersRef = collection(db, 'newsletter_subscriptions');
     const q = query(subscribersRef, where('status', '==', 'active'));
     const snapshot = await getCountFromServer(q);
     const count = snapshot.data().count;
@@ -339,7 +339,7 @@ document.getElementById('newsletterForm').addEventListener('submit', async (e) =
   
   try {
     // Check if already subscribed
-    const subscribersRef = collection(db, 'newsletter_subscribers');
+    const subscribersRef = collection(db, 'newsletter_subscriptions');
     const q = query(subscribersRef, where('email', '==', email));
     const existingSnapshot = await getDocs(q);
     

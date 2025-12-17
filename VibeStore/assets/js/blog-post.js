@@ -65,7 +65,7 @@ async function loadPost(id) {
 
     if (docSnap.exists()) {
       const post = { id: docSnap.id, ...docSnap.data() };
-      
+
       // Only show published posts (or show drafts if admin)
       if (!post.published) {
         showError();
@@ -125,7 +125,7 @@ function renderPost(post) {
   // Tags
   if (post.tags && post.tags.length > 0) {
     const tagsContainer = document.getElementById('tagsContainer');
-    tagsContainer.innerHTML = post.tags.map(tag => 
+    tagsContainer.innerHTML = post.tags.map(tag =>
       `<span class="tag">${tag}</span>`
     ).join('');
   }
@@ -188,7 +188,7 @@ function convertMarkdownToHTML(markdown) {
 
   // Unordered lists
   html = html.replace(/^\- (.*$)/gim, '<li>$1</li>');
-  
+
   // Wrap consecutive list items in ul tags
   html = html.replace(/(<li>.*<\/li>\n?)+/g, (match) => {
     return `<ul>${match}</ul>`;
@@ -211,7 +211,7 @@ function convertMarkdownToHTML(markdown) {
 
   lines.forEach(line => {
     const trimmed = line.trim();
-    
+
     // Skip if it's already a tag
     if (trimmed.startsWith('<') || trimmed === '') {
       if (currentParagraph) {

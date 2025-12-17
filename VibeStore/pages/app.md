@@ -14,133 +14,267 @@ permalink: /pages/app
 .app-header {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 0;
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid var(--c-line);
+  overflow: hidden;
+  position: relative;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  pointer-events: none;
 }
 
 .app-meta {
   display: grid;
-  grid-template-columns: 120px 1fr auto;
-  gap: 1.5rem;
-  align-items: start;
+  grid-template-columns: 140px 1fr auto;
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+  background: var(--c-primary);
+  color: white;
+}
+
+.app-icon-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .app-icon {
-  width: 120px;
-  height: 120px;
-  background: var(--c-primary);
+  width: 140px;
+  height: 140px;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: 3.5rem;
   color: white;
-  box-shadow: 0 8px 24px rgba(107,70,193,0.3);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
   overflow: hidden;
-  border: 1.5px solid #8B5CF6; /* Purple stroke - reduced by half */
+  border: 2px solid rgba(255,255,255,0.3);
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.app-icon:hover {
+  transform: scale(1.05) translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.2);
 }
 
 .app-info {
   flex: 1;
+  color: white;
 }
 
 .badges {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  animation: fadeInLeft 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .badge {
-  background: #e0e7ff;
-  color: #3730a3;
-  padding: 0.25rem 0.75rem;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  padding: 0.4rem 1rem;
   border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: 0.5rem;
-  margin-bottom: 0.25rem;
+  margin-right: 0.75rem;
+  margin-bottom: 0.5rem;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
 .app-title {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  margin: 0 0 0.75rem 0;
-  color: var(--c-text);
+  margin: 0 0 1rem 0;
+  color: white;
   line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  animation: fadeInLeft 0.8s ease-out 0.4s both;
 }
 
 .app-description {
-  color: var(--c-muted);
-  font-size: 1.1rem;
+  color: rgba(255,255,255,0.9);
+  font-size: 1.15rem;
   line-height: 1.6;
   margin: 0 0 1.5rem 0;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
+  animation: fadeInLeft 0.8s ease-out 0.6s both;
 }
 
 .app-tags {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  animation: fadeInLeft 0.8s ease-out 0.8s both;
 }
 
 .tag {
-  background: rgba(107,70,193,0.1);
-  color: var(--c-primary);
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 16px;
+  font-size: 0.85rem;
   font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.tag:hover {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
 }
 
 .rating {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   font-size: 1.1rem;
+  animation: fadeInLeft 0.8s ease-out 1s both;
 }
 
 .rating-stars {
-  color: #f59e0b;
-  font-size: 1.2rem;
+  color: white;
+  font-size: 1.4rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .score {
-  font-weight: 600;
-  color: var(--c-text);
+  font-weight: 700;
+  color: white;
+  font-size: 1.2rem;
 }
 
 .reviews {
-  color: var(--c-muted);
+  color: rgba(255,255,255,0.8);
+  font-size: 1rem;
 }
 
 .app-actions-wrapper {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-items: flex-end;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInRight 0.8s ease-out 1.2s both;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.users-count-prominent {
+  background: rgba(255,255,255,0.95);
+  color: var(--c-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  min-width: 80px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.8);
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  animation: usersCountFloat 3s ease-in-out infinite;
+}
+
+@keyframes usersCountFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.users-count-prominent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.users-number {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.users-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
 }
 
 .app-actions {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  align-items: stretch;
-  min-width: 160px;
+  align-items: center;
+  min-width: 180px;
   width: 100%;
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 1.5rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
@@ -150,27 +284,43 @@ permalink: /pages/app
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-width: 160px;
+  min-width: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
 }
 
 /* Action buttons */
 .action-btn {
-  padding: 0.75rem 1.5rem;
-  min-width: 140px;
+  padding: 1rem 1.5rem;
+  min-width: 180px;
   font-size: 0.95rem;
 }
 
 /* Pressed/Active states */
 .action-btn.pressed {
-  transform: scale(0.95);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  opacity: 0.9;
 }
 
-/* Save button and Add to List button active/saved state */
+/* Save button active/saved state */
 #save-btn.saved,
-#save-btn.active,
-#add-to-list-btn.saved,
-#add-to-list-btn.active {
+#save-btn.active {
   background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
   border: none !important;
   color: white !important;
@@ -179,60 +329,320 @@ permalink: /pages/app
 }
 
 #save-btn.saved:hover,
-#save-btn.active:hover,
-#add-to-list-btn.saved:hover,
-#add-to-list-btn.active:hover {
+#save-btn.active:hover {
   background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
   transform: scale(1.05);
   box-shadow: 0 8px 24px rgba(107, 70, 193, 0.3);
+}
+
+/* Add to List button states */
+#add-to-list-btn.added {
+  background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 4px 16px rgba(107, 70, 193, 0.3);
+  font-weight: 600;
+}
+
+#add-to-list-btn.added:hover {
+  background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(107, 70, 193, 0.3);
+}
+
+#add-to-list-btn.added span {
+  content: "✅ Added to List";
+}
+
+/* Modal styles for Add to List */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1rem;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--c-text);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--c-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: rgba(0,0,0,0.1);
+  color: var(--c-text);
+}
+
+.modal-body {
+  padding: 0 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 1rem;
+}
+
+.btn-cancel {
+  background: #f8fafc;
+  color: var(--c-text);
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.btn-confirm {
+  background: var(--c-primary);
+  color: white;
+  border: 1px solid var(--c-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-confirm:hover {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+}
+
+.btn-confirm:disabled {
+  background: #cbd5e1;
+  border-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.lists-selection {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.list-option {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.list-option:hover {
+  background: #f8fafc;
+  border-color: var(--c-primary);
+}
+
+.list-option input[type="radio"] {
+  margin-right: 0.75rem;
+  accent-color: var(--c-primary);
+}
+
+.list-option-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-name {
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.list-count {
+  font-size: 0.85rem;
+  color: var(--c-muted);
+}
+
+.btn-create-new {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--c-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-create-new:hover {
+  background: var(--c-accent);
+  transform: translateY(-1px);
+}
+
+/* Add to List Modal Styles */
+.lists-selection {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.list-option {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.list-option:hover {
+  background: rgba(107,70,193,0.05);
+  border-color: var(--c-primary);
+}
+
+.list-option input[type="radio"] {
+  margin-right: 0.75rem;
+  accent-color: var(--c-primary);
+}
+
+.list-option-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-name {
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.list-count {
+  font-size: 0.8rem;
+  color: var(--c-muted);
+  background: rgba(107,70,193,0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+}
+
+.btn-create-new {
+  background: var(--c-primary);
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-create-new:hover {
+  background: var(--c-accent);
+  transform: translateY(-1px);
 }
 
 /* Social Share Inline */
 .social-share-inline {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: rgba(255,255,255,0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  animation: fadeInRight 0.8s ease-out 1.4s both;
 }
 
 .share-label {
-  font-size: 0.85rem;
-  color: var(--c-muted);
-  font-weight: 500;
-  margin-right: 0.25rem;
+  font-size: 0.9rem;
+  color: white;
+  font-weight: 600;
+  margin-right: 0.5rem;
 }
 
 .social-btn-flat {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border: none;
-  background: none;
+  background: rgba(255,255,255,0.15);
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  opacity: 0.5;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .social-btn-flat svg {
-  width: 24px;
-  height: 24px;
-  color: var(--c-primary);
-  fill: var(--c-primary);
+  width: 20px;
+  height: 20px;
+  color: white;
+  fill: white;
 }
 
 .social-btn-flat:hover {
-  opacity: 1;
-  transform: scale(1.15);
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
 .social-btn-flat:active {
-  transform: scale(0.95);
+  transform: translateY(0) scale(0.95);
 }
 
 .social-btn-flat.copied {
-  opacity: 1;
+  background: rgba(34, 197, 94, 0.8);
   animation: pulse 0.5s ease;
 }
 
@@ -242,25 +652,30 @@ permalink: /pages/app
 }
 
 .btn.primary {
-  background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
-  color: white;
+  background: white;
+  color: var(--c-primary);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  font-weight: 700;
 }
 
 .btn.primary:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(107,70,193,0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+  background: #f8f9ff;
 }
 
 .btn.secondary {
-  background: rgba(107,70,193,0.1);
-  color: var(--c-primary);
-  border: 1px solid rgba(107,70,193,0.2);
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  font-weight: 700;
 }
 
 .btn.secondary:hover {
-  background: var(--c-primary);
-  color: white;
-  transform: scale(1.05);
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.2);
 }
 
 .card {
@@ -838,37 +1253,64 @@ permalink: /pages/app
     padding: 1rem 0.5rem;
   }
   
+  .app-header {
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+  
   .app-meta {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 1rem;
+    gap: 1.5rem;
+    padding: 1.5rem;
   }
   
   .app-icon {
-    width: 80px;
-    height: 80px;
-    font-size: 2rem;
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
     margin: 0 auto;
   }
   
+  .app-icon-section {
+    align-items: center;
+  }
+  
   .app-title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+  }
+  
+  .app-description {
+    font-size: 1rem;
   }
   
   .app-actions-wrapper {
-    align-items: stretch;
+    align-items: center;
+    gap: 1rem;
   }
   
   .app-actions {
     flex-direction: column;
     align-items: stretch;
+    min-width: auto;
+    width: 100%;
   }
   
   .btn {
     width: 100%;
     min-width: auto;
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .users-count-prominent {
+    min-width: 80px;
     padding: 0.75rem 1rem;
-    font-size: 0.9rem;
+    margin-top: 0.75rem;
+  }
+  
+  .users-number {
+    font-size: 1.2rem;
   }
   
   .details-grid {
@@ -878,6 +1320,18 @@ permalink: /pages/app
   .social-share-inline {
     justify-content: center;
     flex-wrap: wrap;
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .social-btn-flat {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .social-btn-flat svg {
+    width: 18px;
+    height: 18px;
   }
 }
 </style>
@@ -906,8 +1360,15 @@ permalink: /pages/app
     <!-- App Header -->
     <div class="app-header">
       <div class="app-meta">
-        <div class="app-icon" id="app-icon">
-          📱
+        <div class="app-icon-section">
+          <div class="app-icon" id="app-icon">
+            📱
+          </div>
+          <!-- Users Count - Below Icon -->
+          <div class="users-count-prominent" id="users-count-prominent">
+            <div class="users-number" id="users-number">0</div>
+            <div class="users-label">clicks</div>
+          </div>
         </div>
         
         <div class="app-info">
@@ -968,8 +1429,9 @@ permalink: /pages/app
             </button>
             <button class="social-btn-flat copy-link" id="share-copy" title="Copy link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15,3 21,3 21,9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
               </svg>
             </button>
           </div>
@@ -1022,7 +1484,7 @@ permalink: /pages/app
           <span id="app-created">Loading...</span>
         </div>
         <div class="detail-item">
-          <strong>Users:</strong>
+          <strong>Clicks:</strong>
           <span id="app-users-count">Loading...</span>
         </div>
         <div class="detail-item" id="demo-item" style="display: none;">
@@ -1036,6 +1498,10 @@ permalink: /pages/app
         <div class="detail-item" id="notes-item" style="display: none;">
           <strong>Additional Notes:</strong>
           <span id="app-notes">Loading...</span>
+        </div>
+        <div class="detail-item" id="pricing-item" style="display: none;">
+          <strong>Pricing:</strong>
+          <span id="app-pricing">Loading...</span>
         </div>
       </div>
     </div>
@@ -1125,28 +1591,33 @@ permalink: /pages/app
 }
 
 .badge.web {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(59, 130, 246, 0.2);
+  color: white;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .badge.mobile {
-  background: #dcfce7;
-  color: #166534;
+  background: rgba(16, 185, 129, 0.2);
+  color: white;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .badge.whatsapp {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(37, 211, 102, 0.2);
+  color: white;
+  border: 1px solid rgba(37, 211, 102, 0.3);
 }
 
 .badge.featured {
-  background: #fbbf24;
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.2);
+  color: white;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .badge.editor {
-  background: #34d399;
-  color: #065f46;
+  background: rgba(139, 92, 246, 0.2);
+  color: white;
+  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .chip {
@@ -1175,11 +1646,31 @@ permalink: /pages/app
   .app-meta {
     grid-template-columns: 1fr !important;
     text-align: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
   }
   
   .app-actions {
-    flex-direction: row !important;
+    flex-direction: column !important;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .users-count-prominent {
+    min-width: 80px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+  }
+  
+  .users-number {
+    font-size: 1.2rem;
+  }
+  
+  .social-share-inline {
     justify-content: center;
+    flex-wrap: wrap;
+    padding: 0.75rem;
+    gap: 0.5rem;
   }
 }
 </style>
@@ -1388,6 +1879,31 @@ function renderAppContent(app) {
     if (notesItem) notesItem.style.display = 'block';
   }
   
+  // Pricing information
+  const pricingEl = document.getElementById('app-pricing');
+  const pricingItem = document.getElementById('pricing-item');
+  if (app.pricingAmount && app.pricingAmount > 0) {
+    if (pricingEl) {
+      const amount = app.pricingAmount;
+      const type = app.pricingType || 'one-time';
+      const typeLabels = {
+        'monthly': '/month',
+        'yearly': '/year',
+        'one-time': 'one-time',
+        'per-use': '/use'
+      };
+      const typeLabel = typeLabels[type] || '';
+      pricingEl.textContent = `$${amount.toFixed(2)} ${typeLabel}`;
+    }
+    if (pricingItem) pricingItem.style.display = 'block';
+  } else if (app.pricingAmount === 0 || (app.pricingAmount === null && app.pricingType)) {
+    // Free app
+    if (pricingEl) {
+      pricingEl.textContent = 'Free';
+    }
+    if (pricingItem) pricingItem.style.display = 'block';
+  }
+  
   // Render image gallery if screenshots exist
   renderImageGallery(app.screenshots || app.images || []);
   
@@ -1423,7 +1939,7 @@ function renderAppContent(app) {
   // Users count
   const usersCount = app.usersCount || 0;
   const usersCountEl = document.getElementById('app-users-count');
-  if (usersCountEl) usersCountEl.textContent = `${usersCount} users`;
+  if (usersCountEl) usersCountEl.textContent = `${usersCount} clicks`;
   
   // Badges
   const badgesContainer = document.getElementById('app-badges');
@@ -1490,13 +2006,27 @@ function renderAppContent(app) {
   const usersCountInRating = app.usersCount || 0;
   const usersCountElInRating = document.querySelector('.users-count');
   if (usersCountElInRating) {
-    usersCountElInRating.textContent = `${usersCountInRating} users`;
+    const numberEl = usersCountElInRating.querySelector('.number');
+    if (numberEl) {
+      numberEl.textContent = usersCountInRating;
+    }
+  }
+  
+  // Update users count in prominent display
+  const usersNumberEl = document.getElementById('users-number');
+  if (usersNumberEl) {
+    usersNumberEl.textContent = usersCountInRating;
   }
   
   // CTA Button
   const ctaButton = document.getElementById('app-cta');
   if (ctaButton) {
-    ctaButton.href = app.link || '#';
+    const appId = new URLSearchParams(window.location.search).get('id');
+    if (appId) {
+      ctaButton.href = `https://redirectandlogclick-dz75ziy5sq-uc.a.run.app?appId=${appId}`;
+    } else {
+      ctaButton.href = app.link || '#';
+    }
     ctaButton.innerHTML = `<span>${getNicheCTA(app.niche)}</span>`;
   }
 }
@@ -1517,7 +2047,7 @@ function getNicheCTA(niche) {
   
   const ctas = {
     web: 'Open App',
-    mobile: 'Install App',
+    mobile: 'Open App',
     whatsapp: 'Open in WhatsApp'
   };
   return ctas[niche] || 'Open';
@@ -2128,6 +2658,7 @@ async function checkAuthState() {
       
       // Update button states
       updateButtonStates();
+      
     }
   });
 }
@@ -2150,55 +2681,29 @@ async function updateButtonStates() {
         saveButton.classList.remove('saved', 'active');
       }
       
-      console.log('Save button updated - Favorited:', isFavorited);
     }
-    
-    // Update "Add to List" button state
-    const addToListButton = document.getElementById('add-to-list-btn');
-    if (addToListButton) {
-      const isInList = await checkIfAppInUserLists(appId);
-      
-      // Update button classes only (keep text the same)
-      if (isInList) {
-        addToListButton.classList.add('saved', 'active');
+
+    // Update add to list button state
+    if (window.listsManager && window.listsManager.initialized) {
+      if (window.ListUI) {
+        const listUI = new window.ListUI(window.listsManager);
+        listUI.updateAddToListButton(appId);
       } else {
-        addToListButton.classList.remove('saved', 'active');
+        updateAddToListButton(appId);
       }
     }
+    
   } catch (error) {
     console.error('Error updating button states:', error);
   }
 }
 
-// Check if app is in any of user's lists
-async function checkIfAppInUserLists(appId) {
-  try {
-    const { db, storeMod } = await waitForFirebase();
-    const { doc, getDoc } = storeMod;
-    
-    const userRef = doc(db, 'users', currentUser.uid);
-    const userSnap = await getDoc(userRef);
-    
-    if (!userSnap.exists()) return false;
-    
-    const userData = userSnap.data();
-    const lists = userData.lists || [];
-    
-    // Check if app is in any list
-    return lists.some(list => list.apps && list.apps.includes(appId));
-  } catch (error) {
-    console.error('Error checking lists:', error);
-    return false;
-  }
-}
 
 // Initialize star rating (global variable to persist rating)
 let selectedRating = 0;
 
 function initializeStarRating() {
-  console.log('Initializing star rating...');
   const stars = document.querySelectorAll('.star-rating .star');
-  console.log('Found stars:', stars.length);
   
   // Clear existing event listeners by cloning the elements
   stars.forEach(star => {
@@ -2208,13 +2713,11 @@ function initializeStarRating() {
   
   // Get the new stars after cloning
   const newStars = document.querySelectorAll('.star-rating .star');
-  console.log('New stars after cloning:', newStars.length);
   
   newStars.forEach((star, index) => {
     star.addEventListener('click', () => {
       selectedRating = index + 1;
       updateStarDisplay();
-      console.log('Selected rating:', selectedRating); // Debug log
     });
     
     star.addEventListener('mouseenter', () => {
@@ -2277,7 +2780,6 @@ async function submitReview() {
   const rating = selectedRating; // Use global variable
   const text = document.getElementById('review-text')?.value?.trim() || '';
   
-  console.log('Submitting review with rating:', rating); // Debug log
   
   if (rating === 0) {
     alert('Please select a rating');
@@ -2394,6 +2896,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+
 // Initialize button event listeners
 function initializeButtons() {
   // Open button - redirect to app link with logging
@@ -2403,47 +2906,51 @@ function initializeButtons() {
       // Add pressed state
       openButton.classList.add('pressed');
       setTimeout(() => openButton.classList.remove('pressed'), 150);
+      
       const appId = new URLSearchParams(window.location.search).get('id');
-      if (appId && currentUser) {
-        // Log the interaction for review validation
-        try {
-          const { db, storeMod } = await waitForFirebase();
-          const { doc, setDoc, serverTimestamp } = storeMod;
-          
-          // Create interaction record
-          const interactionRef = doc(db, 'interactions', `${currentUser.uid}_${appId}`);
-          await setDoc(interactionRef, {
-            userId: currentUser.uid,
-            appId: appId,
-            lastClickAt: serverTimestamp(),
-            clickCount: 1
-          }, { merge: true });
-          
-          console.log('Interaction logged successfully');
-          
-          // Update user count locally (without Cloud Functions)
+      if (!appId) {
+        console.warn('❌ No app ID found in URL');
+        return;
+      }
+      
+      // Track the click using session tracker
+      if (window.trackAppClick) {
+        const canTrack = window.trackAppClick(appId, 'app_detail');
+        if (canTrack) {
+          console.log('📊 App click tracked successfully for app:', appId);
+        } else {
+          console.log('⏰ Click not tracked due to cooldown for app:', appId);
+        }
+      } else {
+        console.warn('⚠️ Session tracker not available');
+      }
+      
+      // Continue with existing logic for authenticated users
+      if (currentUser) {
+        console.log('🔗 Open App button clicked for app:', appId, 'by user:', currentUser.uid);
+      } else {
+        console.log('🔗 Open App button clicked for app:', appId, 'by anonymous user');
+      }
+      
+      // Update the href with session ID for redirectAndLogClick
+      if (window.sessionTracker && window.sessionTracker.sessionId) {
+        const sessionId = window.sessionTracker.sessionId;
+        const redirectUrl = `https://redirectandlogclick-dz75ziy5sq-uc.a.run.app?appId=${appId}&sessionId=${sessionId}`;
+        
+        // Get auth token if user is logged in
+        if (window.$fb && window.$fb.auth && window.$fb.auth.currentUser) {
           try {
-            const { db, storeMod } = await waitForFirebase();
-            const { doc, getDoc, updateDoc, increment } = storeMod;
-            
-            const appRef = doc(db, 'apps', appId);
-            await updateDoc(appRef, {
-              usersCount: increment(1),
-              updatedAt: new Date()
-            });
-            
-            console.log('User count updated successfully via client-side update');
-            
-            // Reload app details to show updated count
-            await loadAppDetails();
+            const token = await window.$fb.auth.currentUser.getIdToken();
+            openButton.href = `${redirectUrl}&token=${encodeURIComponent(token)}`;
           } catch (error) {
-            console.warn('Failed to update user count:', error);
+            console.warn('Failed to get auth token:', error);
+            openButton.href = redirectUrl;
           }
-          
-        } catch (error) {
-          console.warn('Failed to log interaction:', error);
+        } else {
+          openButton.href = redirectUrl;
         }
       }
+      
       // Let the default link behavior happen
     });
   }
@@ -2483,13 +2990,14 @@ function initializeButtons() {
     });
   }
 
-  // Add to List button
+  // Add to List button functionality
   const addToListButton = document.getElementById('add-to-list-btn');
   if (addToListButton) {
     addToListButton.addEventListener('click', async () => {
       // Add pressed state
       addToListButton.classList.add('pressed');
       setTimeout(() => addToListButton.classList.remove('pressed'), 150);
+      
       if (!currentUser) {
         alert('Please sign in to add apps to lists');
         return;
@@ -2502,165 +3010,32 @@ function initializeButtons() {
       }
 
       try {
-        // Show list selection modal
-        await showListSelectionModal(appId);
+        // Initialize lists manager if not already done
+        if (!window.listsManager) {
+          alert('Lists system not available. Please refresh the page.');
+          return;
+        }
+
+        if (!window.listsManager.initialized) {
+          await window.listsManager.initialize(currentUser);
+        }
+
+        // Show add to list modal
+        if (window.ListUI) {
+          const listUI = new window.ListUI(window.listsManager);
+          listUI.showAddToListModal(appId);
+        } else {
+          showAddToListModal(appId);
+        }
       } catch (error) {
         console.error('Error adding to list:', error);
         alert('Error adding to list. Please try again.');
       }
     });
   }
+
 }
 
-// Show list selection modal
-async function showListSelectionModal(appId) {
-  try {
-    const { db, storeMod } = await waitForFirebase();
-    const { doc, getDoc, updateDoc, arrayUnion } = storeMod;
-    
-    // Get user's lists with offline support
-    const userRef = doc(db, 'users', currentUser.uid);
-    let userSnap;
-    
-    try {
-      userSnap = await getDoc(userRef);
-    } catch (error) {
-      if (error.code === 'unavailable' || error.message.includes('offline')) {
-        alert('You are currently offline. Please check your internet connection and try again.');
-        return;
-      }
-      throw error;
-    }
-    
-    if (!userSnap.exists()) {
-      alert('Please create a list first in your profile');
-      window.location.href = '/pages/profile';
-      return;
-    }
-    
-    const userData = userSnap.data();
-    const lists = userData.lists || [];
-    
-    if (lists.length === 0) {
-      alert('You have no lists yet. Please create a list first in your profile.');
-      window.location.href = '/pages/profile';
-      return;
-    }
-  
-  // Create modal
-  const modal = document.createElement('div');
-  modal.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  `;
-  
-  modal.innerHTML = `
-    <div style="
-      background: white;
-      border-radius: 12px;
-      padding: 2rem;
-      max-width: 400px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-    ">
-      <h3 style="margin: 0 0 1rem 0; color: var(--c-text);">Add to List</h3>
-      <p style="margin: 0 0 1.5rem 0; color: var(--c-muted);">Choose a list to add this app to:</p>
-      <div id="lists-container" style="margin-bottom: 1.5rem;">
-        ${lists.map(list => `
-          <div class="list-item" style="
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-          " data-list-id="${list.id}">
-            <div style="font-weight: 600; color: var(--c-text);">${list.name}</div>
-            <div style="font-size: 0.9rem; color: var(--c-muted);">${list.apps ? list.apps.length : 0} apps</div>
-          </div>
-        `).join('')}
-      </div>
-      <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-        <button id="cancel-btn" style="
-          padding: 0.5rem 1rem;
-          border: 1px solid #e2e8f0;
-          background: white;
-          border-radius: 8px;
-          cursor: pointer;
-        ">Cancel</button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(modal);
-  
-  // Add event listeners
-  const listItems = modal.querySelectorAll('.list-item');
-  const cancelBtn = modal.querySelector('#cancel-btn');
-  
-  listItems.forEach(item => {
-    item.addEventListener('click', async () => {
-      const listId = item.dataset.listId;
-      const list = lists.find(l => l.id === listId);
-      
-      if (list && !list.apps.includes(appId)) {
-        list.apps.push(appId);
-        
-        await updateDoc(userRef, {
-          lists: lists,
-          updatedAt: new Date()
-        });
-        
-        // Update button state after adding to list
-        await updateButtonStates();
-        
-        alert(`Added to "${list.name}" successfully!`);
-      } else if (list && list.apps.includes(appId)) {
-        alert(`This app is already in "${list.name}"`);
-      }
-      
-      document.body.removeChild(modal);
-    });
-    
-    item.addEventListener('mouseenter', () => {
-      item.style.background = '#f8fafc';
-      item.style.borderColor = 'var(--c-primary)';
-    });
-    
-    item.addEventListener('mouseleave', () => {
-      item.style.background = 'white';
-      item.style.borderColor = '#e2e8f0';
-    });
-  });
-  
-  cancelBtn.addEventListener('click', () => {
-    document.body.removeChild(modal);
-  });
-  
-  // Close on background click
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      document.body.removeChild(modal);
-    }
-  });
-  } catch (error) {
-    console.error('Error showing list modal:', error);
-    if (error.code === 'unavailable' || error.message.includes('offline')) {
-      alert('You are currently offline. Please check your internet connection and try again.');
-    } else {
-      alert('Error loading lists. Please try again.');
-    }
-  }
-}
 
 // Helper function to check if app is favorited (using FavoritesManager)
 function checkIfFavorited(appId) {
@@ -2668,6 +3043,86 @@ function checkIfFavorited(appId) {
     return window.favoritesManager.isFavorited(appId);
   }
   return false;
+}
+
+// Show add to list modal
+function showAddToListModal(appId) {
+  const lists = window.listsManager.getLists();
+  
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add to List</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="lists-selection">
+          ${lists.length === 0 ? 
+            '<p style="text-align: center; color: var(--c-muted); margin: 2rem 0;">No lists yet. Create your first list in your profile.</p>' :
+            lists.map(list => `
+              <label class="list-option">
+                <input type="radio" name="selectedList" value="${list.id}">
+                <div class="list-option-content">
+                  <span class="list-name">${list.name}</span>
+                  <span class="list-count">${list.appCount} apps</span>
+                </div>
+              </label>
+            `).join('')
+          }
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+          <a href="/pages/profile" class="btn-create-new" style="display: inline-block; padding: 0.5rem 1rem; background: var(--c-primary); color: white; text-decoration: none; border-radius: 8px;">Create New List</a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel">Cancel</button>
+        <button class="btn-confirm" id="confirm-add-to-list" ${lists.length === 0 ? 'disabled' : ''}>Add to List</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Event listeners
+  modal.querySelector('.modal-close').addEventListener('click', () => {
+    document.body.removeChild(modal);
+  });
+  
+  modal.querySelector('.btn-cancel').addEventListener('click', () => {
+    document.body.removeChild(modal);
+  });
+  
+  modal.querySelector('#confirm-add-to-list').addEventListener('click', async () => {
+    const selectedList = modal.querySelector('input[name="selectedList"]:checked');
+    if (selectedList) {
+      try {
+        await window.listsManager.addAppToList(selectedList.value, appId);
+        updateAddToListButton(appId);
+        document.body.removeChild(modal);
+      } catch (error) {
+        console.error('Error adding app to list:', error);
+        alert('Error adding app to list. Please try again.');
+      }
+    }
+  });
+}
+
+// Update add to list button state
+function updateAddToListButton(appId) {
+  const addToListButton = document.getElementById('add-to-list-btn');
+  if (!addToListButton || !window.listsManager || !window.listsManager.initialized) return;
+  
+  const listIds = window.listsManager.isAppInLists(appId);
+  
+  if (listIds.length > 0) {
+    addToListButton.classList.add('added');
+    addToListButton.querySelector('span').textContent = 'Added to List';
+  } else {
+    addToListButton.classList.remove('added');
+    addToListButton.querySelector('span').textContent = 'Add to List';
+  }
 }
 
 // Social sharing functionality

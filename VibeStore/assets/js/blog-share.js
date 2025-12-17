@@ -67,12 +67,12 @@ class VibeStoreShare {
     if (excerptElement) {
       return excerptElement.textContent.trim();
     }
-    
+
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       return metaDescription.getAttribute('content');
     }
-    
+
     return 'Check out this article on VibeStore!';
   }
 
@@ -151,7 +151,7 @@ class VibeStoreShare {
       font-weight: 500;
       z-index: 1000;
       animation: slideIn 0.3s ease-out;
-      ${type === 'error' 
+      ${type === 'error'
         ? 'background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;'
         : 'background: #d1fae5; color: #059669; border: 1px solid #a7f3d0;'
       }
@@ -183,11 +183,9 @@ class VibeStoreShare {
         userId: this.getCurrentUserId() || 'anonymous'
       };
 
-      console.log('Share tracked:', shareData);
-      
       // Here you would send the data to your analytics service
       // await this.saveShareToFirestore(shareData);
-      
+
     } catch (error) {
       console.error('Error tracking share:', error);
     }
@@ -208,7 +206,7 @@ class VibeStoreShare {
       // const shares = await firestore.collection('blog_shares')
       //   .where('blogId', '==', this.blogId)
       //   .get();
-      
+
       // return shares.docs.map(doc => doc.data());
       return [];
     } catch (error) {
@@ -231,7 +229,7 @@ style.textContent = `
       opacity: 1;
     }
   }
-  
+
   @keyframes slideOut {
     from {
       transform: translateX(0);

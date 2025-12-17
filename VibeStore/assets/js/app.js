@@ -20,17 +20,17 @@
   // Header scroll effects
   const header = document.querySelector('.site-header');
   let lastScrollY = window.scrollY;
-  
+
   window.addEventListener('scroll', () => {
     const currentScrollY = window.scrollY;
-    
+
     // Add scrolled class for styling
     if (currentScrollY > 50) {
       header.classList.add('scrolled');
     } else {
       header.classList.remove('scrolled');
     }
-    
+
     lastScrollY = currentScrollY;
   });
 
@@ -63,121 +63,17 @@
 
   // All data now comes from Firestore - no more demo data!
 
-  // Lazy Loading Implementation - Define BEFORE renderApps
-  window.initializeLazyLoading = function() {
-    // Check if IntersectionObserver is supported
-    if (!('IntersectionObserver' in window)) {
-      // Fallback: load all images immediately
-      const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
-      lazyImages.forEach(img => {
-        img.src = img.dataset.src;
-        img.classList.remove('lazy-image');
-      });
-      return;
-    }
-
-    // Create intersection observer
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          loadImage(img);
-          observer.unobserve(img);
-        }
-      });
-    }, {
-      rootMargin: '50px 0px', // Start loading 50px before image comes into view
-      threshold: 0.01
-    });
-
-    // Observe all lazy images
-    const lazyImages = document.querySelectorAll('.lazy-image[data-src]');
-    lazyImages.forEach(img => {
-      imageObserver.observe(img);
-    });
-  }
-
-  // Load image with progressive enhancement - Define BEFORE renderApps
-  window.loadImage = function(img) {
-    const src = img.dataset.src;
-    if (!src) return;
-
-    // Show loading state
-    const placeholder = img.parentElement.querySelector('.image-placeholder');
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-    }
-
-    // Create new image to preload
-    const newImg = new Image();
-    
-    // Set timeout for image loading (5 seconds)
-    const timeoutId = setTimeout(() => {
-      // Timeout reached - replace with emoji icon
-      const container = img.parentElement;
-      const niche = container.closest('.card-v2')?.dataset.niche || 'web';
-      let appIcon = '📱';
-      if (niche.includes('whatsapp')) appIcon = '💬';
-      else if (niche.includes('mobile')) appIcon = '📱';
-      else if (niche.includes('web')) appIcon = '🌐';
-      
-      container.innerHTML = `<div class="app-icon-v2">${appIcon}</div>`;
-      
-      console.warn('Image loading timeout:', src);
-    }, 5000);
-    
-    newImg.onload = () => {
-      // Clear timeout
-      clearTimeout(timeoutId);
-      
-      // Image loaded successfully
-      img.src = src;
-      img.classList.remove('lazy-image');
-      img.classList.add('loaded');
-      
-      // Hide loading placeholder
-      if (placeholder) {
-        placeholder.style.display = 'none';
-      }
-      
-      // Add fade-in effect
-      img.style.opacity = '0';
-      img.style.transition = 'opacity 0.3s ease';
-      setTimeout(() => {
-        img.style.opacity = '1';
-      }, 10);
-    };
-    
-    newImg.onerror = () => {
-      // Clear timeout
-      clearTimeout(timeoutId);
-      
-      // Image failed to load - replace with emoji icon
-      const container = img.parentElement;
-      const niche = container.closest('.card-v2')?.dataset.niche || 'web';
-      let appIcon = '📱';
-      if (niche.includes('whatsapp')) appIcon = '💬';
-      else if (niche.includes('mobile')) appIcon = '📱';
-      else if (niche.includes('web')) appIcon = '🌐';
-      
-      container.innerHTML = `<div class="app-icon-v2">${appIcon}</div>`;
-      
-      console.warn('Failed to load image:', src);
-    };
-    
-    // Start loading
-    newImg.src = src;
-  }
+  // Image loading functions removed - will be rebuilt
 
   async function renderApps(filter) {
     if (!marketplaceGrid) return;
-    
+
     // Show loading state
     marketplaceGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted);">Loading apps...</div>';
-    
+
     try {
       let apps = [];
-      
+
       // Fetch apps from Firestore based on filter
       if (window.VibeStoreFirestore) {
         try {
@@ -189,17 +85,15 @@
             apps = await window.VibeStoreFirestore.fetchEditorsChoice();
           }
         } catch (error) {
-          console.warn('Error fetching apps from Firestore:', error);
           apps = [];
         }
       } else {
-        console.warn('VibeStoreFirestore not available - check Firebase connection');
         apps = [];
       }
-      
+
       // Clear loading and render apps
       marketplaceGrid.innerHTML = '';
-      
+
       if (apps.length === 0) {
         // Show demo apps when no real apps are available
         const demoApps = [
@@ -234,27 +128,37 @@
             imageUrl: null
           }
         ];
-        
+
         apps = demoApps;
       }
-      
+
       apps.forEach(app => {
         const cardHTML = createCardHTML(app);
         marketplaceGrid.insertAdjacentHTML('beforeend', cardHTML);
       });
-      
+
       // Re-observe new cards for reveal animation
       const newCards = marketplaceGrid.querySelectorAll('.reveal');
       newCards.forEach(card => io.observe(card));
-      
+
       // Add click handlers for favorite functionality
       addCardClickHandlers();
-      
-      // Initialize lazy loading for new images
-      if (window.initializeLazyLoading) {
-        window.initializeLazyLoading();
-      }
-      
+
+      // Update favorite buttons if favorites manager is ready
+      if (window.favoritesManager && window.favoritesManager.initialized) {
+        if (window.updateFavoriteButtons) {
+          // Only update buttons for newly created cards, not all buttons
+          const newCards = marketplaceGrid.querySelectorAll('.app-card:not([data-initialized])');
+          newCards.forEach(card => {
+            card.setAttribute('data-initialized', 'true');
+          });
+          window.updateFavoriteButtons();
+        }
+      } else {
+        }
+
+      // Image loading removed - will be rebuilt
+
     } catch (error) {
       console.error('Error rendering apps:', error);
       marketplaceGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted);">Error loading apps. Please try again.</div>';
@@ -263,103 +167,84 @@
 
   // Make functions globally available
   window.createCardHTML = function(app) {
+    return createAppCard(app);
+  }
+
+  // Create app card with new design
+  function createAppCard(app) {
     const rating = app.rating_avg || app.rating || 0;
     const category = app.category || 'App';
     const title = app.title || 'Untitled App';
     const description = app.description || 'No description available';
     const appId = app.id || app.firestoreId || 'demo';
-    
+    const usersCount = app.usersCount || 0;
+
     // Generate stars based on rating
     const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
-    
-    // Use only V2 design
-    return createVersion2Card(app, appId, category, title, description, stars);
-  }
 
-  // Version 2: Detailed Rich Design - Updated with correct favorites state
-  function createVersion2Card(app, appId, category, title, description, stars) {
-    const rating = app.rating_avg || app.rating || 0;
-    const usersCount = app.usersCount || 0;
-    
-    // Get appropriate icon based on niche (handle array or single value)
+    // Get appropriate icon based on niche or user uploaded image
     let appIcon = '📱';
-    const nicheArray = Array.isArray(app.niche) ? app.niche : [app.niche];
-    if (nicheArray.includes('whatsapp')) appIcon = '💬';
-    else if (nicheArray.includes('mobile')) appIcon = '📱';
-    else if (nicheArray.includes('web')) appIcon = '🌐';
-    
-    // Use first niche for data attribute, or join them
-    const nicheAttr = Array.isArray(app.niche) ? app.niche.join(',') : (app.niche || 'web');
-    
-    // Check if app is favorited (using FavoritesManager if available)
-    const isFavorited = window.favoritesManager && window.favoritesManager.initialized 
+    if (app.niche === 'web') appIcon = '🌐';
+    else if (app.niche === 'mobile') appIcon = '📱';
+    else if (app.niche === 'whatsapp') appIcon = '💬';
+
+    // Check if user uploaded an image
+    const appImageUrl = app.imageUrl || app.image;
+    const hasCustomImage = appImageUrl && appImageUrl.trim() !== '';
+
+    // Check if app is favorited
+    const isFavorited = window.favoritesManager && window.favoritesManager.initialized
       ? window.favoritesManager.isFavorited(appId)
       : false;
-    
-    // Set appropriate class and fill for favorite button
-    const heartClass = isFavorited ? 'action-btn-v2 heart-btn favorited' : 'action-btn-v2 heart-btn';
+
+    const heartClass = isFavorited ? 'action-btn heart-btn favorited' : 'action-btn heart-btn';
     const heartFill = isFavorited ? 'currentColor' : 'none';
     const heartTitle = isFavorited ? 'Remove from favorites' : 'Add to favorites';
-    
-    // Use app image if available, otherwise fallback to emoji
-    const appImageUrl = app.imageUrl || app.image;
-    const iconContent = appImageUrl 
-      ? `<div class="app-icon-container">
-           <img 
-             data-src="${appImageUrl}" 
-             alt="${title} Icon" 
-             class="lazy-image app-icon-img"
-             loading="lazy"
-             onerror="this.parentElement.innerHTML='<div class=\\"app-icon-v2\\">${appIcon}</div>'"
-           >
-           <div class="image-placeholder">
-             <div class="loading-spinner"></div>
-           </div>
-         </div>`
-      : `<div class="app-icon-v2">${appIcon}</div>`;
 
     return `
-      <article class="card card-v2 reveal" data-app-id="${appId}" data-niche="${nicheAttr}">
-        <div class="card-header-v2">
-          ${iconContent}
-          <div class="header-info">
-            <span class="category-tag">${category}</span>
-            <div class="rating-v2">
-              <span class="stars">${stars}</span>
-              <span class="rating-number">${rating.toFixed ? rating.toFixed(1) : rating}</span>
+      <article class="app-card" data-app-id="${appId}" data-niche="${app.niche || 'web'}" data-initialized="false">
+        <div class="card-header" onclick="trackAppCardClick('${appId}', 'home_card_header'); window.location.href='/pages/app?id=${appId}'" style="cursor: pointer;">
+          <div class="app-icon">
+            ${hasCustomImage
+              ? `<img src="${appImageUrl}" alt="${title} Icon" class="app-icon-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                 <div class="app-icon-fallback" style="display: none;">${appIcon}</div>`
+              : appIcon
+            }
+          </div>
+          <div class="app-info">
+            <h3 class="app-title">${title}</h3>
+            <div class="app-meta">
+              <div class="app-meta-left">
+                <span class="category-tag">${category}</span>
+                <div class="rating">
+                  <span class="stars">${stars}</span>
+                  <span class="rating-value">${rating.toFixed ? rating.toFixed(1) : rating}</span>
+                </div>
+              </div>
+              <div class="app-meta-right">
+                <div class="users-count">
+                  <div class="number">${usersCount}</div>
+                  <div class="label">clicks</div>
+                </div>
+              </div>
             </div>
-            <div class="users-count">${usersCount} users</div>
           </div>
         </div>
-        
-        <div class="card-body-v2">
-          <h3 class="app-title-v2">${title}</h3>
-          <p class="app-description-v2">${description}</p>
+
+        <div class="card-body" onclick="trackAppCardClick('${appId}', 'home_card_body'); window.location.href='/pages/app?id=${appId}'" style="cursor: pointer;">
+          <p class="app-description">${description}</p>
         </div>
-        
-        <div class="card-footer-v2">
+
+        <div class="card-footer">
           <button class="${heartClass}" data-app-id="${appId}" title="${heartTitle}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="${heartFill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-          </button>
-          <button class="action-btn-v2 plus-btn" data-app-id="${appId}" title="Add to list">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </button>
-          <button class="action-btn-v2 more-btn" data-app-id="${appId}" title="View details">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
             </svg>
           </button>
         </div>
       </article>
     `;
   }
-
 
   // Filter button event listeners
   filterButtons.forEach(btn => {
@@ -406,44 +291,43 @@
       if (e.target.closest('.card-v2') && !e.target.closest('.action-btn-v2')) {
         const card = e.target.closest('.card-v2');
         const appId = card.dataset.appId;
-        
+
         if (appId) {
-          console.log('Opening app details:', appId);
           window.location.href = `/pages/app?id=${appId}`;
         }
       }
     });
-    
+
     // Heart button - add to favorites (handled by favorites.js)
     // This functionality is now handled by VibeStoreFavorites.initializeFavoriteButtons()
-    
-    // Plus button - add to list (handled by lists.js)
-    // This functionality is now handled by VibeStoreLists.initializeListEventListeners()
-    
-    // More button - view details
-    document.addEventListener('click', async (e) => {
-      if (e.target.closest('.more-btn')) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const btn = e.target.closest('.more-btn');
-        const appId = btn.dataset.appId;
-        
-        if (appId) {
-          console.log('Opening app details:', appId);
-          window.location.href = `/pages/app?id=${appId}`;
-        }
-      }
-    });
-  }
 
+  }
 
   // Make renderApps globally available
   window.renderApps = renderApps;
 
-  // Initialize with featured apps
+  // Initialize with featured apps immediately
   if (marketplaceGrid) {
+    // Load featured apps immediately without waiting for favorites manager
     renderApps('featured');
+
+    // Set up favorites manager listener for when it becomes available
+    const setupFavoritesListener = () => {
+      if (window.favoritesManager) {
+        // Add listener for future changes
+        window.favoritesManager.addListener(() => {
+          if (window.updateFavoriteButtons) {
+            window.updateFavoriteButtons();
+          }
+        });
+      } else {
+        // Check again in 100ms
+        setTimeout(setupFavoritesListener, 100);
+      }
+    };
+
+    // Start setting up favorites listener
+    setupFavoritesListener();
   }
 
   // Check if current user is admin
@@ -451,17 +335,11 @@
     if (!window.$fb || !window.$fb.auth || !window.$fb.auth.currentUser) {
       return false;
     }
-    
+
     try {
       const user = window.$fb.auth.currentUser;
-      
-      // Hardcoded admin check (same as admin page)
-      if (user.email === 'shalom.cohen.111@gmail.com') {
-        console.log('✅ Hardcoded admin user detected:', user.email);
-        return true;
-      }
-      
-      // Firebase claims check (for future admins)
+
+      // Check admin claims from Firebase Auth
       const idTokenResult = await user.getIdTokenResult();
       return idTokenResult.claims.admin === true;
     } catch (error) {
@@ -475,28 +353,28 @@
     const guestNav = document.getElementById('nav-guest');
     const authNav = document.getElementById('nav-authenticated');
     const userName = document.getElementById('user-name');
-    
+
     // Wait for Firebase to initialize
     if (!window.$fb || !window.$fb.auth) {
       setTimeout(updateNavigation, 100);
       return;
     }
-    
+
     const user = window.$fb.auth.currentUser;
-    
+
     if (user && guestNav && authNav && userName) {
       // User is authenticated - show authenticated nav
       guestNav.style.display = 'none';
       authNav.style.display = 'flex';
-      
+
       // Create 2-letter initials from user name or email (English only)
       let initials = 'US';
-      
+
       if (user.displayName) {
         const firstName = user.displayName.split(' ')[0];
         // Check if firstName contains only English letters
         const englishOnly = /^[A-Za-z]+$/;
-        
+
         if (englishOnly.test(firstName)) {
           // Use first 2 letters of first name if it's English
           initials = firstName.substring(0, 2).toUpperCase();
@@ -508,7 +386,7 @@
         // Use first 2 characters of email
         initials = user.email.substring(0, 2).toUpperCase();
       }
-      
+
       userName.textContent = initials;
     } else if (guestNav && authNav) {
       // User is not authenticated - show guest nav
@@ -522,7 +400,7 @@
     const guestCircle = e.target.closest('#guest-circle');
     const userCircle = e.target.closest('#user-circle');
     const userAvatar = e.target.closest('.user-avatar');
-    
+
     if (guestCircle) {
       // Guest circle - go to auth page
       window.location.href = '/pages/auth';
@@ -537,7 +415,7 @@
     if (window.$fb && window.$fb.authMod) {
       window.$fb.authMod.onAuthStateChanged(window.$fb.auth, (user) => {
         updateNavigation();
-        
+
         // Keep sign in button text consistent
         const signBtn = document.querySelector('a[href$="/pages/auth"]');
         if (signBtn) {
@@ -571,25 +449,25 @@
     const sortSelect = document.getElementById('sort-select');
     const searchInput = document.getElementById('search-input');
     const resultsCount = document.getElementById('results-count');
-    
+
     // Initialize current filters from URL
     const urlParams = new URLSearchParams(window.location.search);
     const currentQuery = urlParams.get('q') || '';
     const currentNiche = urlParams.get('niche') || 'all';
     const currentSort = urlParams.get('sort') || 'trending';
-    
+
     // Set initial values
     if (searchInput) searchInput.value = currentQuery;
     if (sortSelect) sortSelect.value = currentSort;
-    
+
     // Set active filters
     nicheFilters.forEach(f => {
       f.classList.toggle('active', f.dataset.niche === currentNiche);
     });
-    
+
     // Load initial results
     await loadResultsPage(currentNiche, currentSort, currentQuery);
-    
+
     // Niche filtering
     nicheFilters.forEach(filter => {
       filter.addEventListener('click', async () => {
@@ -603,7 +481,7 @@
         await loadResultsPage(newNiche, currentSort, currentQuery);
       });
     });
-    
+
     // Sort change
     if (sortSelect) {
       sortSelect.addEventListener('change', async () => {
@@ -612,7 +490,7 @@
         await loadResultsPage(currentNiche, newSort, currentQuery);
       });
     }
-    
+
     // Search form submission
     const searchForm = document.querySelector('.search');
     if (searchForm) {
@@ -632,17 +510,17 @@
         niche: niche !== 'all' ? niche : null,
         sortBy: sort
       };
-      
+
       await window.VibeStoreSearchUI.handleSearchInput(query, options);
       return;
     }
-    
+
     // Fallback to old implementation if search modules not loaded
     const resultsGrid = document.getElementById('results-grid');
     const loadingState = document.getElementById('loading-state');
     const emptyState = document.getElementById('empty-state');
     const resultsCount = document.getElementById('results-count');
-    
+
     if (!resultsGrid) return;
 
     // Show loading state
@@ -652,15 +530,15 @@
 
     try {
       let apps = [];
-      
+
       // Fetch from Firestore
       if (window.VibeStoreFirestore) {
         const filters = {};
         if (niche !== 'all') filters.niche = niche;
         if (sort !== 'trending') filters.sortBy = sort;
-        
+
         apps = await window.VibeStoreFirestore.fetchAppsFromFirestore(filters);
-        
+
         // Apply search query if provided
         if (query && query.trim()) {
           apps = await window.VibeStoreFirestore.searchApps(query, filters);
@@ -670,7 +548,7 @@
       // Hide loading state
       if (loadingState) loadingState.style.display = 'none';
       resultsGrid.style.display = 'grid';
-      
+
       // Update results count
       if (resultsCount) {
         const countText = apps.length === 1 ? '1 app found' : `${apps.length} apps found`;
@@ -680,10 +558,10 @@
           resultsCount.textContent = countText;
         }
       }
-      
+
       // Clear and render
       resultsGrid.innerHTML = '';
-      
+
       if (apps.length === 0) {
         resultsGrid.style.display = 'none';
         if (emptyState) emptyState.style.display = 'block';
@@ -698,9 +576,11 @@
       // Re-observe new cards for reveal animation
       const newCards = resultsGrid.querySelectorAll('.reveal');
       newCards.forEach(card => io.observe(card));
-      
+
       // Add click handlers for card interactions
       addCardClickHandlers();
+
+      // Image loading removed - will be rebuilt
 
     } catch (error) {
       console.error('Error loading results:', error);
@@ -720,7 +600,7 @@
     const usersCount = niche === 'mobile' ? '1M+' : niche === 'whatsapp' ? '70K+' : '900K+';
     const reviewCount = app.rating_count || app.reviews || 0;
     const likesCount = app.likesCount || 0;
-    
+
     return `
       <div class="app-square" data-niche="${Array.isArray(app.niche) ? app.niche.join(',') : app.niche}" data-app-id="${app.id}">
         <div class="square-content">
@@ -738,7 +618,7 @@
             <span class="likes-count">❤️ ${likesCount}</span>
           </div>
         </div>
-        
+
         <!-- Expanded content (hidden by default) -->
         <div class="expanded-content">
           <p class="app-description">${app.description}</p>
@@ -793,14 +673,28 @@
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, initializing app...');
-  
   // Re-initialize if elements weren't found earlier
   const marketplaceGrid = document.getElementById('marketplace-grid');
   if (marketplaceGrid && marketplaceGrid.innerHTML.trim() === '') {
-    console.log('Marketplace grid found, rendering featured apps...');
     if (window.renderApps) {
+      // Load featured apps immediately without waiting for favorites manager
       window.renderApps('featured');
+
+      // Set up favorites manager listener for when it becomes available
+      const setupFavoritesListener = () => {
+        if (window.favoritesManager) {
+          // Add listener for future changes
+          window.favoritesManager.addListener(() => {
+            updateFavoriteButtons();
+          });
+        } else {
+          // Check again in 100ms
+          setTimeout(setupFavoritesListener, 100);
+        }
+      };
+
+      // Start setting up favorites listener
+      setupFavoritesListener();
     } else {
       // Fallback: render demo apps directly
       const demoApps = [
@@ -835,7 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
           imageUrl: null
         }
       ];
-      
+
       demoApps.forEach(app => {
         if (window.createCardHTML) {
           const cardHTML = window.createCardHTML(app);
@@ -844,4 +738,18 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   }
+
+  // Track app card clicks
+  function trackAppCardClick(appId, source) {
+    if (window.trackAppClick) {
+      const canTrack = window.trackAppClick(appId, source);
+      if (canTrack) {
+        } else {
+        }
+    } else {
+      }
+  }
+
+  // Export tracking function globally
+  window.trackAppCardClick = trackAppCardClick;
 });

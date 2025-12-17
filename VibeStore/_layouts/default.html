@@ -20,15 +20,18 @@
         {% include analytics.html %}
         <!-- Firebase config must load first -->
         <script type="module" src="{{ '/assets/js/firebaseConfig.js' | relative_url }}?v={{ site.data.site.cache_bust }}"></script>
+        <!-- Lazy loading (load with defer for performance) -->
+        <script src="{{ '/assets/js/lazy-loading.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <!-- Session tracker (load early for tracking) -->
+        <script src="{{ '/assets/js/session-tracker.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <!-- Search engine (independent module) -->
         <script src="{{ '/assets/js/search-engine.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <!-- Other scripts load after Firebase is ready -->
         <script src="{{ '/assets/js/firestore-apps.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/search-ui.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/favorites.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        {% if page.url == '/pages/my-tools' or page.url == '/pages/app' or page.url == '/pages/profile' or page.url == '/pages/profile/' or page.url == '/' or page.url == '/pages/results' %}
-        <script src="{{ '/assets/js/lists.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        {% endif %}
+        <script src="{{ '/assets/js/lists-manager.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/list-ui.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         {% if page.url == '/pages/my-tools' %}
         <script src="{{ '/assets/js/firestore-test.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         {% endif %}

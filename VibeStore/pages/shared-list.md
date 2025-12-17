@@ -1,22 +1,8 @@
 ---
-title: Shared App List
+title: Shared List
 layout: page
 permalink: /pages/shared-list
 ---
-
-<div class="shared-list-page">
-  <div class="shared-list-header">
-    <h1 id="shared-list-title">Loading...</h1>
-    <p id="shared-list-description" class="shared-list-desc"></p>
-    <p id="shared-list-creator" class="shared-list-creator"></p>
-  </div>
-
-  <div class="shared-list-content">
-    <div class="shared-list-apps" id="shared-list-apps">
-      <div class="loading-state">Loading apps...</div>
-    </div>
-  </div>
-</div>
 
 <style>
 .shared-list-page {
@@ -26,185 +12,273 @@ permalink: /pages/shared-list
 }
 
 .shared-list-header {
-  text-align: center;
-  margin-bottom: 3rem;
-  padding: 2rem;
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(0,0,0,0.05);
+  text-align: center;
 }
 
-.shared-list-header h1 {
-  margin: 0 0 1rem;
-  color: var(--c-text);
-  font-size: 2.5rem;
+.shared-list-title {
+  font-size: 2rem;
   font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--c-text);
 }
 
-.shared-list-desc {
-  margin: 0 0 1rem;
+.shared-list-description {
   color: var(--c-muted);
   font-size: 1.1rem;
+  margin: 0 0 1rem 0;
   line-height: 1.6;
 }
 
-.shared-list-creator {
-  margin: 0;
-  color: var(--c-muted);
-  font-size: 0.9rem;
-  font-weight: 500;
+.shared-list-meta {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
 }
 
-.shared-list-content {
+.meta-item {
+  text-align: center;
+}
+
+.meta-number {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  display: block;
+}
+
+.meta-label {
+  font-size: 0.9rem;
+  color: var(--c-muted);
+  margin-top: 0.25rem;
+}
+
+.apps-section {
   background: white;
   border-radius: 16px;
-  padding: 2rem;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 2rem;
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
-.shared-list-apps {
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  color: var(--c-text);
+}
+
+.apps-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
-.shared-app-card {
+.app-card {
   background: white;
-  border: 2px solid var(--c-line);
-  border-radius: 16px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.shared-app-card:hover {
-  border-color: var(--c-primary);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(107,70,193,.15);
-}
-
-.shared-app-icon {
-  width: 60px;
-  height: 60px;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.app-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.app-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(107,70,193,.3);
-}
-
-.shared-app-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.shared-app-title {
-  margin: 0 0 0.5rem;
-  color: var(--c-text);
-  font-size: 1.2rem;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.shared-app-desc {
-  margin: 0 0 1rem;
-  color: var(--c-muted);
-  font-size: 0.9rem;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.shared-app-meta {
-  display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
-.shared-app-category, .shared-app-platform {
-  font-size: 0.8rem;
-  padding: 0.25rem 0.75rem;
-  background: var(--c-bg);
-  color: var(--c-muted);
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-.shared-app-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-view-shared {
-  padding: 0.6rem 1.2rem;
+.app-icon {
+  width: 50px;
+  height: 50px;
   background: var(--c-primary);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: inline-flex;
+  border-radius: 12px;
+  display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  flex-shrink: 0;
 }
 
-.btn-view-shared:hover {
-  background: var(--c-accent);
-  transform: translateY(-1px);
+.app-info {
+  flex: 1;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
+.app-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: var(--c-text);
+}
+
+.app-category {
+  font-size: 0.9rem;
   color: var(--c-muted);
 }
 
-.loading-state {
-  text-align: center;
-  padding: 3rem 1rem;
+.app-description {
   color: var(--c-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .error-state {
   text-align: center;
-  padding: 3rem 1rem;
-  color: #ef4444;
+  padding: 4rem 2rem;
+  color: var(--c-muted);
 }
 
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.error-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--c-text);
+}
+
+.error-message {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--c-muted);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(107,70,193,0.1);
+  border-top: 3px solid var(--c-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
-  .shared-list-header h1 {
-    font-size: 2rem;
+  .shared-list-page {
+    padding: 1rem;
   }
   
-  .shared-list-apps {
-    grid-template-columns: 1fr;
+  .shared-list-header {
+    padding: 1.5rem;
   }
   
-  .shared-app-card {
+  .shared-list-title {
+    font-size: 1.5rem;
+  }
+  
+  .shared-list-meta {
     flex-direction: column;
-    text-align: center;
+    gap: 1rem;
   }
   
-  .shared-app-icon {
-    align-self: center;
+  .apps-section {
+    padding: 1.5rem;
+  }
+  
+  .apps-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .app-card {
+    padding: 1rem;
+  }
+  
+  .app-header {
+    gap: 0.75rem;
+  }
+  
+  .app-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
   }
 }
 </style>
 
+<div class="shared-list-page">
+  <!-- Loading State -->
+  <div class="loading-state" id="loading-state">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading shared list...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" id="error-state" style="display: none;">
+    <div class="error-icon">📋</div>
+    <h2 class="error-title">List Not Found</h2>
+    <p class="error-message">This shared list doesn't exist or has been removed.</p>
+  </div>
+
+  <!-- Shared List Content -->
+  <div id="shared-list-content" style="display: none;">
+    <!-- List Header -->
+    <div class="shared-list-header">
+      <h1 class="shared-list-title" id="list-title">Loading...</h1>
+      <p class="shared-list-description" id="list-description">Loading...</p>
+      
+      <div class="shared-list-meta">
+        <div class="meta-item">
+          <span class="meta-number" id="app-count">0</span>
+          <span class="meta-label">Apps</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-number" id="access-count">0</span>
+          <span class="meta-label">Views</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Apps Section -->
+    <div class="apps-section">
+      <h2 class="section-title">Apps in this list</h2>
+      <div class="apps-grid" id="apps-grid">
+        <!-- Apps will be loaded dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 // Wait for Firebase to initialize
-const waitForFirebase = () => new Promise(resolve => {
+const waitForFirebaseShared = () => new Promise(resolve => {
   const check = () => {
-    if (window.$fb && window.$fb.auth) {
+    if (window.$fb && window.$fb.auth && window.$fb.db) {
       resolve(window.$fb);
     } else {
       setTimeout(check, 100);
@@ -213,129 +287,103 @@ const waitForFirebase = () => new Promise(resolve => {
   check();
 });
 
-try {
-  const { db, storeMod } = await waitForFirebase();
-  const { doc, getDoc, collection, query, where, getDocs } = storeMod;
-
-  // Get list ID from URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const listId = urlParams.get('id');
-
-  if (!listId) {
-    document.getElementById('shared-list-apps').innerHTML = 
-      '<div class="error-state">List not found</div>';
-    throw new Error('No list ID provided');
-  }
-
-  // Find the list by searching through all users
-  async function findSharedList(listId) {
-    try {
-      // Get all users
-      const usersQuery = query(collection(db, 'users'));
-      const usersSnapshot = await getDocs(usersQuery);
-      
-      for (const userDoc of usersSnapshot.docs) {
-        const userData = userDoc.data();
-        const lists = userData.lists || [];
-        
-        const list = lists.find(l => l.id === listId);
-        if (list) {
-          return { list, userData };
-        }
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Error finding shared list:', error);
-      return null;
+// Load shared list
+async function loadSharedList() {
+  try {
+    const { db, storeMod } = await waitForFirebaseShared();
+    const { doc, getDoc, updateDoc, increment } = storeMod;
+    
+    // Get share token from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const shareToken = urlParams.get('token');
+    
+    if (!shareToken) {
+      showError();
+      return;
     }
-  }
-
-  // Load shared list
-  async function loadSharedList() {
-    try {
-      const result = await findSharedList(listId);
-      
-      if (!result) {
-        document.getElementById('shared-list-apps').innerHTML = 
-          '<div class="error-state">List not found or has been deleted</div>';
-        return;
-      }
-
-      const { list, userData } = result;
-      
-      // Update header
-      document.getElementById('shared-list-title').textContent = list.name;
-      document.getElementById('shared-list-description').textContent = 
-        list.description || 'No description available';
-      document.getElementById('shared-list-creator').textContent = 
-        `Created by ${userData.displayName || userData.email?.split('@')[0] || 'Unknown'}`;
-
-      // Load apps
-      const apps = [];
-      for (const appId of list.apps || []) {
-        try {
-          const appDoc = await getDoc(doc(db, 'apps', appId));
-          if (appDoc.exists()) {
-            apps.push({ id: appDoc.id, ...appDoc.data() });
-          }
-        } catch (error) {
-          console.error('Error loading app:', error);
-        }
-      }
-
-      // Render apps
-      const appsContainer = document.getElementById('shared-list-apps');
-      
-      if (apps.length === 0) {
-        appsContainer.innerHTML = '<div class="empty-state">No apps in this list</div>';
-        return;
-      }
-
-      appsContainer.innerHTML = '';
-      
-      apps.forEach(app => {
-        // Get appropriate icon based on niche
-        let appIcon = '📱';
-        if (app.niche === 'web') appIcon = '🌐';
-        else if (app.niche === 'mobile') appIcon = '📱';
-        else if (app.niche === 'whatsapp') appIcon = '💬';
-
-        const appCard = `
-          <div class="shared-app-card">
-            <div class="shared-app-icon">
-              ${appIcon}
-            </div>
-            <div class="shared-app-content">
-              <h3 class="shared-app-title">${app.title || 'Untitled App'}</h3>
-              <p class="shared-app-desc">${app.description || 'No description available'}</p>
-              <div class="shared-app-meta">
-                <span class="shared-app-category">${app.category || 'App'}</span>
-                <span class="shared-app-platform">${app.platform || 'Platform'}</span>
-              </div>
-              <div class="shared-app-actions">
-                <a href="/pages/app?id=${app.id}" class="btn-view-shared">View App</a>
-              </div>
-            </div>
-          </div>
-        `;
-        
-        appsContainer.insertAdjacentHTML('beforeend', appCard);
-      });
-
-    } catch (error) {
-      console.error('Error loading shared list:', error);
-      document.getElementById('shared-list-apps').innerHTML = 
-        '<div class="error-state">Error loading list. Please try again.</div>';
+    
+    // Get shared list document
+    const sharedListRef = doc(db, 'shared_lists', shareToken);
+    const sharedListDoc = await getDoc(sharedListRef);
+    
+    if (!sharedListDoc.exists()) {
+      showError();
+      return;
     }
+    
+    const sharedListData = sharedListDoc.data();
+    
+    // Update access count
+    await updateDoc(sharedListRef, {
+      accessCount: increment(1),
+      lastAccessed: new Date()
+    });
+    
+    // Display list information
+    document.getElementById('list-title').textContent = sharedListData.name;
+    document.getElementById('list-description').textContent = sharedListData.description || 'No description available';
+    document.getElementById('app-count').textContent = sharedListData.apps.length;
+    document.getElementById('access-count').textContent = (sharedListData.accessCount || 0) + 1;
+    
+    // Load and display apps
+    await loadApps(sharedListData.apps);
+    
+    // Show content
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('shared-list-content').style.display = 'block';
+    
+  } catch (error) {
+    console.error('Error loading shared list:', error);
+    showError();
   }
-
-  // Load the shared list
-  loadSharedList();
-
-} catch (error) {
-  console.log('Firebase not ready or error:', error);
-  document.getElementById('shared-list-apps').innerHTML = 
-    '<div class="error-state">Unable to load list. Please try again later.</div>';
 }
+
+// Load apps for the shared list
+async function loadApps(apps) {
+  const appsGrid = document.getElementById('apps-grid');
+  if (!appsGrid) return;
+  
+  if (apps.length === 0) {
+    appsGrid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--c-muted);">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
+        <h3>No apps in this list</h3>
+        <p>This list doesn't contain any apps yet.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  appsGrid.innerHTML = '';
+  
+  apps.forEach(app => {
+    const appCard = createAppCard(app);
+    appsGrid.insertAdjacentHTML('beforeend', appCard);
+  });
+}
+
+// Create app card HTML
+function createAppCard(app) {
+  return `
+    <div class="app-card" onclick="window.location.href='/pages/app?id=${app.appId}'">
+      <div class="app-header">
+        <div class="app-icon">${app.appIcon}</div>
+        <div class="app-info">
+          <h3 class="app-title">${app.appTitle}</h3>
+          <p class="app-category">${app.appCategory}</p>
+        </div>
+      </div>
+      <p class="app-description">Click to view app details</p>
+    </div>
+  `;
+}
+
+// Show error state
+function showError() {
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('error-state').style.display = 'block';
+}
+
+// Load shared list when page loads
+document.addEventListener('DOMContentLoaded', loadSharedList);
 </script>

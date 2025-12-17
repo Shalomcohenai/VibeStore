@@ -5,7 +5,6 @@ slug: "positive-developer-culture"
 category: "positive-tech-culture"
 tags: ["team-culture", "leadership", "collaboration", "workplace-wellness"]
 author: "VibeStore Team"
-featured_image: "/img/blog/developer-culture.jpg"
 meta_description: "Learn how to build a positive, inclusive developer culture that promotes growth, collaboration, and well-being"
 meta_keywords: ["developer culture", "team building", "workplace wellness", "positive work environment"]
 published: true
