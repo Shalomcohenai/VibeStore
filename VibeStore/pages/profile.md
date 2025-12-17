@@ -1099,14 +1099,19 @@ permalink: /pages/profile/
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1.2rem;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.list-app-card-icon-new svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 2.5;
 }
 
 .list-app-card-content-new {

@@ -1,0 +1,54 @@
+// Firebase client bootstrap
+// Production Firebase configuration
+const firebaseConfig = {
+  apiKey:            "AIzaSyCpzqQ4eKeLej8BeN2ly7lOspkx5nnEttE",
+  authDomain:        "vibestore-7af1e.firebaseapp.com",
+  projectId:         "vibestore-7af1e",
+  storageBucket:     "vibestore-7af1e.firebasestorage.app",
+  messagingSenderId: "282481643143",
+  appId:             "1:282481643143:web:a7ab34bfe49766eec43222",
+  measurementId:     "G-59FYNPQGEP"
+};
+
+let firebaseInitialized = false;
+
+// Initialize Firebase
+export async function initFirebase() {
+  if (firebaseInitialized && window.$fb) {
+    return window.$fb;
+  }
+
+  // Lazy-load Firebase SDKs (ESM via gstatic)
+  const appMod     = await import('https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js');
+  const authMod    = await import('https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js');
+  const storeMod   = await import('https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js');
+  const storageMod = await import('https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js');
+  const functionsMod = await import('https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js');
+
+  const app     = appMod.initializeApp(firebaseConfig);
+  const auth    = authMod.getAuth(app);
+  const db      = storeMod.getFirestore(app);
+  const storage = storageMod.getStorage(app);
+  const functions = functionsMod.getFunctions(app);
+
+  // Expose minimal helpers on window (for backward compatibility)
+  window.$fb = { app, auth, db, storage, functions, authMod, storeMod, storageMod, functionsMod };
+
+  // Global waitForFirebase function - used by all modules
+  window.waitForFirebase = () => new Promise(resolve => {
+    const check = () => {
+      if (window.$fb && window.$fb.auth && window.$fb.db && window.$fb.functions) {
+        resolve(window.$fb);
+      } else {
+        setTimeout(check, 100);
+      }
+    };
+    check();
+  });
+
+  firebaseInitialized = true;
+  return window.$fb;
+}
+
+// Auto-initialize when module loads (for backward compatibility)
+initFirebase();

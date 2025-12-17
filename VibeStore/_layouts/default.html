@@ -5,12 +5,7 @@
     {% seo %}
   </head>
   <body class="body">
-    <!-- Dynamic background -->
-    <div class="dynamic-bg" aria-hidden="true">
-      <div class="floating-shape"></div>
-      <div class="floating-shape"></div>
-      <div class="floating-shape"></div>
-    </div>
+    <!-- Dynamic background removed -->
     
     {% include header.html %}
     <main class="container">
@@ -20,26 +15,45 @@
         {% include analytics.html %}
         <!-- Firebase config must load first -->
         <script type="module" src="{{ '/assets/js/firebaseConfig.js' | relative_url }}?v={{ site.data.site.cache_bust }}"></script>
-        <!-- Lazy loading (load with defer for performance) -->
+        <!-- Core modules -->
+        <script src="{{ '/assets/js/core/constants.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/core/navigation.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/core/animations.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <!-- Components -->
+        <script src="{{ '/assets/js/components/card.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <!-- Features -->
+        <script src="{{ '/assets/js/features/apps/firestore.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/features/apps/renderer.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/features/apps/filters.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/features/apps/results.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <!-- Utilities and other modules (backward compatibility - old paths still work) -->
         <script src="{{ '/assets/js/lazy-loading.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <!-- Session tracker (load early for tracking) -->
         <script src="{{ '/assets/js/session-tracker.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <!-- Search engine (independent module) -->
         <script src="{{ '/assets/js/search-engine.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <!-- Other scripts load after Firebase is ready -->
-        <script src="{{ '/assets/js/firestore-apps.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <!-- firestore-apps.js removed - duplicate of features/apps/firestore.js -->
         <script src="{{ '/assets/js/search-ui.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/favorites.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/lists-manager.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/list-ui.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        {% if page.url == '/pages/my-tools' %}
-        <script src="{{ '/assets/js/firestore-test.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        {% endif %}
+        <!-- Main app initialization -->
         <script src="{{ '/assets/js/app.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         
         <!-- Blog-specific styles and scripts -->
         {% if page.layout == 'blog' or page.layout == 'blog-post' or page.url contains '/blog/' %}
         <link rel="stylesheet" href="{{ '/assets/css/blog.css' | relative_url }}?v={{ site.data.site.cache_bust }}">
+        <script src="{{ '/assets/js/features/blog/main.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/features/blog/comments.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/features/blog/share.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% if page.layout == 'blog-post' %}
+        <script src="{{ '/assets/js/features/blog/post.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% endif %}
+        <!-- Backward compatibility - old paths -->
+        <script src="{{ '/assets/js/blog.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/blog-comments.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/blog-share.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% if page.layout == 'blog-post' %}
+        <script src="{{ '/assets/js/blog-post.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% endif %}
         {% endif %}
     </body>
 </html>
