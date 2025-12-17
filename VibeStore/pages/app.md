@@ -628,7 +628,8 @@ permalink: /pages/app
   width: 20px;
   height: 20px;
   color: white;
-  fill: white;
+  stroke: currentColor;
+  fill: none;
 }
 
 .social-btn-flat:hover {
@@ -801,7 +802,7 @@ permalink: /pages/app
   top: 50%;
   transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.9);
-  border: 2px solid #8B5CF6;
+  border: 2px solid #1a1a1a;
   border-radius: 50%;
   width: 48px;
   height: 48px;
@@ -815,9 +816,9 @@ permalink: /pages/app
 }
 
 .gallery-nav:hover {
-  background: #8B5CF6;
+  background: #1a1a1a;
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 6px 16px rgba(26, 26, 26, 0.3);
 }
 
 .gallery-nav:hover svg {
@@ -827,7 +828,7 @@ permalink: /pages/app
 .gallery-nav svg {
   width: 24px;
   height: 24px;
-  color: #8B5CF6;
+  color: #1a1a1a;
   transition: color 0.3s ease;
 }
 
@@ -851,7 +852,7 @@ permalink: /pages/app
 }
 
 .gallery-nav:disabled:hover svg {
-  color: #8B5CF6;
+  color: #1a1a1a;
 }
 
 .gallery-image {
@@ -935,7 +936,7 @@ permalink: /pages/app
   height: 100%;
   border-radius: 20px;
   overflow: hidden;
-  border: 1.5px solid #8B5CF6; /* Purple stroke for image icons - reduced by half */
+  border: 1.5px solid #1a1a1a; /* Black stroke for image icons - reduced by half */
 }
 
 .app-icon-img {
@@ -1031,7 +1032,7 @@ permalink: /pages/app
   top: 50%;
   transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.9);
-  border: 2px solid #8B5CF6;
+  border: 2px solid #1a1a1a;
   border-radius: 50%;
   width: 48px;
   height: 48px;
@@ -1045,9 +1046,9 @@ permalink: /pages/app
 }
 
 .lightbox-nav:hover {
-  background: #8B5CF6;
+  background: #1a1a1a;
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 6px 16px rgba(26, 26, 26, 0.3);
 }
 
 .lightbox-nav:hover svg {
@@ -1057,7 +1058,7 @@ permalink: /pages/app
 .lightbox-nav svg {
   width: 24px;
   height: 24px;
-  color: #8B5CF6;
+  color: #1a1a1a;
   transition: color 0.3s ease;
 }
 
@@ -1406,32 +1407,31 @@ permalink: /pages/app
           <div class="social-share-inline">
             <span class="share-label">Share:</span>
             <button class="social-btn-flat facebook" id="share-facebook" title="Share on Facebook">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
               </svg>
             </button>
             <button class="social-btn-flat twitter" id="share-twitter" title="Share on Twitter/X">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
               </svg>
             </button>
             <button class="social-btn-flat linkedin" id="share-linkedin" title="Share on LinkedIn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                 <rect x="2" y="9" width="4" height="12"></rect>
                 <circle cx="4" cy="4" r="2"></circle>
               </svg>
             </button>
             <button class="social-btn-flat whatsapp" id="share-whatsapp" title="Share on WhatsApp">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
               </svg>
             </button>
             <button class="social-btn-flat copy-link" id="share-copy" title="Copy link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                <polyline points="15,3 21,3 21,9"></polyline>
-                <line x1="10" y1="14" x2="21" y2="3"></line>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
             </button>
           </div>
@@ -1615,9 +1615,9 @@ permalink: /pages/app
 }
 
 .badge.editor {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(26, 26, 26, 0.2);
   color: white;
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  border: 1px solid rgba(26, 26, 26, 0.3);
 }
 
 .chip {

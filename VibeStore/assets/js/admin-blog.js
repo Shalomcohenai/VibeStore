@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await checkAdminAccess();
   setupEventListeners();
   setDefaultPublishDate();
+  setupAIEventListeners();
 });
 
 /**
@@ -510,6 +511,362 @@ function resetForm() {
   document.getElementById('imagePreviewContainer').style.display = 'none';
   document.getElementById('metaDescCounter').textContent = '0';
   currentPostId = null;
+}
+
+/**
+ * Setup AI generation event listeners
+ */
+function setupAIEventListeners() {
+  const generateBtn = document.getElementById('generateWithAI');
+  if (generateBtn) {
+    generateBtn.addEventListener('click', generateBlogPostWithAI);
+  }
+}
+
+/**
+ * Generate blog post with OpenAI
+ */
+async function generateBlogPostWithAI() {
+  const topicInput = document.getElementById('aiTopic');
+  const categoryInput = document.getElementById('aiCategory');
+  const keywordsInput = document.getElementById('aiKeywords');
+  const apiKeyInput = document.getElementById('openaiApiKey');
+  const generateBtn = document.getElementById('generateWithAI');
+  const generateBtnText = document.getElementById('generateBtnText');
+  const generateBtnLoading = document.getElementById('generateBtnLoading');
+  const aiError = document.getElementById('aiError');
+
+  // Validate inputs
+  if (!topicInput.value.trim()) {
+    showAIError('אנא הכנס נושא לכתבה');
+    return;
+  }
+
+  if (!apiKeyInput.value.trim()) {
+    showAIError('אנא הכנס את OpenAI API Key שלך');
+    return;
+  }
+
+  // Show loading state
+  generateBtn.disabled = true;
+  generateBtnText.style.display = 'none';
+  generateBtnLoading.style.display = 'inline';
+  aiError.style.display = 'none';
+
+  try {
+    // Build SEO-optimized prompt
+    const prompt = buildSEOPrompt(
+      topicInput.value.trim(),
+      categoryInput.value,
+      keywordsInput.value.trim()
+    );
+
+    // Call OpenAI API
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKeyInput.value.trim()}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'system',
+            content: 'אתה כותב בלוג מקצועי ומנוסה המתמחה ביצירת תוכן מנוע SEO. אתה יוצר כתבות מעמיקות, מעניינות וממוקדות SEO.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 4000
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'שגיאה ב-OpenAI API');
+    }
+
+    const data = await response.json();
+    const generatedContent = data.choices[0].message.content;
+
+    // Parse the generated content
+    const parsedContent = parseGeneratedContent(generatedContent);
+
+    // Fill form with generated content
+    fillFormWithGeneratedContent(parsedContent, categoryInput.value);
+
+    // Show success message
+    showAISuccess('הכתבה נוצרה בהצלחה! אנא בדוק וערוך לפי הצורך.');
+
+  } catch (error) {
+    console.error('Error generating blog post:', error);
+    showAIError(`שגיאה ביצירת הכתבה: ${error.message}`);
+  } finally {
+    // Reset button state
+    generateBtn.disabled = false;
+    generateBtnText.style.display = 'inline';
+    generateBtnLoading.style.display = 'none';
+  }
+}
+
+/**
+ * Build SEO-optimized prompt for OpenAI
+ */
+function buildSEOPrompt(topic, category, keywords) {
+  const categoryNames = {
+    'tools-platforms': 'כלי פיתוח ופלטפורמות',
+    'use-cases-examples': 'שימושיים ודוגמאות מהעולם האמיתי',
+    'best-practices': 'שיטות עבודה מומלצות ומתודולוגיה',
+    'challenges-risks': 'אתגרים וסיכונים',
+    'general': 'כללי'
+  };
+
+  let prompt = `צור כתבת בלוג מנועת SEO בנושא: "${topic}"
+
+קטגוריה: ${categoryNames[category] || 'כללי'}
+
+דרישות:
+1. הכתבה חייבת להיות באורך של לפחות 1500 מילים
+2. הכתבה חייבת להיות מנועת SEO עם:
+   - כותרת ראשית (H1) ממוקדת SEO
+   - כותרות משנה (H2, H3) רלוונטיות
+   - שימוש במילות מפתח בצורה טבעית
+   - פסקאות קצרות וקריאות (3-4 משפטים)
+   - רשימות עם bullet points
+   - קישורים פנימיים וחיצוניים רלוונטיים
+   - Meta description אופטימלי (150-160 תווים)
+   - מילות מפתח רלוונטיות
+
+3. מבנה הכתבה:
+   - מבוא מעניין (2-3 פסקאות)
+   - 4-6 סעיפים עיקריים עם כותרות H2
+   - כל סעיף צריך לכלול 2-3 תת-סעיפים עם H3
+   - סיכום ומסקנות
+   - Call-to-action בסוף
+
+4. פורמט התשובה (JSON):
+{
+  "title": "כותרת הכתבה (ממוקדת SEO)",
+  "slug": "url-friendly-slug",
+  "excerpt": "תקציר קצר של 1-2 משפטים",
+  "metaDescription": "Meta description של 150-160 תווים",
+  "metaKeywords": "מילת מפתח 1, מילת מפתח 2, מילת מפתח 3",
+  "tags": ["תגית1", "תגית2", "תגית3", "תגית4"],
+  "content": "תוכן הכתבה המלא בפורמט Markdown"
+}`;
+
+  if (keywords && keywords.trim()) {
+    prompt += `\n\nמילות מפתח שצריכות להופיע בכתבה: ${keywords}`;
+  }
+
+  prompt += `\n\nהחזר רק את ה-JSON, ללא טקסט נוסף לפני או אחרי.`;
+
+  return prompt;
+}
+
+/**
+ * Parse generated content from OpenAI response
+ */
+function parseGeneratedContent(content) {
+  try {
+    // Try to extract JSON from the response
+    let jsonStr = content.trim();
+    
+    // Remove markdown code blocks if present
+    jsonStr = jsonStr.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    
+    // Try to find JSON object
+    const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[0];
+    }
+    
+    const parsed = JSON.parse(jsonStr);
+    return parsed;
+  } catch (error) {
+    console.error('Error parsing generated content:', error);
+    
+    // Fallback: try to extract information manually
+    return {
+      title: extractTitle(content),
+      slug: generateSlug(extractTitle(content)),
+      excerpt: extractExcerpt(content),
+      metaDescription: extractMetaDescription(content),
+      metaKeywords: extractKeywords(content),
+      tags: extractTags(content),
+      content: content
+    };
+  }
+}
+
+/**
+ * Extract title from content
+ */
+function extractTitle(content) {
+  const titleMatch = content.match(/title["\s:]+["']?([^"'\n]+)["']?/i);
+  if (titleMatch) return titleMatch[1];
+  
+  const h1Match = content.match(/^#\s+(.+)$/m);
+  if (h1Match) return h1Match[1];
+  
+  return 'כותרת הכתבה';
+}
+
+/**
+ * Extract excerpt from content
+ */
+function extractExcerpt(content) {
+  const excerptMatch = content.match(/excerpt["\s:]+["']?([^"'\n]+)["']?/i);
+  if (excerptMatch) return excerptMatch[1];
+  
+  // Get first paragraph
+  const firstPara = content.split('\n\n').find(p => p.trim().length > 20);
+  if (firstPara) {
+    return firstPara.substring(0, 150).trim() + '...';
+  }
+  
+  return 'תקציר הכתבה';
+}
+
+/**
+ * Extract meta description
+ */
+function extractMetaDescription(content) {
+  const metaMatch = content.match(/metaDescription["\s:]+["']?([^"'\n]+)["']?/i);
+  if (metaMatch) return metaMatch[1];
+  
+  return extractExcerpt(content).substring(0, 160);
+}
+
+/**
+ * Extract keywords
+ */
+function extractKeywords(content) {
+  const keywordsMatch = content.match(/metaKeywords["\s:]+["']?([^"'\n]+)["']?/i);
+  if (keywordsMatch) {
+    return keywordsMatch[1].split(',').map(k => k.trim()).join(', ');
+  }
+  
+  return '';
+}
+
+/**
+ * Extract tags
+ */
+function extractTags(content) {
+  const tagsMatch = content.match(/tags["\s:]+\[([^\]]+)\]/i);
+  if (tagsMatch) {
+    return tagsMatch[1].split(',').map(t => t.trim().replace(/["']/g, '')).join(', ');
+  }
+  
+  return '';
+}
+
+/**
+ * Generate slug from title
+ */
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^\u0590-\u05FF\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
+/**
+ * Fill form with generated content
+ */
+function fillFormWithGeneratedContent(parsedContent, category) {
+  if (parsedContent.title) {
+    titleInput.value = parsedContent.title;
+    // Auto-generate slug if not manually edited
+    if (!slugInput.dataset.manuallyEdited) {
+      slugInput.value = parsedContent.slug || generateSlug(parsedContent.title);
+    }
+  }
+  
+  if (parsedContent.excerpt) {
+    excerptInput.value = parsedContent.excerpt;
+  }
+  
+  if (parsedContent.metaDescription) {
+    metaDescInput.value = parsedContent.metaDescription;
+    updateCharCounter();
+  }
+  
+  if (parsedContent.metaKeywords) {
+    metaKeywordsInput.value = parsedContent.metaKeywords;
+  }
+  
+  if (parsedContent.tags) {
+    tagsInput.value = parsedContent.tags;
+  }
+  
+  if (category) {
+    categorySelect.value = category;
+  }
+  
+  if (parsedContent.content) {
+    contentInput.value = parsedContent.content;
+  }
+  
+  // Scroll to form
+  document.querySelector('.editor-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/**
+ * Show AI error message
+ */
+function showAIError(message) {
+  const aiError = document.getElementById('aiError');
+  if (aiError) {
+    aiError.textContent = message;
+    aiError.style.display = 'block';
+    setTimeout(() => {
+      aiError.style.display = 'none';
+    }, 5000);
+  }
+}
+
+/**
+ * Show AI success message
+ */
+function showAISuccess(message) {
+  // Create temporary success message
+  const successDiv = document.createElement('div');
+  successDiv.style.cssText = 'margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.2); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.5); color: white;';
+  successDiv.textContent = message;
+  
+  const aiSection = document.querySelector('.ai-generator-section');
+  if (aiSection) {
+    aiSection.appendChild(successDiv);
+    setTimeout(() => {
+      successDiv.remove();
+    }, 5000);
+  }
+}
+
+/**
+ * Update character counter for meta description
+ */
+function updateCharCounter() {
+  const counter = document.getElementById('metaDescCounter');
+  if (counter && metaDescInput) {
+    counter.textContent = metaDescInput.value.length;
+
+    if (metaDescInput.value.length > 160) {
+      counter.style.color = '#ef4444';
+    } else if (metaDescInput.value.length > 150) {
+      counter.style.color = '#f59e0b';
+    } else {
+      counter.style.color = '#6b7280';
+    }
+  }
 }
 
 // Export for use in other modules

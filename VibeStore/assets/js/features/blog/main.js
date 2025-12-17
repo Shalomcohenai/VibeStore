@@ -43,7 +43,7 @@ class VibeStoreBlog {
           name: "Tools & Platforms",
           slug: "tools-platforms",
           description: "Reviews of AI coding tools, platforms, and version updates (Replit, Cursor, GitHub Copilot, Cloudflare VibeSDK, etc.)",
-          color: "#6366f1",
+          color: "#1a1a1a",
           icon: "🛠️"
         },
         {
@@ -59,7 +59,7 @@ class VibeStoreBlog {
           name: "Best Practices & Methodology",
           slug: "best-practices",
           description: "Working effectively without compromising quality - code review, validation, testing, dependency management, and version control",
-          color: "#8b5cf6",
+          color: "#4b5563",
           icon: "✅"
         },
         {
@@ -273,7 +273,7 @@ class VibeStoreBlog {
 
   createPostCard(post) {
     const category = this.categories.find(cat => cat.id === post.category);
-    const categoryColor = category ? category.color : '#6366f1';
+    const categoryColor = category ? category.color : '#1a1a1a';
     const publishDate = post.published_at || post.publishDate;
 
     return `

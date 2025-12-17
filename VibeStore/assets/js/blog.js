@@ -5,7 +5,8 @@ class VibeStoreBlog {
   constructor() {
     this.posts = [];
     this.categories = [];
-    this.currentCategory = null;
+    this.currentCategory = 'all';
+    this.searchQuery = '';
     this.init();
   }
 
@@ -14,6 +15,7 @@ class VibeStoreBlog {
       this.showLoadingSpinner();
       await this.loadCategories();
       await this.loadPosts();
+      this.renderCategoryFilters();
       this.renderPosts();
       this.setupEventListeners();
     } catch (error) {
@@ -43,7 +45,7 @@ class VibeStoreBlog {
           name: "Tools & Platforms",
           slug: "tools-platforms",
           description: "Reviews of AI coding tools, platforms, and version updates (Replit, Cursor, GitHub Copilot, Cloudflare VibeSDK, etc.)",
-          color: "#6366f1",
+          color: "#1a1a1a",
           icon: "🛠️"
         },
         {
@@ -59,7 +61,7 @@ class VibeStoreBlog {
           name: "Best Practices & Methodology",
           slug: "best-practices",
           description: "Working effectively without compromising quality - code review, validation, testing, dependency management, and version control",
-          color: "#8b5cf6",
+          color: "#4b5563",
           icon: "✅"
         },
         {
@@ -252,45 +254,86 @@ class VibeStoreBlog {
 
   renderPosts() {
     const container = document.getElementById('blog-posts-container');
+    const noResults = document.getElementById('no-results');
     if (!container) return;
 
-    const filteredPosts = this.currentCategory
-      ? this.posts.filter(post => post.category === this.currentCategory)
-      : this.posts;
+    // Filter posts by category and search
+    let filteredPosts = this.posts;
 
+    // Filter by category
+    if (this.currentCategory && this.currentCategory !== 'all') {
+      filteredPosts = filteredPosts.filter(post => post.category === this.currentCategory);
+    }
+
+    // Filter by search query
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filteredPosts = filteredPosts.filter(post =>
+        post.title.toLowerCase().includes(query) ||
+        post.excerpt.toLowerCase().includes(query) ||
+        (post.tags && post.tags.some(tag => tag.toLowerCase().includes(query))) ||
+        (post.author && post.author.toLowerCase().includes(query))
+      );
+    }
+
+    // Show/hide no results message
     if (filteredPosts.length === 0) {
-      container.innerHTML = `
-        <div class="no-posts">
-          <h3>No posts found</h3>
-          <p>Try selecting a different category or check back later for new content.</p>
-        </div>
-      `;
+      container.style.display = 'none';
+      if (noResults) noResults.style.display = 'block';
       return;
+    } else {
+      container.style.display = 'grid';
+      if (noResults) noResults.style.display = 'none';
     }
 
     container.innerHTML = filteredPosts.map(post => this.createPostCard(post)).join('');
   }
 
+  renderCategoryFilters() {
+    const filterContainer = document.querySelector('.blog-categories-filter');
+    if (!filterContainer) return;
+
+    // Add category filter buttons
+    this.categories.forEach(category => {
+      const btn = document.createElement('button');
+      btn.className = 'category-filter-btn';
+      btn.setAttribute('data-category', category.id);
+      btn.innerHTML = `<span>${category.icon} ${category.name}</span>`;
+      btn.addEventListener('click', () => this.filterByCategory(category.id));
+      filterContainer.appendChild(btn);
+    });
+  }
+
   createPostCard(post) {
     const category = this.categories.find(cat => cat.id === post.category);
-    const categoryColor = category ? category.color : '#6366f1';
+    const categoryColor = category ? category.color : '#1a1a1a';
+    const categoryIcon = category ? category.icon : '📝';
     const publishDate = post.published_at || post.publishDate;
+    const featuredImage = post.featuredImage || null;
+    
+    // Generate image or gradient background
+    const imageSection = featuredImage 
+      ? `<div class="post-card-image" style="background-image: url('${featuredImage}'); background-size: cover; background-position: center;"></div>`
+      : `<div class="post-card-image" style="background: linear-gradient(135deg, ${categoryColor}, ${this.lightenColor(categoryColor, 20)});">
+          <span style="font-size: 3rem;">${categoryIcon}</span>
+        </div>`;
 
     return `
       <article class="post-card">
         <a href="${post.url}" class="post-card-link">
+          ${imageSection}
           <div class="post-card-content">
             <div class="post-card-meta">
               <span class="post-card-category" style="background-color: ${categoryColor}">
-                ${category ? category.icon + ' ' + category.name : post.category}
+                ${categoryIcon} ${category ? category.name : post.category}
               </span>
               <span class="post-card-date">${this.formatDate(publishDate)}</span>
             </div>
             <h2 class="post-card-title">${post.title}</h2>
-            <p class="post-card-excerpt">${post.excerpt}</p>
+            <p class="post-card-excerpt">${post.excerpt || ''}</p>
             <div class="post-card-footer">
-              <span class="post-card-author">By ${post.author}</span>
-              <span class="read-more">Read more →</span>
+              <span class="post-card-author">${post.author || 'VibeStore Team'}</span>
+              <span class="read-more">קרא עוד</span>
             </div>
           </div>
         </a>
@@ -298,9 +341,20 @@ class VibeStoreBlog {
     `;
   }
 
+  lightenColor(color, percent) {
+    // Simple color lightening function
+    const num = parseInt(color.replace("#",""), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = Math.min(255, (num >> 16) + amt);
+    const G = Math.min(255, (num >> 8 & 0x00FF) + amt);
+    const B = Math.min(255, (num & 0x0000FF) + amt);
+    return "#" + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+  }
+
   formatDate(dateString) {
+    if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('he-IL', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -308,60 +362,58 @@ class VibeStoreBlog {
   }
 
   setupEventListeners() {
-    // Category filtering
-    const categoryCards = document.querySelectorAll('.category-card');
-    categoryCards.forEach(card => {
-      card.addEventListener('click', (e) => {
-        e.preventDefault();
-        const categorySlug = card.getAttribute('href').split('/').pop();
-        this.filterByCategory(categorySlug);
-      });
-    });
-
-    // Search functionality (if search input exists)
+    // Search functionality
     const searchInput = document.getElementById('blog-search');
+    const searchClear = document.getElementById('search-clear');
+    
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
-        this.searchPosts(e.target.value);
+        this.searchQuery = e.target.value;
+        if (this.searchQuery.trim()) {
+          if (searchClear) searchClear.style.display = 'flex';
+        } else {
+          if (searchClear) searchClear.style.display = 'none';
+        }
+        this.renderPosts();
       });
-    }
-  }
 
-  filterByCategory(categorySlug) {
-    const category = this.categories.find(cat => cat.slug === categorySlug);
-    this.currentCategory = category ? category.id : null;
-    this.renderPosts();
-    this.updateActiveCategory(categorySlug);
-  }
-
-  updateActiveCategory(activeSlug) {
-    const categoryCards = document.querySelectorAll('.category-card');
-    categoryCards.forEach(card => {
-      const categorySlug = card.getAttribute('href').split('/').pop();
-      if (categorySlug === activeSlug) {
-        card.classList.add('active');
-      } else {
-        card.classList.remove('active');
+      // Clear search
+      if (searchClear) {
+        searchClear.addEventListener('click', () => {
+          searchInput.value = '';
+          this.searchQuery = '';
+          searchClear.style.display = 'none';
+          this.renderPosts();
+        });
       }
+    }
+
+    // Category filter buttons
+    const categoryButtons = document.querySelectorAll('.category-filter-btn');
+    categoryButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const categoryId = btn.getAttribute('data-category');
+        this.filterByCategory(categoryId);
+      });
     });
   }
 
-  searchPosts(query) {
-    if (!query.trim()) {
-      this.renderPosts();
-      return;
-    }
+  filterByCategory(categoryId) {
+    this.currentCategory = categoryId;
+    this.updateActiveCategoryButtons();
+    this.renderPosts();
+  }
 
-    const filteredPosts = this.posts.filter(post =>
-      post.title.toLowerCase().includes(query.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(query.toLowerCase()) ||
-      post.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
-    );
-
-    const container = document.getElementById('blog-posts-container');
-    if (!container) return;
-
-    container.innerHTML = filteredPosts.map(post => this.createPostCard(post)).join('');
+  updateActiveCategoryButtons() {
+    const categoryButtons = document.querySelectorAll('.category-filter-btn');
+    categoryButtons.forEach(btn => {
+      const categoryId = btn.getAttribute('data-category');
+      if (categoryId === this.currentCategory) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
   }
 
   showError(message) {

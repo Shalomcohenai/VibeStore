@@ -709,10 +709,10 @@
   // Color icons with random colors
   function colorIcons() {
     const colors = [
-      '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981',
-      '#ef4444', '#14b8a6', '#eab308', '#6366f1', '#f97316',
+      '#3b82f6', '#4b5563', '#ec4899', '#f59e0b', '#10b981',
+      '#ef4444', '#14b8a6', '#eab308', '#1a1a1a', '#f97316',
       '#06b6d4', '#a855f7', '#22c55e', '#f43f5e', '#0ea5e9',
-      '#84cc16', '#64748b', '#f59e0b', '#8b5cf6', '#ec4899'
+      '#84cc16', '#64748b', '#f59e0b', '#4b5563', '#ec4899'
     ];
 
     // Color all SVG icons in app cards

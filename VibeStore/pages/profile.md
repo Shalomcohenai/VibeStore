@@ -553,7 +553,7 @@ permalink: /pages/profile/
 
 /* App Card Styles - Purple Minimalist Design */
 .app-card, .list-card {
-  background: linear-gradient(135deg, var(--c-primary), #8B5CF6);
+  background: linear-gradient(135deg, var(--c-primary), #4b5563);
   border: none;
   border-radius: 16px;
   transition: all 0.3s ease;

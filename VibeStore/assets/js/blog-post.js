@@ -20,7 +20,7 @@ const categories = {
   'tools-platforms': {
     name: 'Tools & Platforms',
     icon: '🛠️',
-    color: '#6366f1'
+    color: '#1a1a1a'
   },
   'use-cases-examples': {
     name: 'Use Cases & Real-World Examples',
@@ -30,7 +30,7 @@ const categories = {
   'best-practices': {
     name: 'Best Practices & Methodology',
     icon: '✅',
-    color: '#8b5cf6'
+    color: '#4b5563'
   },
   'challenges-risks': {
     name: 'Challenges & Risks',

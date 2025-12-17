@@ -30,6 +30,57 @@ permalink: /admin/blog-editor/
 
   <!-- Editor Form -->
   <div id="editorForm" style="display: none;">
+    
+    <!-- AI Content Generator -->
+    <section class="editor-section ai-generator-section" style="background: linear-gradient(135deg, #1a1a1a 0%, #4b5563 100%); color: white; margin-bottom: 2rem;">
+      <h2 style="color: white; margin-top: 0;">🤖 יצירת כתבה עם AI</h2>
+      <p style="opacity: 0.9; margin-bottom: 1.5rem;">הכנס נושא והנח את ה-AI ליצור כתבה מנועת SEO עבורך</p>
+      
+      <div class="form-group">
+        <label for="aiTopic" style="color: white;">נושא הכתבה *</label>
+        <input type="text" id="aiTopic" name="aiTopic" 
+               placeholder="לדוגמה: מדריך מקיף ל-Cursor AI בשנת 2025"
+               style="background: rgba(255,255,255,0.95); color: #111827;">
+        <small style="color: rgba(255,255,255,0.8);">תאר את הנושא שברצונך לכתוב עליו</small>
+      </div>
+
+      <div class="form-group">
+        <label for="aiCategory" style="color: white;">קטגוריה</label>
+        <select id="aiCategory" name="aiCategory" style="background: rgba(255,255,255,0.95); color: #111827;">
+          <option value="tools-platforms">🛠️ Tools & Platforms</option>
+          <option value="use-cases-examples">💡 Use Cases & Real-World Examples</option>
+          <option value="best-practices">✅ Best Practices & Methodology</option>
+          <option value="challenges-risks">⚠️ Challenges & Risks</option>
+          <option value="general">📰 General</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="aiKeywords" style="color: white;">מילות מפתח SEO (אופציונלי)</label>
+        <input type="text" id="aiKeywords" name="aiKeywords" 
+               placeholder="cursor ai, ai coding, ide review"
+               style="background: rgba(255,255,255,0.95); color: #111827;">
+        <small style="color: rgba(255,255,255,0.8);">מילות מפתח שצריכות להופיע בכתבה (מופרדות בפסיקים)</small>
+      </div>
+
+      <div class="form-group">
+        <label for="openaiApiKey" style="color: white;">OpenAI API Key *</label>
+        <input type="password" id="openaiApiKey" name="openaiApiKey" 
+               placeholder="sk-..."
+               style="background: rgba(255,255,255,0.95); color: #111827;">
+        <small style="color: rgba(255,255,255,0.8);">המפתח שלך נשמר רק בזיכרון הדפדפן ולא נשלח לשרת</small>
+      </div>
+
+      <button type="button" id="generateWithAI" class="btn btn-ai" style="background: white; color: #1a1a1a; font-weight: 600; width: 100%; padding: 1rem; font-size: 1.1rem;">
+        <span id="generateBtnText">✨ צור כתבה עם AI</span>
+        <span id="generateBtnLoading" style="display: none;">
+          <span class="spinner-small"></span> יוצר כתבה...
+        </span>
+      </button>
+
+      <div id="aiError" class="ai-error" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.2); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.5);"></div>
+    </section>
+
     <form id="blogPostForm">
       
       <!-- Basic Information -->
@@ -295,7 +346,7 @@ Your content here...
 }
 
 .btn-primary {
-  background: #6366f1;
+  background: #1a1a1a;
   color: white;
 }
 
@@ -328,7 +379,7 @@ Your content here...
 
 .spinner {
   border: 3px solid #f3f4f6;
-  border-top: 3px solid #6366f1;
+  border-top: 3px solid #1a1a1a;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -385,7 +436,7 @@ Your content here...
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: #1a1a1a;
 }
 
 .form-group small {
@@ -434,7 +485,7 @@ Your content here...
 
 .toolbar-btn:hover {
   background: #f3f4f6;
-  border-color: #6366f1;
+  border-color: #1a1a1a;
 }
 
 .markdown-help {
@@ -443,7 +494,7 @@ Your content here...
 
 .markdown-help summary {
   cursor: pointer;
-  color: #6366f1;
+  color: #1a1a1a;
   font-weight: 500;
 }
 
@@ -547,6 +598,40 @@ Your content here...
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-family: monospace;
+}
+
+.btn-ai {
+  background: white !important;
+  color: #1a1a1a !important;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-ai:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-ai:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner-small {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-top-color: #1a1a1a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+
+.ai-error {
+  color: white;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 768px) {

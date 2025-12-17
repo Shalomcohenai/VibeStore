@@ -8,14 +8,14 @@ permalink: /blog/post/
   <!-- Loading State -->
   <div id="loadingPost" class="loading-state">
     <div class="spinner"></div>
-    <p>Loading blog post...</p>
+    <p>טוען כתבה...</p>
   </div>
 
   <!-- Error State -->
   <div id="postError" class="error-state" style="display: none;">
-    <h2>⚠️ Post Not Found</h2>
-    <p>The blog post you're looking for doesn't exist or has been removed.</p>
-    <a href="/blog/" class="btn btn-primary">← Back to Blog</a>
+    <h2>⚠️ כתבה לא נמצאה</h2>
+    <p>הכתבה שחיפשת לא קיימת או הוסרה.</p>
+    <a href="/blog/" class="btn btn-primary">← חזרה לבלוג</a>
   </div>
 
   <!-- Blog Post Content -->
@@ -54,8 +54,15 @@ permalink: /blog/post/
     <!-- Post Footer -->
     <footer class="post-footer">
       <div class="share-section">
-        <h3>Share this post</h3>
+        <h3>שתף את הכתבה</h3>
         <div class="share-buttons">
+          <button id="shareFacebook" class="share-btn facebook">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            Facebook
+          </button>
+          
           <button id="shareTwitter" class="share-btn twitter">
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
               <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
@@ -70,17 +77,17 @@ permalink: /blog/post/
             LinkedIn
           </button>
           
-          <button id="shareCopy" class="share-btn copy">
+          <button id="shareCopy" class="share-btn copy-link">
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
               <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
             </svg>
-            Copy Link
+            העתק קישור
           </button>
         </div>
       </div>
 
       <div class="navigation-section">
-        <a href="/blog/" class="btn btn-secondary">← Back to Blog</a>
+        <a href="/blog/" class="btn btn-secondary">← חזרה לבלוג</a>
       </div>
     </footer>
   </article>
@@ -101,7 +108,7 @@ permalink: /blog/post/
 
 .spinner {
   border: 3px solid #f3f4f6;
-  border-top: 3px solid #6366f1;
+  border-top: 3px solid #1a1a1a;
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -139,7 +146,7 @@ permalink: /blog/post/
 .category-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background: #6366f1;
+  background: #1a1a1a;
   color: white;
   border-radius: 20px;
   font-size: 0.875rem;
@@ -229,9 +236,9 @@ permalink: /blog/post/
 }
 
 .markdown-body a {
-  color: #6366f1;
+  color: #1a1a1a;
   text-decoration: none;
-  border-bottom: 1px solid #6366f1;
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .markdown-body a:hover {
@@ -263,7 +270,7 @@ permalink: /blog/post/
 }
 
 .markdown-body blockquote {
-  border-left: 4px solid #6366f1;
+  border-left: 4px solid #1a1a1a;
   padding-left: 1rem;
   margin-left: 0;
   color: #6b7280;
@@ -319,7 +326,7 @@ permalink: /blog/post/
 }
 
 .share-btn:hover {
-  border-color: #6366f1;
+  border-color: #1a1a1a;
   background: #f3f4f6;
 }
 
@@ -342,7 +349,7 @@ permalink: /blog/post/
 }
 
 .btn-primary {
-  background: #6366f1;
+  background: #1a1a1a;
   color: white;
 }
 

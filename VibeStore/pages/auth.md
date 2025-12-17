@@ -5,6 +5,84 @@ permalink: /pages/auth
 ---
 
 <div class="auth-container">
+  <!-- Floating Icons Background -->
+  <div class="auth-floating-icons">
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <circle cx="12" cy="12" r="6"></circle>
+        <circle cx="12" cy="12" r="2"></circle>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 11l3 3L22 4"></path>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="9" y1="3" x2="9" y2="21"></line>
+        <line x1="15" y1="3" x2="15" y2="21"></line>
+        <line x1="3" y1="9" x2="21" y2="9"></line>
+        <line x1="3" y1="15" x2="21" y2="15"></line>
+      </svg>
+    </div>
+    <div class="auth-floating-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+      </svg>
+    </div>
+  </div>
+
   <!-- Sign In Form -->
   <div class="auth-card" id="signin-card">
     <h2 class="auth-title">Welcome Back</h2>
@@ -95,6 +173,173 @@ permalink: /pages/auth
   margin: 2rem auto;
   padding: 0 1rem;
   position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Floating Icons Background */
+.auth-floating-icons {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.auth-floating-icon {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: auth-float-icon 22s ease-in-out infinite;
+  transition: transform 0.3s ease;
+  opacity: 0.6;
+}
+
+.auth-floating-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+}
+
+/* Icon positions */
+.auth-floating-icon:nth-child(1) {
+  top: 12%;
+  left: 8%;
+  animation-delay: 0s;
+}
+
+.auth-floating-icon:nth-child(2) {
+  top: 65%;
+  right: 12%;
+  animation-delay: -3s;
+}
+
+.auth-floating-icon:nth-child(3) {
+  bottom: 18%;
+  left: 18%;
+  animation-delay: -6s;
+}
+
+.auth-floating-icon:nth-child(4) {
+  top: 35%;
+  right: 8%;
+  animation-delay: -9s;
+}
+
+.auth-floating-icon:nth-child(5) {
+  top: 50%;
+  left: 12%;
+  animation-delay: -12s;
+}
+
+.auth-floating-icon:nth-child(6) {
+  bottom: 35%;
+  right: 25%;
+  animation-delay: -15s;
+}
+
+.auth-floating-icon:nth-child(7) {
+  top: 22%;
+  left: 45%;
+  animation-delay: -18s;
+}
+
+.auth-floating-icon:nth-child(8) {
+  bottom: 12%;
+  right: 18%;
+  animation-delay: -1s;
+}
+
+.auth-floating-icon:nth-child(9) {
+  top: 75%;
+  left: 30%;
+  animation-delay: -4s;
+}
+
+.auth-floating-icon:nth-child(10) {
+  top: 8%;
+  right: 35%;
+  animation-delay: -7s;
+}
+
+.auth-floating-icon:nth-child(11) {
+  bottom: 45%;
+  left: 55%;
+  animation-delay: -10s;
+}
+
+.auth-floating-icon:nth-child(12) {
+  top: 58%;
+  right: 50%;
+  animation-delay: -13s;
+}
+
+/* Icon colors - black/gray theme */
+.auth-floating-icon:nth-child(1) svg {
+  stroke: #1a1a1a;
+}
+
+.auth-floating-icon:nth-child(2) svg {
+  stroke: #4b5563;
+}
+
+.auth-floating-icon:nth-child(3) svg {
+  stroke: #6b7280;
+}
+
+.auth-floating-icon:nth-child(4) svg {
+  stroke: #1a1a1a;
+}
+
+.auth-floating-icon:nth-child(5) svg {
+  stroke: #374151;
+}
+
+.auth-floating-icon:nth-child(6) svg {
+  stroke: #4b5563;
+}
+
+.auth-floating-icon:nth-child(7) svg {
+  stroke: #1a1a1a;
+}
+
+.auth-floating-icon:nth-child(8) svg {
+  stroke: #6b7280;
+}
+
+.auth-floating-icon:nth-child(9) svg {
+  stroke: #374151;
+}
+
+.auth-floating-icon:nth-child(10) svg {
+  stroke: #1a1a1a;
+}
+
+.auth-floating-icon:nth-child(11) svg {
+  stroke: #4b5563;
+}
+
+.auth-floating-icon:nth-child(12) svg {
+  stroke: #6b7280;
+}
+
+@keyframes auth-float-icon {
+  0%, 100% { transform: translateY(0) translateX(0) rotate(0deg) scale(1); }
+  20% { transform: translateY(-30px) translateX(25px) rotate(10deg) scale(1.05); }
+  40% { transform: translateY(-50px) translateX(-20px) rotate(-10deg) scale(0.95); }
+  60% { transform: translateY(-35px) translateX(30px) rotate(8deg) scale(1.02); }
+  80% { transform: translateY(-20px) translateX(-15px) rotate(-5deg) scale(0.98); }
 }
 
 .auth-container::before {
@@ -105,7 +350,7 @@ permalink: /pages/auth
   transform: translate(-50%, -50%);
   width: 600px;
   height: 600px;
-  background: linear-gradient(135deg, rgba(107,70,193,0.15), rgba(139,92,246,0.1));
+  background: linear-gradient(135deg, rgba(26,26,26,0.08), rgba(75,85,99,0.05));
   border-radius: 50%;
   z-index: -1;
   animation: auth-float 8s ease-in-out infinite;
@@ -119,7 +364,7 @@ permalink: /pages/auth
   right: 10%;
   width: 400px;
   height: 400px;
-  background: linear-gradient(225deg, rgba(139,92,246,0.12), rgba(107,70,193,0.08));
+  background: linear-gradient(225deg, rgba(75,85,99,0.06), rgba(26,26,26,0.04));
   border-radius: 50%;
   z-index: -1;
   animation: auth-float-reverse 10s ease-in-out infinite;
@@ -149,10 +394,11 @@ permalink: /pages/auth
   backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 10px 25px rgba(107,70,193,.12);
-  border: 1px solid rgba(107,70,193,0.1);
+  box-shadow: 0 10px 25px rgba(26,26,26,.12);
+  border: 1px solid rgba(26,26,26,0.1);
   position: relative;
-  z-index: 1;
+  z-index: 10;
+  width: 100%;
 }
 
 .auth-title {
@@ -189,7 +435,7 @@ permalink: /pages/auth
 .auth-input:focus {
   outline: none;
   border-color: var(--c-primary);
-  box-shadow: 0 0 0 3px rgba(107,70,193,0.1);
+  box-shadow: 0 0 0 3px rgba(26,26,26,0.1);
 }
 
 .auth-btn {

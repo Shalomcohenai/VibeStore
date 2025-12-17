@@ -4,7 +4,7 @@ categories:
     name: "Tools & Platforms"
     slug: "tools-platforms"
     description: "Reviews of AI coding tools, platforms, and version updates (Replit, Cursor, GitHub Copilot, Cloudflare VibeSDK, etc.)"
-    color: "#6366f1"
+    color: "#1a1a1a"
     icon: "🛠️"
   
   - id: "use-cases-examples"
@@ -18,7 +18,7 @@ categories:
     name: "Best Practices & Methodology"
     slug: "best-practices"
     description: "Working effectively without compromising quality - code review, validation, testing, dependency management, and version control"
-    color: "#8b5cf6"
+    color: "#4b5563"
     icon: "✅"
   
   - id: "challenges-risks"

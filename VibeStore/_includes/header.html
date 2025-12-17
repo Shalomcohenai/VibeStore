@@ -1,32 +1,36 @@
 <header class="site-header">
   <div class="wrap">
-    <a class="site-title hover-lift" href="{{ '/' | relative_url }}">
-      <span class="logo-dot" aria-hidden="true"></span>
-      {{ site.title }}
+    <a class="site-title" href="{{ '/' | relative_url }}">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-logo">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="9" y1="3" x2="9" y2="21"></line>
+        <line x1="15" y1="3" x2="15" y2="21"></line>
+        <line x1="3" y1="9" x2="21" y2="9"></line>
+        <line x1="3" y1="15" x2="21" y2="15"></line>
+      </svg>
+      <span class="site-title-text">{{ site.title }}</span>
     </a>
-    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
-      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-    </button>
-    <nav class="site-nav" data-nav id="main-nav">
-      <a href="{{ '/blog' | relative_url }}" class="nav-link">Blog</a>
-      
-      <!-- Dynamic content based on auth state -->
+    
+    <nav class="site-nav site-nav-right" data-nav>
       <div id="nav-guest" class="nav-state">
-        <div class="user-circle" id="guest-circle" title="Sign in">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </div>
+        <a href="{{ '/pages/auth' | relative_url }}" class="sign-in-btn">Sign in</a>
       </div>
       
       <div id="nav-authenticated" class="nav-state" style="display: none;">
-        <a href="{{ '/pages/submit-form' | relative_url }}" class="nav-link">Submit App</a>
-        <!-- <a href="{{ '/pages/pricing' | relative_url }}" class="nav-link">Promote</a> -->
-        <div class="user-circle" id="user-circle" title="Go to Profile">
+        <a href="{{ '/pages/submit-form' | relative_url }}" class="nav-link-icon" title="Submit App">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </a>
+        <a href="{{ '/pages/profile' | relative_url }}" class="user-circle" id="user-circle" title="Go to Profile">
           <span id="user-name"></span>
-        </div>
+        </a>
       </div>
     </nav>
+    
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
   </div>
 </header>

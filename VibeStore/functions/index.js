@@ -1063,3 +1063,319 @@ export const generateThumbnail = onCall(
     }
   }
 );
+
+/**
+ * generateSitemap - Generate dynamic sitemap from Firestore
+ * Includes all published blog posts and approved apps
+ */
+export const generateSitemap = onRequest(
+  { cors: true },
+  async (req, res) => {
+    try {
+      const baseUrl = process.env.SITE_URL || 'https://vibestore-7af1e.firebaseapp.com';
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Start building sitemap XML
+      let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- Homepage -->
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Blog -->
+  <url>
+    <loc>${baseUrl}/blog/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Main Pages -->
+  <url>
+    <loc>${baseUrl}/pages/results</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/pages/submit-form</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/pages/guidelines</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/pages/newsletter</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Legal Pages -->
+  <url>
+    <loc>${baseUrl}/pages/privacy</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/pages/terms</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+`;
+
+      // Fetch published blog posts
+      try {
+        const blogPostsQuery = db.collection('blog_posts')
+          .where('published', '==', true)
+          .orderBy('publishDate', 'desc')
+          .limit(1000); // Limit to prevent timeout
+        
+        const blogPostsSnap = await blogPostsQuery.get();
+        
+        blogPostsSnap.forEach(doc => {
+          const post = doc.data();
+          const publishDate = post.publishDate?.toDate?.() || new Date();
+          const lastmod = publishDate.toISOString().split('T')[0];
+          const postUrl = post.url || `${baseUrl}/blog/post/?id=${doc.id}`;
+          
+          sitemap += `  <!-- Blog Post: ${post.title} -->
+  <url>
+    <loc>${postUrl}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+`;
+        });
+        
+        logger.info(`Added ${blogPostsSnap.size} blog posts to sitemap`);
+      } catch (blogError) {
+        logger.error('Error fetching blog posts for sitemap:', blogError);
+      }
+
+      // Fetch approved apps (optional - can be large)
+      try {
+        const appsQuery = db.collection('apps')
+          .where('status', '==', 'approved')
+          .orderBy('createdAt', 'desc')
+          .limit(500); // Limit to prevent timeout
+        
+        const appsSnap = await appsQuery.get();
+        
+        appsSnap.forEach(doc => {
+          const app = doc.data();
+          const createdAt = app.createdAt?.toDate?.() || new Date();
+          const lastmod = createdAt.toISOString().split('T')[0];
+          const appUrl = `${baseUrl}/pages/results?app=${doc.id}`;
+          
+          sitemap += `  <!-- App: ${app.title} -->
+  <url>
+    <loc>${appUrl}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+`;
+        });
+        
+        logger.info(`Added ${appsSnap.size} apps to sitemap`);
+      } catch (appsError) {
+        logger.error('Error fetching apps for sitemap:', appsError);
+      }
+
+      sitemap += `</urlset>`;
+
+      // Save sitemap to Firestore for caching
+      await db.collection('sitemap_cache').doc('current').set({
+        content: sitemap,
+        generatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        urlCount: (sitemap.match(/<url>/g) || []).length
+      });
+
+      // Set response headers
+      res.set('Content-Type', 'application/xml');
+      res.set('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+      res.send(sitemap);
+      
+      logger.info('Sitemap generated successfully');
+      
+    } catch (error) {
+      logger.error('Error generating sitemap:', error);
+      res.status(500).send('Error generating sitemap');
+    }
+  }
+);
+
+/**
+ * updateSitemapDaily - Scheduled function to update sitemap every 24 hours
+ * Runs daily at 2:00 AM UTC
+ */
+export const updateSitemapDaily = onSchedule(
+  { schedule: '0 2 * * *', timeZone: 'UTC' },
+  async () => {
+    try {
+      logger.info('Starting daily sitemap update...');
+      
+      const baseUrl = process.env.SITE_URL || 'https://vibestore-7af1e.firebaseapp.com';
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Start building sitemap XML
+      let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- Homepage -->
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Blog -->
+  <url>
+    <loc>${baseUrl}/blog/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Main Pages -->
+  <url>
+    <loc>${baseUrl}/pages/results</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/pages/submit-form</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/pages/guidelines</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/pages/newsletter</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Legal Pages -->
+  <url>
+    <loc>${baseUrl}/pages/privacy</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/pages/terms</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+`;
+
+      // Fetch published blog posts
+      const blogPostsQuery = db.collection('blog_posts')
+        .where('published', '==', true)
+        .orderBy('publishDate', 'desc')
+        .limit(1000);
+      
+      const blogPostsSnap = await blogPostsQuery.get();
+      
+      blogPostsSnap.forEach(doc => {
+        const post = doc.data();
+        const publishDate = post.publishDate?.toDate?.() || new Date();
+        const lastmod = publishDate.toISOString().split('T')[0];
+        const postUrl = post.url || `${baseUrl}/blog/post/?id=${doc.id}`;
+        
+        sitemap += `  <!-- Blog Post: ${post.title} -->
+  <url>
+    <loc>${postUrl}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+`;
+      });
+      
+      // Fetch approved apps
+      const appsQuery = db.collection('apps')
+        .where('status', '==', 'approved')
+        .orderBy('createdAt', 'desc')
+        .limit(500);
+      
+      const appsSnap = await appsQuery.get();
+      
+      appsSnap.forEach(doc => {
+        const app = doc.data();
+        const createdAt = app.createdAt?.toDate?.() || new Date();
+        const lastmod = createdAt.toISOString().split('T')[0];
+        const appUrl = `${baseUrl}/pages/results?app=${doc.id}`;
+        
+        sitemap += `  <!-- App: ${app.title} -->
+  <url>
+    <loc>${appUrl}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+`;
+      });
+
+      sitemap += `</urlset>`;
+
+      // Save sitemap to Firestore cache
+      await db.collection('sitemap_cache').doc('current').set({
+        content: sitemap,
+        generatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        urlCount: (sitemap.match(/<url>/g) || []).length,
+        blogPostsCount: blogPostsSnap.size,
+        appsCount: appsSnap.size
+      });
+
+      logger.info(`Sitemap updated successfully: ${blogPostsSnap.size} blog posts, ${appsSnap.size} apps`);
+      
+    } catch (error) {
+      logger.error('Error updating sitemap:', error);
+    }
+  }
+);

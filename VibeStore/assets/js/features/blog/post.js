@@ -20,7 +20,7 @@ const categories = {
   'tools-platforms': {
     name: 'Tools & Platforms',
     icon: '🛠️',
-    color: '#6366f1'
+    color: '#1a1a1a'
   },
   'use-cases-examples': {
     name: 'Use Cases & Real-World Examples',
@@ -30,7 +30,7 @@ const categories = {
   'best-practices': {
     name: 'Best Practices & Methodology',
     icon: '✅',
-    color: '#8b5cf6'
+    color: '#4b5563'
   },
   'challenges-risks': {
     name: 'Challenges & Risks',
@@ -139,8 +139,9 @@ function renderPost(post) {
  * Format date for display
  */
 function formatDate(dateString) {
+  if (!dateString) return '';
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString('he-IL', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -250,32 +251,51 @@ function setupShareButtons() {
   const title = document.getElementById('postTitle').textContent;
 
   // Twitter share
-  document.getElementById('shareTwitter').addEventListener('click', () => {
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(currentUrl)}`;
-    window.open(twitterUrl, '_blank', 'width=550,height=420');
-  });
+  const twitterBtn = document.getElementById('shareTwitter');
+  if (twitterBtn) {
+    twitterBtn.addEventListener('click', () => {
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(currentUrl)}`;
+      window.open(twitterUrl, '_blank', 'width=550,height=420');
+    });
+  }
 
   // LinkedIn share
-  document.getElementById('shareLinkedIn').addEventListener('click', () => {
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`;
-    window.open(linkedInUrl, '_blank', 'width=550,height=420');
-  });
+  const linkedInBtn = document.getElementById('shareLinkedIn');
+  if (linkedInBtn) {
+    linkedInBtn.addEventListener('click', () => {
+      const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`;
+      window.open(linkedInUrl, '_blank', 'width=550,height=420');
+    });
+  }
+
+  // Facebook share
+  const facebookBtn = document.getElementById('shareFacebook');
+  if (facebookBtn) {
+    facebookBtn.addEventListener('click', () => {
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
+      window.open(facebookUrl, '_blank', 'width=550,height=420');
+    });
+  }
 
   // Copy link
-  document.getElementById('shareCopy').addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(currentUrl);
-      const btn = document.getElementById('shareCopy');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Copied!';
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-      }, 2000);
-    } catch (error) {
-      console.error('Failed to copy link:', error);
-      alert('Failed to copy link. Please copy manually: ' + currentUrl);
-    }
-  });
+  const copyBtn = document.getElementById('shareCopy');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(currentUrl);
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> הועתק!';
+        copyBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        setTimeout(() => {
+          copyBtn.innerHTML = originalText;
+          copyBtn.style.background = '';
+        }, 2000);
+      } catch (error) {
+        console.error('Failed to copy link:', error);
+        alert('נכשל בהעתקת הקישור. נא להעתיק ידנית: ' + currentUrl);
+      }
+    });
+  }
 }
 
 /**
