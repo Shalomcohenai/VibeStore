@@ -17,24 +17,40 @@
         <script type="module" src="{{ '/assets/js/firebaseConfig.js' | relative_url }}?v={{ site.data.site.cache_bust }}"></script>
         <!-- Core modules -->
         <script src="{{ '/assets/js/core/constants.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/core/error-handler.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/core/analytics.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/core/navigation.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/core/animations.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <!-- Utilities -->
+        <script src="{{ '/assets/js/utils/validation.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/utils/lazy-loading.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <!-- Components -->
         <script src="{{ '/assets/js/components/card.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <!-- Features -->
+        <!-- Features - Apps (only on app pages) -->
+        {% unless page.url contains '/pages/app' or page.url contains '/pages/results' or page.url == '/' %}
+        <!-- App features not needed on this page -->
+        {% else %}
         <script src="{{ '/assets/js/features/apps/firestore.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/features/apps/renderer.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/features/apps/filters.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         <script src="{{ '/assets/js/features/apps/results.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <!-- Utilities and other modules (backward compatibility - old paths still work) -->
-        <script src="{{ '/assets/js/lazy-loading.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% endunless %}
+        <!-- Session tracking -->
         <script src="{{ '/assets/js/session-tracker.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <script src="{{ '/assets/js/search-engine.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <!-- firestore-apps.js removed - duplicate of features/apps/firestore.js -->
-        <script src="{{ '/assets/js/search-ui.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <script src="{{ '/assets/js/favorites.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <script src="{{ '/assets/js/lists-manager.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <script src="{{ '/assets/js/list-ui.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <!-- Search feature (only on pages with search) -->
+        {% if page.url contains '/pages/results' or page.url == '/' or page.url contains '/pages/app' %}
+        <script src="{{ '/assets/js/features/search/engine.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/features/search/ui.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% endif %}
+        <!-- Favorites feature (only on pages with apps) -->
+        {% if page.url contains '/pages/app' or page.url == '/' or page.url contains '/pages/results' or page.url contains '/pages/profile' %}
+        <script src="{{ '/assets/js/features/favorites/manager.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% endif %}
+        <!-- Lists feature (only on profile and app pages) -->
+        {% if page.url contains '/pages/profile' or page.url contains '/pages/app' or page.url contains '/pages/shared-list' %}
+        <script src="{{ '/assets/js/features/lists/manager.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        <script src="{{ '/assets/js/features/lists/ui.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
+        {% endif %}
         <!-- Main app initialization -->
         <script src="{{ '/assets/js/app.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         
@@ -46,13 +62,6 @@
         <script src="{{ '/assets/js/features/blog/share.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         {% if page.layout == 'blog-post' %}
         <script src="{{ '/assets/js/features/blog/post.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        {% endif %}
-        <!-- Backward compatibility - old paths -->
-        <script src="{{ '/assets/js/blog.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <script src="{{ '/assets/js/blog-comments.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        <script src="{{ '/assets/js/blog-share.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
-        {% if page.layout == 'blog-post' %}
-        <script src="{{ '/assets/js/blog-post.js' | relative_url }}?v={{ site.data.site.cache_bust }}" defer></script>
         {% endif %}
         {% endif %}
     </body>

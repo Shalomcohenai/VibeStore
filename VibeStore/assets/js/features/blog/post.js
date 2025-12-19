@@ -141,7 +141,7 @@ function renderPost(post) {
 function formatDate(dateString) {
   if (!dateString) return '';
   const date = new Date(dateString);
-  return date.toLocaleDateString('he-IL', {
+  return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -284,7 +284,7 @@ function setupShareButtons() {
       try {
         await navigator.clipboard.writeText(currentUrl);
         const originalText = copyBtn.innerHTML;
-        copyBtn.innerHTML = '<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> הועתק!';
+        copyBtn.innerHTML = '<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Copied!';
         copyBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
         setTimeout(() => {
           copyBtn.innerHTML = originalText;
@@ -292,7 +292,7 @@ function setupShareButtons() {
         }, 2000);
       } catch (error) {
         console.error('Failed to copy link:', error);
-        alert('נכשל בהעתקת הקישור. נא להעתיק ידנית: ' + currentUrl);
+        alert('Failed to copy link. Please copy manually: ' + currentUrl);
       }
     });
   }

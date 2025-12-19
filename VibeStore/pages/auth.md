@@ -186,7 +186,7 @@ permalink: /pages/auth
   left: 0;
   width: 100%;
   height: 100vh;
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
   overflow: hidden;
 }
@@ -709,7 +709,22 @@ try {
       
       showSuccess();
     } catch (error) {
-      alert('Google sign in failed: ' + error.message);
+      let errorMessage = 'Google sign in failed: ' + error.message;
+      
+      // Provide helpful guidance for common errors
+      if (error.code === 'auth/unauthorized-domain') {
+        const currentDomain = window.location.hostname;
+        errorMessage = `Domain not authorized: ${currentDomain}\n\n` +
+          'To fix this:\n' +
+          '1. Go to Firebase Console → Authentication → Settings → Authorized domains\n' +
+          '2. Click "Add domain"\n' +
+          `3. Add: ${currentDomain}\n` +
+          '4. Also add: localhost (for local development)\n\n' +
+          'Then try signing in again.';
+      }
+      
+      alert(errorMessage);
+      console.error('Google sign in error:', error);
     }
   };
 

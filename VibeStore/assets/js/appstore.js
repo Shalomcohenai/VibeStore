@@ -60,13 +60,24 @@
       });
     }
 
-    // Sort select
-    const sortSelect = document.getElementById('vya-appstore-sort-select');
-    if (sortSelect) {
-      sortSelect.addEventListener('change', (e) => {
-        currentSort = e.target.value;
+    // Sort icons
+    const sortIcons = document.querySelectorAll('.vya-appstore-sort-icon');
+    sortIcons.forEach(icon => {
+      icon.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sortValue = icon.dataset.sort;
+        currentSort = sortValue;
+        // Update active state
+        sortIcons.forEach(i => i.classList.remove('active'));
+        icon.classList.add('active');
         filterApps();
       });
+    });
+    
+    // Set initial active state
+    const initialSortIcon = document.querySelector(`.vya-appstore-sort-icon[data-sort="${currentSort}"]`);
+    if (initialSortIcon) {
+      initialSortIcon.classList.add('active');
     }
 
     // Mobile card tap to expand
@@ -413,11 +424,24 @@
 
   // Render all app sections
   function renderApps() {
-    renderFeatured();
-    renderPopular();
-    renderTrending();
-    renderNew();
-    renderRecommended();
+    // Check if search is active
+    if (currentSearch && currentSearch.trim()) {
+      // Hide all existing galleries
+      hideAllGalleries();
+      // Show and render search results
+      renderSearchResults();
+    } else {
+      // Show all existing galleries
+      showAllGalleries();
+      // Hide search results
+      hideSearchResults();
+      // Render normal galleries
+      renderFeatured();
+      renderPopular();
+      renderTrending();
+      renderNew();
+      renderRecommended();
+    }
     
     // Color icons after rendering
     setTimeout(colorIcons, 100);
@@ -557,7 +581,7 @@
     attachCardClickHandlers(container);
   }
 
-  // Render trending horizontal row
+  // Render trending horizontal row with infinite scroll animation
   function renderTrending() {
     const container = document.getElementById('vya-appstore-trending-row');
     if (!container) return;
@@ -571,7 +595,11 @@
       return;
     }
 
-    container.innerHTML = trending.map(app => createTrendingCard(app)).join('');
+    // Create duplicate cards for seamless infinite scroll
+    const cardsHTML = trending.map(app => createTrendingCard(app)).join('');
+    // Duplicate the cards to create seamless loop
+    container.innerHTML = cardsHTML + cardsHTML;
+    
     attachCardClickHandlers(container);
   }
 
@@ -610,6 +638,101 @@
 
     container.innerHTML = recommended.map(app => createListItem(app)).join('');
     attachCardClickHandlers(container);
+  }
+
+  // Hide all existing galleries
+  function hideAllGalleries() {
+    const featured = document.querySelector('.vya-appstore-featured');
+    const popularSection = document.querySelector('#vya-appstore-popular-grid')?.closest('.vya-appstore-section');
+    const trendingSection = document.querySelector('#vya-appstore-trending-row')?.closest('.vya-appstore-section');
+    const splitSection = document.querySelector('.vya-appstore-split');
+
+    if (featured) featured.style.display = 'none';
+    if (popularSection) popularSection.style.display = 'none';
+    if (trendingSection) trendingSection.style.display = 'none';
+    if (splitSection) splitSection.style.display = 'none';
+  }
+
+  // Show all existing galleries
+  function showAllGalleries() {
+    const featured = document.querySelector('.vya-appstore-featured');
+    const popularSection = document.querySelector('#vya-appstore-popular-grid')?.closest('.vya-appstore-section');
+    const trendingSection = document.querySelector('#vya-appstore-trending-row')?.closest('.vya-appstore-section');
+    const splitSection = document.querySelector('.vya-appstore-split');
+
+    if (featured) featured.style.display = '';
+    if (popularSection) popularSection.style.display = '';
+    if (trendingSection) trendingSection.style.display = '';
+    if (splitSection) splitSection.style.display = '';
+  }
+
+  // Hide search results
+  function hideSearchResults() {
+    const searchResults = document.getElementById('vya-appstore-search-results');
+    if (searchResults) searchResults.style.display = 'none';
+  }
+
+  // Render search results with square cards
+  function renderSearchResults() {
+    const container = document.getElementById('vya-appstore-search-grid');
+    const searchResults = document.getElementById('vya-appstore-search-results');
+    const searchTitle = document.getElementById('vya-appstore-search-results-title');
+    
+    if (!container || !searchResults) return;
+
+    // Show search results section
+    searchResults.style.display = 'block';
+
+    // Update title with search query and count
+    const count = filteredApps.length;
+    if (searchTitle) {
+      const countText = count === 1 ? '1 app found' : `${count} apps found`;
+      searchTitle.textContent = `${countText} for "${currentSearch}"`;
+    }
+
+    if (filteredApps.length === 0) {
+      container.innerHTML = '<p style="color: var(--c-muted); padding: 2rem; text-align: center; grid-column: 1 / -1;">No apps found. Try adjusting your search.</p>';
+      return;
+    }
+
+    // Always show at least 8 results (2 rows) if available
+    // If we have more than 8, show all results
+    // If we have less than 8, still show what we have (will fill 2 rows partially)
+    const minResults = 8; // 2 rows × 4 columns = 8 cards
+    const appsToShow = filteredApps.length > minResults 
+      ? filteredApps // Show all if we have more than 8
+      : filteredApps.slice(0, minResults); // Show up to 8 if we have 8 or less
+    
+    container.innerHTML = appsToShow.map(app => createSquareCard(app)).join('');
+    attachCardClickHandlers(container);
+  }
+
+  // Create square card HTML for search results
+  function createSquareCard(app) {
+    const icon = getAppIcon(app);
+    const appId = app.id || app.firestoreId || 'demo';
+    const title = escapeHtml(app.title || 'App');
+    const category = escapeHtml(app.category || 'App');
+    const rating = app.rating_avg || app.rating || 0;
+    const usersCount = app.usersCount || 0;
+    const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+
+    return `
+      <div class="vya-appstore-search-card" data-app-id="${appId}">
+        <div class="vya-appstore-search-card-icon">${icon}</div>
+        <div class="vya-appstore-search-card-content">
+          <h4 class="vya-appstore-search-card-title">${title}</h4>
+          <p class="vya-appstore-search-card-category">${category}</p>
+          <div class="vya-appstore-search-card-meta">
+            <div class="vya-appstore-search-card-rating">
+              <span class="vya-appstore-search-card-stars">${stars}</span>
+              <span class="vya-appstore-search-card-rating-value">${rating.toFixed(1)}</span>
+            </div>
+            <div class="vya-appstore-search-card-clicks">${usersCount} clicks</div>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   // Check if app is new (within last 30 days)
@@ -721,6 +844,7 @@
       '.vya-appstore-trending-icon svg',
       '.vya-appstore-list-icon svg',
       '.vya-appstore-featured-icon svg',
+      '.vya-appstore-search-card-icon svg',
       '.app-icon svg',
       '.app-icon .app-icon-svg',
       '.list-app-card-icon-new svg',
@@ -767,4 +891,5 @@
   // Color icons on initial load
   setTimeout(colorIcons, 500);
 })();
+
 

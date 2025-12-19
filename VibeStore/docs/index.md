@@ -150,7 +150,7 @@ permalink: /
     
     <div class="vya-appstore-hero-ctas">
       <a href="#app-store" class="vya-appstore-hero-cta vya-appstore-hero-cta-primary">Explore Apps</a>
-      <a href="/pages/submit_form" class="vya-appstore-hero-cta vya-appstore-hero-cta-secondary">Submit App</a>
+      <a href="/pages/submit-form" class="vya-appstore-hero-cta vya-appstore-hero-cta-secondary">Submit App</a>
     </div>
   </div>
 </section>
@@ -265,11 +265,25 @@ permalink: /
         <input type="search" placeholder="Search apps..." id="vya-appstore-search-input">
       </div>
       <div class="vya-appstore-sort">
-        <select id="vya-appstore-sort-select">
-          <option value="trending">Trending</option>
-          <option value="new">New</option>
-          <option value="top-rated">Top Rated</option>
-        </select>
+        <button class="vya-appstore-sort-icon" data-sort="trending" aria-label="Trending" title="Trending">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span class="vya-appstore-sort-tooltip">Trending</span>
+        </button>
+        <button class="vya-appstore-sort-icon" data-sort="new" aria-label="New" title="New">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+          <span class="vya-appstore-sort-tooltip">New</span>
+        </button>
+        <button class="vya-appstore-sort-icon" data-sort="top-rated" aria-label="Top Rated" title="Top Rated">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span class="vya-appstore-sort-tooltip">Top Rated</span>
+        </button>
       </div>
     </div>
 
@@ -314,6 +328,14 @@ permalink: /
         <ul class="vya-appstore-list" id="vya-appstore-recommended-list">
           <!-- Will be populated by JavaScript -->
         </ul>
+      </div>
+    </div>
+
+    <!-- Search Results Gallery (shown only when searching) -->
+    <div class="vya-appstore-search-results" id="vya-appstore-search-results" style="display: none;">
+      <h2 class="vya-appstore-section-title" id="vya-appstore-search-results-title">Search Results</h2>
+      <div class="vya-appstore-search-grid" id="vya-appstore-search-grid">
+        <!-- Will be populated by JavaScript -->
       </div>
     </div>
   </main>

@@ -4,5 +4,11 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-59FYNPQGEP', { 'anonymize_ip': true });
+  
+  // Configure Google Analytics
+  gtag('config', 'G-59FYNPQGEP', {
+    'anonymize_ip': true,
+    'cookie_flags': 'SameSite=None;Secure',
+    'send_page_view': false // We'll track page views manually for better control
+  });
 </script>

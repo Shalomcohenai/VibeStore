@@ -89,7 +89,70 @@
 <!-- Additional SEO -->
 <meta name="robots" content="index, follow">
 <meta name="author" content="{{ site.title }}">
+<meta name="keywords" content="
+  {%- if page.keywords -%}
+    {{ page.keywords }}
+  {%- else -%}
+    no-code apps, web apps, mobile apps, whatsapp agents, app store, vibestore
+  {%- endif -%}
+">
 <link rel="canonical" href="{{ page.url | absolute_url }}">
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "{% if page.layout == 'blog-post' %}BlogPosting{% elsif page.app_title %}SoftwareApplication{% else %}WebSite{% endif %}",
+  "name": "{% if page.app_title %}{{ page.app_title }}{% elsif page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}",
+  "description": "{% if page.app_description %}{{ page.app_description | strip_html | truncate: 160 }}{% elsif page.description %}{{ page.description | strip_html | truncate: 160 }}{% elsif page.excerpt %}{{ page.excerpt | strip_html | truncate: 160 }}{% else %}{{ site.description }}{% endif %}",
+  "url": "{{ page.url | absolute_url }}",
+  {% if page.layout == 'blog-post' %}
+  "headline": "{{ page.title }}",
+  "datePublished": "{{ page.date | date: '%Y-%m-%d' }}",
+  "dateModified": "{{ page.date | date: '%Y-%m-%d' }}",
+  "author": {
+    "@type": "Organization",
+    "name": "{{ site.title }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site.title }}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ '/img/placeholder.svg' | absolute_url }}"
+    }
+  },
+  {% elsif page.app_title %}
+  "applicationCategory": "{{ page.app_category | default: 'WebApplication' }}",
+  "operatingSystem": "{% if page.app_niche == 'web' %}Web{% elsif page.app_niche == 'mobile' %}iOS, Android{% elsif page.app_niche == 'whatsapp' %}WhatsApp{% else %}Any{% endif %}",
+  "offers": {
+    "@type": "Offer",
+    "price": "{% if page.app_price %}{{ page.app_price }}{% else %}0{% endif %}",
+    "priceCurrency": "USD"
+  },
+  {% else %}
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ '/pages/results?q={search_term_string}' | absolute_url }}",
+    "query-input": "required name=search_term_string"
+  },
+  {% endif %}
+  "image": "{% if page.app_image %}{{ page.app_image }}{% else %}{{ '/img/placeholder.svg' | absolute_url }}{% endif %}"
+}
+</script>
+
+<!-- Organization Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{ site.title }}",
+  "url": "{{ site.url }}",
+  "logo": "{{ '/img/placeholder.svg' | absolute_url }}",
+  "description": "{{ site.description }}",
+  "sameAs": []
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

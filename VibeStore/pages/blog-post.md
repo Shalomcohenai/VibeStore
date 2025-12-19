@@ -8,14 +8,14 @@ permalink: /blog/post/
   <!-- Loading State -->
   <div id="loadingPost" class="loading-state">
     <div class="spinner"></div>
-    <p>טוען כתבה...</p>
+    <p>Loading blog post...</p>
   </div>
 
   <!-- Error State -->
   <div id="postError" class="error-state" style="display: none;">
-    <h2>⚠️ כתבה לא נמצאה</h2>
-    <p>הכתבה שחיפשת לא קיימת או הוסרה.</p>
-    <a href="/blog/" class="btn btn-primary">← חזרה לבלוג</a>
+    <h2>⚠️ Post Not Found</h2>
+    <p>The blog post you're looking for doesn't exist or has been removed.</p>
+    <a href="/blog/" class="btn btn-primary">← Back to Blog</a>
   </div>
 
   <!-- Blog Post Content -->
@@ -54,7 +54,7 @@ permalink: /blog/post/
     <!-- Post Footer -->
     <footer class="post-footer">
       <div class="share-section">
-        <h3>שתף את הכתבה</h3>
+        <h3>Share this post</h3>
         <div class="share-buttons">
           <button id="shareFacebook" class="share-btn facebook">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -81,13 +81,13 @@ permalink: /blog/post/
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
               <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
             </svg>
-            העתק קישור
+            Copy Link
           </button>
         </div>
       </div>
 
       <div class="navigation-section">
-        <a href="/blog/" class="btn btn-secondary">← חזרה לבלוג</a>
+        <a href="/blog/" class="btn btn-secondary">← Back to Blog</a>
       </div>
     </footer>
   </article>
@@ -391,5 +391,5 @@ permalink: /blog/post/
 }
 </style>
 
-<script type="module" src="/assets/js/blog-post.js"></script>
+<script type="module" src="/assets/js/features/blog/post.js"></script>
 

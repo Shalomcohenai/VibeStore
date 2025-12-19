@@ -644,3 +644,4 @@ export function renderAppCards(container, apps) {
 **נכתב על ידי:** AI Code Reviewer  
 **תאריך:** ינואר 2025  
 **גרסה:** 1.0
+

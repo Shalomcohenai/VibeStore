@@ -47,3 +47,4 @@ function initAnimations() {
 if (typeof window !== 'undefined') {
   window.initAnimations = initAnimations;
 }
+

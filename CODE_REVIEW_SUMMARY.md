@@ -126,3 +126,4 @@ VibeStore/
 ---
 
 For detailed review in Hebrew, see `CODE_REVIEW_HEBREW.md`
+

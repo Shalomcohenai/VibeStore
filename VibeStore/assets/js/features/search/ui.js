@@ -62,6 +62,11 @@ async function handleSearchInput(query, options = {}) {
 
     // Display results
     displaySearchResults(results, query);
+    
+    // Track search in analytics
+    if (window.Analytics) {
+      window.Analytics.trackSearch(query, results.length);
+    }
 
     return results;
   } catch (error) {
@@ -250,6 +255,14 @@ function createDefaultCardHTML(app) {
 
 // Track app card clicks
 function trackAppCardClick(appId, source) {
+  // Track in analytics
+  if (window.Analytics) {
+    // Get app title if available
+    const card = document.querySelector(`[data-app-id="${appId}"]`);
+    const appTitle = card?.querySelector('.app-title')?.textContent || 'Unknown App';
+    window.Analytics.trackAppClick(appId, appTitle, source);
+  }
+  
   if (window.trackAppClick) {
     const canTrack = window.trackAppClick(appId, source);
     if (canTrack) {

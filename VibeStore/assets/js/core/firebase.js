@@ -35,12 +35,19 @@ export async function initFirebase() {
   window.$fb = { app, auth, db, storage, functions, authMod, storeMod, storageMod, functionsMod };
 
   // Global waitForFirebase function - used by all modules
-  window.waitForFirebase = () => new Promise(resolve => {
+  window.waitForFirebase = () => new Promise((resolve, reject) => {
+    const timeout = window.TIME_WINDOWS?.FIREBASE_TIMEOUT_MS || 5000;
+    const checkInterval = window.TIME_WINDOWS?.FIREBASE_CHECK_INTERVAL_MS || 100;
+    let elapsed = 0;
+    
     const check = () => {
       if (window.$fb && window.$fb.auth && window.$fb.db && window.$fb.functions) {
         resolve(window.$fb);
+      } else if (elapsed >= timeout) {
+        reject(new Error('Firebase initialization timeout'));
       } else {
-        setTimeout(check, 100);
+        elapsed += checkInterval;
+        setTimeout(check, checkInterval);
       }
     };
     check();
@@ -52,3 +59,4 @@ export async function initFirebase() {
 
 // Auto-initialize when module loads (for backward compatibility)
 initFirebase();
+

@@ -3,6 +3,14 @@
 ## 1) Firebase project & config
 - Edit .firebaserc and set your dev project id.
 - In Firebase Console → Build → Authentication: enable Email/Password + Google.
+- **IMPORTANT: Add Authorized Domains for Google Sign-In**
+  - Go to Firebase Console → Build → Authentication → Settings → Authorized domains
+  - Add all domains where you'll test/deploy:
+    - `localhost` (for local development)
+    - `127.0.0.1` (for local IP access)
+    - Your custom domain (e.g., `yourdomain.com`)
+    - Your Firebase hosting domain (e.g., `yourproject.firebaseapp.com`)
+  - Without this, you'll get `auth/unauthorized-domain` errors
 - In Firebase Console → Firestore: create database (Production mode).
 - Create a Web App in Firebase Console → copy config into assets/js/firebaseConfig.js.
 

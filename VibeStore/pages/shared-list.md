@@ -276,22 +276,36 @@ permalink: /pages/shared-list
 
 <script type="module">
 // Wait for Firebase to initialize
-const waitForFirebaseShared = () => new Promise(resolve => {
-  const check = () => {
-    if (window.$fb && window.$fb.auth && window.$fb.db) {
-      resolve(window.$fb);
-    } else {
-      setTimeout(check, 100);
-    }
-  };
-  check();
-});
+const waitForFirebaseShared = async () => {
+  if (window.waitForFirebase) {
+    const fb = await window.waitForFirebase();
+    return {
+      db: fb.db,
+      storeMod: fb.storeMod
+    };
+  } else {
+    // Fallback: wait for $fb to be available
+    return new Promise(resolve => {
+      const check = () => {
+        if (window.$fb && window.$fb.db && window.$fb.storeMod) {
+          resolve({
+            db: window.$fb.db,
+            storeMod: window.$fb.storeMod
+          });
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
+    });
+  }
+};
 
 // Load shared list
 async function loadSharedList() {
   try {
     const { db, storeMod } = await waitForFirebaseShared();
-    const { doc, getDoc, updateDoc, increment } = storeMod;
+    const { doc, getDoc, updateDoc, increment, serverTimestamp } = storeMod;
     
     // Get share token from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -316,17 +330,17 @@ async function loadSharedList() {
     // Update access count
     await updateDoc(sharedListRef, {
       accessCount: increment(1),
-      lastAccessed: new Date()
+      lastAccessed: serverTimestamp()
     });
     
     // Display list information
-    document.getElementById('list-title').textContent = sharedListData.name;
+    document.getElementById('list-title').textContent = sharedListData.name || 'Untitled List';
     document.getElementById('list-description').textContent = sharedListData.description || 'No description available';
-    document.getElementById('app-count').textContent = sharedListData.apps.length;
+    document.getElementById('app-count').textContent = (sharedListData.apps && sharedListData.apps.length) || 0;
     document.getElementById('access-count').textContent = (sharedListData.accessCount || 0) + 1;
     
     // Load and display apps
-    await loadApps(sharedListData.apps);
+    await loadApps(sharedListData.apps || []);
     
     // Show content
     document.getElementById('loading-state').style.display = 'none';
@@ -364,18 +378,31 @@ async function loadApps(apps) {
 
 // Create app card HTML
 function createAppCard(app) {
+  const appIcon = app.appIcon || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 100%; height: 100%;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
+  const appTitle = app.appTitle || 'Unknown App';
+  const appCategory = app.appCategory || 'App';
+  const appId = app.appId || '';
+  
   return `
-    <div class="app-card" onclick="window.location.href='/pages/app?id=${app.appId}'">
+    <div class="app-card" onclick="window.location.href='/pages/app?id=${appId}'">
       <div class="app-header">
-        <div class="app-icon">${app.appIcon}</div>
+        <div class="app-icon">${appIcon}</div>
         <div class="app-info">
-          <h3 class="app-title">${app.appTitle}</h3>
-          <p class="app-category">${app.appCategory}</p>
+          <h3 class="app-title">${escapeHtml(appTitle)}</h3>
+          <p class="app-category">${escapeHtml(appCategory)}</p>
         </div>
       </div>
       <p class="app-description">Click to view app details</p>
     </div>
   `;
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Show error state

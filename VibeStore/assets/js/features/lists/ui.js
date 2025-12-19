@@ -123,7 +123,7 @@ class ListUI {
             }
           </div>
           <div style="text-align: center; margin-top: 1rem;">
-            <a href="/pages/profile" class="btn-create-new" style="display: inline-block; padding: 0.5rem 1rem; background: var(--c-primary); color: white; text-decoration: none; border-radius: 8px;">Create New List</a>
+            <button class="btn-create-new" id="create-new-list-in-modal" style="display: inline-block; padding: 0.5rem 1rem; background: var(--c-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">Create New List</button>
           </div>
         </div>
         <div class="modal-footer">
@@ -143,6 +143,17 @@ class ListUI {
     modal.querySelector('.btn-cancel').addEventListener('click', () => {
       document.body.removeChild(modal);
     });
+
+    // Create new list button - opens create list modal
+    const createNewListBtn = modal.querySelector('#create-new-list-in-modal');
+    if (createNewListBtn) {
+      createNewListBtn.addEventListener('click', () => {
+        // Close the add-to-list modal
+        document.body.removeChild(modal);
+        // Open create list modal
+        this.showCreateListModal(appId); // Pass appId so we can add it after creation
+      });
+    }
 
     modal.querySelector('#confirm-add-to-list').addEventListener('click', async () => {
       const selectedList = modal.querySelector('input[name="selectedList"]:checked');
@@ -179,8 +190,9 @@ class ListUI {
 
   /**
    * Show create list modal
+   * @param {string} appId - Optional app ID to add to the new list after creation
    */
-  showCreateListModal() {
+  showCreateListModal(appId = null) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `
@@ -227,8 +239,23 @@ class ListUI {
       }
 
       try {
-        await this.listsManager.createList(name, description, false); // Default to private
-        await this.renderListsContainer();
+        const listId = await this.listsManager.createList(name, description, false); // Default to private
+        
+        // If appId was provided, add the app to the newly created list
+        if (appId && listId) {
+          try {
+            await this.listsManager.addAppToList(listId, appId);
+            this.updateAddToListButton(appId);
+            alert(`✅ List "${name}" created and app added successfully!`);
+          } catch (error) {
+            console.error('Error adding app to new list:', error);
+            alert(`✅ List "${name}" created, but failed to add app. You can add it manually.`);
+          }
+        } else {
+          // Update lists container if we're on profile page
+          await this.renderListsContainer();
+        }
+        
         document.body.removeChild(modal);
       } catch (error) {
         console.error('Error creating list:', error);
@@ -500,11 +527,13 @@ class ListUI {
     window.openList = (listId) => {
       const list = this.listsManager.getList(listId);
       if (list) {
-        // Redirect to the shared list page using the share token
-        if (list.shareToken) {
-          window.open(`/pages/shared-list?token=${list.shareToken}`, '_blank');
+        // If list is public and has share token, open in shared-list page
+        // Otherwise, show in modal (for private lists or if user wants to see it directly)
+        if (list.isPublic && list.shareToken) {
+          // Open in same window for better UX (user can go back)
+          window.location.href = `/pages/shared-list?token=${list.shareToken}`;
         } else {
-          // If no share token, show the list in a modal
+          // Show the list in a modal for private lists
           this.showListDetailModal(list);
         }
       }

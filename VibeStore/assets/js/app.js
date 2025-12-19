@@ -6,20 +6,46 @@
   // (we maintain backward compatibility with non-module system)
 
   // Initialize core modules when DOM is ready
-  function initializeApp() {
-    // Wait for Firebase to be available
-    const checkFirebase = setInterval(() => {
-      if (window.$fb && window.$fb.auth && window.$fb.db) {
-        clearInterval(checkFirebase);
-        startInitialization();
-      }
-    }, 100);
+  async function initializeApp() {
+    try {
+      // Wait for Firebase with timeout using Promise.race
+      const timeout = window.TIME_WINDOWS?.FIREBASE_TIMEOUT_MS || 5000;
+      const checkInterval = window.TIME_WINDOWS?.FIREBASE_CHECK_INTERVAL_MS || 100;
+      
+      const fbPromise = new Promise((resolve) => {
+        const check = () => {
+          if (window.$fb && window.$fb.auth && window.$fb.db) {
+            resolve(window.$fb);
+          } else {
+            setTimeout(check, checkInterval);
+          }
+        };
+        check();
+      });
 
-    // Timeout after 5 seconds
-    setTimeout(() => {
-      clearInterval(checkFirebase);
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Firebase initialization timeout'));
+        }, timeout);
+      });
+
+      // Wait for Firebase or timeout
+      await Promise.race([fbPromise, timeoutPromise]);
+      
+      // Firebase is ready, start initialization
       startInitialization();
-    }, 5000);
+    } catch (error) {
+      // Handle timeout or other errors
+      if (window.ErrorHandler) {
+        window.ErrorHandler.handle(error, 'initializeApp', 
+          'שגיאה באתחול האפליקציה. אנא רענן את הדף.');
+      } else {
+        console.error('Error initializing app:', error);
+      }
+      
+      // Try to start anyway (graceful degradation)
+      startInitialization();
+    }
   }
 
   function startInitialization() {
@@ -65,7 +91,11 @@
       const idTokenResult = await user.getIdTokenResult();
       return idTokenResult.claims.admin === true;
     } catch (error) {
-      console.error('Error checking admin status:', error);
+      if (window.ErrorHandler) {
+        window.ErrorHandler.handle(error, 'isUserAdmin');
+      } else {
+        console.error('Error checking admin status:', error);
+      }
       return false;
     }
   };
@@ -74,47 +104,44 @@
   function updateNavigation() {
     const guestNav = document.getElementById('nav-guest');
     const authNav = document.getElementById('nav-authenticated');
+    const userIcon = document.getElementById('user-icon');
     const userName = document.getElementById('user-name');
 
     if (!window.$fb || !window.$fb.auth) {
-      setTimeout(updateNavigation, 100);
+      const checkInterval = window.TIME_WINDOWS?.FIREBASE_CHECK_INTERVAL_MS || 100;
+      setTimeout(updateNavigation, checkInterval);
       return;
     }
 
     const user = window.$fb.auth.currentUser;
 
-    if (user && guestNav && authNav && userName) {
+    if (user && guestNav && authNav && userIcon && userName) {
       guestNav.style.display = 'none';
       authNav.style.display = 'flex';
 
-      let initials = 'US';
+      // Get username from displayName or email
+      let username = 'User';
       if (user.displayName) {
-        const firstName = user.displayName.split(' ')[0];
-        const englishOnly = /^[A-Za-z]+$/;
-        if (englishOnly.test(firstName)) {
-          initials = firstName.substring(0, 2).toUpperCase();
-        } else if (user.email) {
-          initials = user.email.substring(0, 2).toUpperCase();
-        }
+        username = user.displayName.split(' ')[0]; // Take first name only
       } else if (user.email) {
-        initials = user.email.substring(0, 2).toUpperCase();
+        username = user.email.split('@')[0]; // Take part before @
       }
-      userName.textContent = initials;
+      userName.textContent = username;
     } else if (guestNav && authNav) {
       guestNav.style.display = 'flex';
       authNav.style.display = 'none';
     }
   }
 
-  // User circle/avatar click handler
+  // User icon/avatar click handler
   document.addEventListener('click', (e) => {
     const guestCircle = e.target.closest('#guest-circle');
-    const userCircle = e.target.closest('#user-circle');
+    const userIcon = e.target.closest('#user-icon');
     const userAvatar = e.target.closest('.user-avatar');
 
     if (guestCircle) {
       window.location.href = '/pages/auth';
-    } else if (userCircle || userAvatar) {
+    } else if (userIcon || userAvatar) {
       window.location.href = '/pages/profile/';
     }
   });
@@ -122,15 +149,29 @@
   // Initialize auth listener
   const initializeAuthListener = () => {
     if (window.$fb && window.$fb.authMod) {
-      window.$fb.authMod.onAuthStateChanged(window.$fb.auth, (user) => {
+      window.$fb.authMod.onAuthStateChanged(window.$fb.auth, async (user) => {
         updateNavigation();
         const signBtn = document.querySelector('a[href$="/pages/auth"]');
         if (signBtn) {
           signBtn.textContent = 'Sign in';
         }
+
+        // Initialize lists manager automatically when user logs in/out
+        if (window.listsManager) {
+          try {
+            await window.listsManager.initialize(user);
+          } catch (error) {
+            if (window.ErrorHandler) {
+              window.ErrorHandler.handle(error, 'initializeAuthListener.listsManager');
+            } else {
+              console.error('Error initializing lists manager:', error);
+            }
+          }
+        }
       });
     } else {
-      setTimeout(initializeAuthListener, 100);
+      const checkInterval = window.TIME_WINDOWS?.FIREBASE_CHECK_INTERVAL_MS || 100;
+      setTimeout(initializeAuthListener, checkInterval);
     }
   };
 

@@ -139,21 +139,21 @@ permalink: /pages/profile/
           <h4>Notifications</h4>
           <div class="setting-item">
             <label class="toggle-label">
-              <input type="checkbox" checked />
+              <input type="checkbox" id="setting-email-notifications" data-setting="emailNotifications" />
               <span class="toggle-slider"></span>
               Email notifications for app approvals
             </label>
           </div>
           <div class="setting-item">
             <label class="toggle-label">
-              <input type="checkbox" />
+              <input type="checkbox" id="setting-weekly-newsletter" data-setting="weeklyNewsletter" />
               <span class="toggle-slider"></span>
               Weekly newsletter
             </label>
           </div>
           <div class="setting-item">
             <label class="toggle-label">
-              <input type="checkbox" checked />
+              <input type="checkbox" id="setting-features-announcements" data-setting="featuresAnnouncements" />
               <span class="toggle-slider"></span>
               New features announcements
             </label>
@@ -164,14 +164,14 @@ permalink: /pages/profile/
           <h4>Privacy</h4>
           <div class="setting-item">
             <label class="toggle-label">
-              <input type="checkbox" checked />
+              <input type="checkbox" id="setting-profile-public" data-setting="profilePublic" />
               <span class="toggle-slider"></span>
               Make my profile public
             </label>
           </div>
           <div class="setting-item">
             <label class="toggle-label">
-              <input type="checkbox" />
+              <input type="checkbox" id="setting-show-submitted-apps" data-setting="showSubmittedApps" />
               <span class="toggle-slider"></span>
               Show my submitted apps
             </label>
@@ -180,7 +180,7 @@ permalink: /pages/profile/
 
         <div class="setting-group danger">
           <h4>Danger Zone</h4>
-          <button class="btn-danger">Delete Account</button>
+          <button class="btn-danger" id="delete-account-btn">Delete Account</button>
           <p class="warning-text">This action cannot be undone. All your data will be permanently deleted.</p>
         </div>
       </div>
@@ -2578,9 +2578,12 @@ try {
     if (window.listsManager) {
       listsManager = window.listsManager;
       
-      // Initialize with current user
+      // Initialize with current user (only if not already initialized or user changed)
       if (currentUser) {
-        await listsManager.initialize(currentUser);
+        // Only initialize if not already initialized or user changed
+        if (!listsManager.initialized || listsManager.currentUser?.uid !== currentUser.uid) {
+          await listsManager.initialize(currentUser);
+        }
         
         // Create list UI
         listUI = new window.ListUI(listsManager);
@@ -3021,7 +3024,14 @@ try {
           email: currentUser.email,
           displayName: currentUser.displayName || currentUser.email.split('@')[0],
           favorites: [],
-          createdAt: new Date()
+          createdAt: new Date(),
+          preferences: {
+            emailNotifications: true,
+            weeklyNewsletter: false,
+            featuresAnnouncements: true,
+            profilePublic: true,
+            showSubmittedApps: false
+          }
         };
         await setDoc(doc(db, 'users', uid), userData);
         return userData;
@@ -3387,26 +3397,6 @@ try {
     updateUserStats();
   });
 
-
-  // Load favorite apps when user is authenticated
-  authMod.onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      currentUser = user;
-      updateProfile(user);
-      await loadFavorites();
-      await loadSubmissions();
-      await updateUserStats();
-      
-      // Initialize lists
-      await initializeLists();
-      
-      // 🔥 Firebase Built-in - Check email verification status
-      checkEmailVerificationStatus(user);
-    } else {
-      window.location.href = '/pages/auth';
-    }
-  });
-
   // 🔥 Firebase Built-in - Check email verification status
   async function checkEmailVerificationStatus(user) {
     const notificationsContainer = document.getElementById('auth-status-notifications');
@@ -3440,6 +3430,213 @@ try {
       } catch (error) {
         alert('❌ Error: ' + error.message);
       }
+    }
+  });
+
+  // ============================================
+  // Account Settings Management
+  // ============================================
+
+  // Load user settings from Firebase
+  async function loadUserSettings() {
+    if (!currentUser) return;
+
+    try {
+      const userData = await getUserData(currentUser.uid);
+      const preferences = userData?.preferences || {};
+
+      // Default values
+      const settings = {
+        emailNotifications: preferences.emailNotifications ?? true,
+        weeklyNewsletter: preferences.weeklyNewsletter ?? false,
+        featuresAnnouncements: preferences.featuresAnnouncements ?? true,
+        profilePublic: preferences.profilePublic ?? true,
+        showSubmittedApps: preferences.showSubmittedApps ?? false
+      };
+
+      // Update UI checkboxes
+      document.getElementById('setting-email-notifications').checked = settings.emailNotifications;
+      document.getElementById('setting-weekly-newsletter').checked = settings.weeklyNewsletter;
+      document.getElementById('setting-features-announcements').checked = settings.featuresAnnouncements;
+      document.getElementById('setting-profile-public').checked = settings.profilePublic;
+      document.getElementById('setting-show-submitted-apps').checked = settings.showSubmittedApps;
+
+      return settings;
+    } catch (error) {
+      console.error('❌ Error loading user settings:', error);
+      return null;
+    }
+  }
+
+  // Save user settings to Firebase
+  async function saveUserSetting(settingKey, value) {
+    if (!currentUser) return false;
+
+    try {
+      const userData = await getUserData(currentUser.uid);
+      const currentPreferences = userData?.preferences || {};
+
+      // Update preferences
+      const updatedPreferences = {
+        ...currentPreferences,
+        [settingKey]: value,
+        lastUpdated: new Date()
+      };
+
+      // Save to Firebase
+      await updateUserData(currentUser.uid, {
+        preferences: updatedPreferences
+      });
+
+      console.log(`✅ Setting "${settingKey}" saved:`, value);
+      return true;
+    } catch (error) {
+      console.error(`❌ Error saving setting "${settingKey}":`, error);
+      return false;
+    }
+  }
+
+  // Setup event listeners for settings toggles
+  function setupSettingsListeners() {
+    // Get all setting checkboxes
+    const settingCheckboxes = document.querySelectorAll('[data-setting]');
+
+    settingCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', async (e) => {
+        const settingKey = e.target.dataset.setting;
+        const value = e.target.checked;
+
+        // Show loading state
+        const originalCursor = e.target.style.cursor;
+        e.target.style.cursor = 'wait';
+        e.target.disabled = true;
+
+        // Save setting
+        const success = await saveUserSetting(settingKey, value);
+
+        // Restore state
+        e.target.disabled = false;
+        e.target.style.cursor = originalCursor;
+
+        if (!success) {
+          // Revert checkbox if save failed
+          e.target.checked = !value;
+          alert('❌ Failed to save setting. Please try again.');
+        } else {
+          // Show success feedback for certain settings
+          if (settingKey === 'profilePublic') {
+            const status = value ? 'public' : 'private';
+            console.log(`✅ Profile is now ${status}`);
+          }
+        }
+      });
+    });
+  }
+
+  // Delete account functionality
+  async function deleteUserAccount() {
+    if (!currentUser) return;
+
+    // Double confirmation
+    const confirm1 = confirm('⚠️ Are you absolutely sure you want to delete your account?\n\nThis will permanently delete:\n- Your profile\n- All your submitted apps\n- Your favorites\n- Your lists\n- All your data\n\nThis action CANNOT be undone!');
+    if (!confirm1) return;
+
+    const confirm2 = confirm('⚠️ FINAL WARNING: This will permanently delete ALL your data. Type DELETE in the next prompt to confirm.');
+    if (!confirm2) return;
+
+    const confirm3 = prompt('Type DELETE to confirm account deletion:');
+    if (confirm3 !== 'DELETE') {
+      alert('Account deletion cancelled.');
+      return;
+    }
+
+    try {
+      const { db, storeMod, auth } = await waitForFirebaseProfile();
+      const { doc, deleteDoc, collection, query, where, getDocs, writeBatch } = storeMod;
+
+      // Show loading
+      const deleteBtn = document.getElementById('delete-account-btn');
+      const originalText = deleteBtn.textContent;
+      deleteBtn.textContent = 'Deleting...';
+      deleteBtn.disabled = true;
+
+      // 1. Delete user document
+      await deleteDoc(doc(db, 'users', currentUser.uid));
+
+      // 2. Delete user's submitted apps
+      const appsQuery = query(collection(db, 'apps'), where('submittedBy', '==', currentUser.uid));
+      const appsSnapshot = await getDocs(appsQuery);
+      const batch = writeBatch(db);
+      
+      appsSnapshot.forEach((appDoc) => {
+        batch.delete(appDoc.ref);
+      });
+
+      // 3. Delete user's lists
+      const listsQuery = query(collection(db, 'user_lists'), where('userId', '==', currentUser.uid));
+      const listsSnapshot = await getDocs(listsQuery);
+      
+      listsSnapshot.forEach((listDoc) => {
+        batch.delete(listDoc.ref);
+      });
+
+      // 4. Delete user's interactions
+      const interactionsQuery = query(collection(db, 'interactions'), where('userId', '==', currentUser.uid));
+      const interactionsSnapshot = await getDocs(interactionsQuery);
+      
+      interactionsSnapshot.forEach((interactionDoc) => {
+        batch.delete(interactionDoc.ref);
+      });
+
+      // Execute batch delete
+      await batch.commit();
+
+      // 5. Delete Firebase Auth account
+      const user = auth.currentUser;
+      if (user) {
+        await authMod.deleteUser(user);
+      }
+
+      // Success - redirect to home
+      alert('✅ Your account has been permanently deleted.');
+      window.location.href = '/';
+
+    } catch (error) {
+      console.error('❌ Error deleting account:', error);
+      alert('❌ Error deleting account: ' + error.message + '\n\nPlease contact support if this persists.');
+      
+      // Restore button
+      const deleteBtn = document.getElementById('delete-account-btn');
+      deleteBtn.textContent = originalText;
+      deleteBtn.disabled = false;
+    }
+  }
+
+  // Initialize settings when user is authenticated
+  authMod.onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      updateProfile(user);
+      await loadFavorites();
+      await loadSubmissions();
+      await updateUserStats();
+      
+      // Initialize lists
+      await initializeLists();
+      
+      // Load and setup settings
+      await loadUserSettings();
+      setupSettingsListeners();
+      
+      // Setup delete account button
+      document.getElementById('delete-account-btn')?.addEventListener('click', () => {
+        deleteUserAccount();
+      });
+      
+      // 🔥 Firebase Built-in - Check email verification status
+      checkEmailVerificationStatus(user);
+    } else {
+      window.location.href = '/pages/auth';
     }
   });
 

@@ -4,14 +4,17 @@
  */
 
 // Get IntersectionObserver from animations (we'll need to re-observe cards)
-let ioInstance = null;
+// Use shared global instance to avoid conflicts with results.js
+if (typeof window.ioInstance === 'undefined') {
+  window.ioInstance = null;
+}
 
 /**
  * Set IntersectionObserver instance for reveal animations
  * @param {IntersectionObserver} io - IntersectionObserver instance
  */
 function setIntersectionObserver(io) {
-  ioInstance = io;
+  window.ioInstance = io;
 }
 
 // Export for backward compatibility
@@ -51,7 +54,11 @@ async function renderApps(filter) {
           apps = await window.VibeStoreFirestore.fetchEditorsChoice();
         }
       } catch (error) {
-        console.error('Error fetching apps:', error);
+        if (window.ErrorHandler) {
+          window.ErrorHandler.handle(error, 'renderApps.fetch', 'שגיאה בטעינת אפליקציות');
+        } else {
+          console.error('Error fetching apps:', error);
+        }
         apps = [];
       }
     } else {
@@ -105,9 +112,15 @@ async function renderApps(filter) {
     });
 
     // Re-observe new cards for reveal animation
-    if (ioInstance) {
+    if (window.ioInstance) {
       const newCards = marketplaceGrid.querySelectorAll('.reveal');
-      newCards.forEach(card => ioInstance.observe(card));
+      newCards.forEach(card => window.ioInstance.observe(card));
+    }
+
+    // Observe new images for lazy loading
+    if (window.lazyImageLoader) {
+      const newImages = marketplaceGrid.querySelectorAll('img.lazy-load');
+      window.lazyImageLoader.addImages(Array.from(newImages));
     }
 
     // Add click handlers for favorite functionality
@@ -128,8 +141,20 @@ async function renderApps(filter) {
     }
 
   } catch (error) {
-    console.error('Error rendering apps:', error);
-    marketplaceGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted);">Error loading apps. Please try again.</div>';
+    if (window.ErrorHandler) {
+      const errorInfo = window.ErrorHandler.handle(error, 'renderApps', 'שגיאה בטעינת האפליקציות. אנא נסה לרענן את הדף.');
+      marketplaceGrid.innerHTML = `
+        <div style="text-align: center; padding: 2rem; color: var(--c-muted);">
+          <p>${errorInfo.userMessage}</p>
+          <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--c-primary); color: white; border: none; border-radius: 4px; cursor: pointer;">
+            רענן דף
+          </button>
+        </div>
+      `;
+    } else {
+      console.error('Error rendering apps:', error);
+      marketplaceGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted);">Error loading apps. Please try again.</div>';
+    }
   }
 }
 

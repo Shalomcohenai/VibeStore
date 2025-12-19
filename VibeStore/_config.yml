@@ -3,6 +3,7 @@ tagline: Find a ready-made app for your problem
 description: Search across Web apps, Mobile apps, and WhatsApp agents built by the no-code community.
 baseurl: ""
 url: "https://vibestore-7af1e.firebaseapp.com"
+forum_url: "" # Add your Discourse forum URL here
 theme: minima
 markdown: kramdown
 version: "9.2"

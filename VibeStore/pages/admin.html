@@ -46,6 +46,7 @@ permalink: /pages/admin/
       <button class="management-tab active" data-tab="apps">📱 Apps Approval</button>
       <button class="management-tab" data-tab="statistics">📊 Statistics</button>
       <button class="management-tab" data-tab="analytics">📈 User Analytics</button>
+      <button class="management-tab" data-tab="page-analytics">📄 Page Analytics</button>
       <button class="management-tab" data-tab="blog">✍️ Blog</button>
     </div>
   </div>
@@ -278,6 +279,89 @@ permalink: /pages/admin/
           <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.8rem; color: var(--c-muted);">
             <span>30 days ago</span>
             <span>Today</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- Page Analytics Management Section -->
+  <div class="management-content" id="page-analytics-management" style="display: none;">
+    <div class="admin-content">
+      
+      <!-- Page Views Overview -->
+      <div style="margin-bottom: 2rem;">
+        <h2 style="margin: 0 0 1rem 0; color: #111827;">📄 Page Views Analytics</h2>
+        
+        <!-- Page Analytics Filters -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+          <select id="page-analytics-time-filter" class="form-select">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="all">All time</option>
+          </select>
+          <select id="page-analytics-path-filter" class="form-select" style="min-width: 300px;">
+            <option value="">All Pages</option>
+          </select>
+          <button id="refresh-page-analytics" class="btn primary">🔄 Refresh Data</button>
+          <button id="export-page-views-csv" class="btn secondary">📥 Export CSV</button>
+        </div>
+        
+        <!-- Page Analytics Stats Cards -->
+        <div class="admin-stats">
+          <div class="stat-card">
+            <div class="stat-number" id="page-analytics-total-views">-</div>
+            <div class="stat-label">Total Page Views</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="page-analytics-unique-pages">-</div>
+            <div class="stat-label">Unique Pages</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="page-analytics-unique-sessions">-</div>
+            <div class="stat-label">Unique Sessions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="page-analytics-avg-time">-</div>
+            <div class="stat-label">Avg Time on Page</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Top Pages by Views -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 1rem 0;">🏆 Top Pages by Views</h3>
+        <div class="analytics-list-container" style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.05); overflow: hidden;">
+          <div id="top-pages-list" style="max-height: 400px; overflow-y: auto;">
+            <div style="text-align: center; padding: 2rem;">
+              <div class="spinner"></div>
+              <p>Loading page analytics...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Page Views Timeline -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 1rem 0;">📅 Page Views Timeline</h3>
+        <div class="timeline-container" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,.05);">
+          <div id="page-views-timeline" style="height: 300px; display: flex; align-items: end; gap: 2px; padding: 1rem 0;">
+            <!-- Timeline bars will be generated here -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recent Page Views -->
+      <div style="margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 1rem 0;">📋 Recent Page Views</h3>
+        <div class="analytics-list-container" style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.05); overflow: hidden;">
+          <div id="recent-page-views-list" style="max-height: 500px; overflow-y: auto;">
+            <div style="text-align: center; padding: 2rem;">
+              <div class="spinner"></div>
+              <p>Loading recent page views...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -1785,6 +1869,7 @@ async function initializeAdminPanel() {
   
   // Setup analytics event listeners
   setupAnalyticsEventListeners();
+  setupPageAnalyticsEventListeners();
 }
 
 // Initialize management tabs (Apps, Statistics, Blog)
@@ -1794,6 +1879,7 @@ function initializeManagementTabs() {
     'apps': document.getElementById('apps-management'),
     'statistics': document.getElementById('statistics-management'),
     'analytics': document.getElementById('analytics-management'),
+    'page-analytics': document.getElementById('page-analytics-management'),
     'blog': document.getElementById('blog-management')
   };
   
@@ -1818,6 +1904,8 @@ function initializeManagementTabs() {
           populateStatisticsTab();
         } else if (selectedTab === 'analytics') {
           loadAnalyticsData();
+        } else if (selectedTab === 'page-analytics') {
+          loadPageAnalyticsData();
         }
       }
     });
@@ -3290,6 +3378,348 @@ async function populateAppFilter() {
   } catch (error) {
     console.error('Error populating app filter:', error);
   }
+}
+
+// Page Analytics variables
+let pageAnalyticsData = null;
+
+// Load page analytics data
+async function loadPageAnalyticsData() {
+  try {
+    const { db, storeMod } = await waitForFirebase();
+    const { collection, query, where, orderBy, limit, getDocs, Timestamp } = storeMod;
+    
+    const timeFilter = document.getElementById('page-analytics-time-filter')?.value || '30';
+    const pathFilter = document.getElementById('page-analytics-path-filter')?.value || '';
+    
+    // Calculate date range
+    let startDate = null;
+    if (timeFilter !== 'all') {
+      const days = parseInt(timeFilter);
+      startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+    }
+    
+    // Build query
+    let pageViewsQuery = collection(db, 'page_views');
+    if (startDate) {
+      pageViewsQuery = query(
+        pageViewsQuery,
+        where('timestamp', '>=', Timestamp.fromDate(startDate)),
+        orderBy('timestamp', 'desc')
+      );
+    } else {
+      pageViewsQuery = query(pageViewsQuery, orderBy('timestamp', 'desc'), limit(10000));
+    }
+    
+    const pageViewsSnap = await getDocs(pageViewsQuery);
+    const pageViews = [];
+    
+    pageViewsSnap.forEach(doc => {
+      const data = doc.data();
+      if (!pathFilter || data.path === pathFilter) {
+        pageViews.push({
+          id: doc.id,
+          ...data,
+          timestamp: data.timestamp?.toDate() || new Date()
+        });
+      }
+    });
+    
+    // Get analytics events for time on page
+    let eventsQuery = collection(db, 'analytics_events');
+    if (startDate) {
+      eventsQuery = query(
+        eventsQuery,
+        where('timestamp', '>=', Timestamp.fromDate(startDate)),
+        where('event_name', '==', 'time_on_page')
+      );
+    } else {
+      eventsQuery = query(
+        eventsQuery,
+        where('event_name', '==', 'time_on_page'),
+        orderBy('timestamp', 'desc'),
+        limit(5000)
+      );
+    }
+    
+    const eventsSnap = await getDocs(eventsQuery);
+    const timeOnPageEvents = [];
+    eventsSnap.forEach(doc => {
+      const data = doc.data();
+      timeOnPageEvents.push({
+        path: data.params?.path || data.path,
+        time: data.params?.time_seconds || 0,
+        timestamp: data.timestamp?.toDate() || new Date()
+      });
+    });
+    
+    // Process page analytics data
+    pageAnalyticsData = {
+      pageViews: pageViews,
+      timeOnPageEvents: timeOnPageEvents,
+      timeFilter: timeFilter,
+      pathFilter: pathFilter
+    };
+    
+    // Populate path filter
+    populatePagePathFilter(pageViews);
+    
+    // Render page analytics
+    renderPageAnalyticsData();
+    
+  } catch (error) {
+    console.error('Error loading page analytics data:', error);
+    if (window.ErrorHandler) {
+      window.ErrorHandler.handle(error, 'loadPageAnalyticsData', 'שגיאה בטעינת נתוני אנליטיקת עמודים');
+    }
+  }
+}
+
+// Populate page path filter
+function populatePagePathFilter(pageViews) {
+  const select = document.getElementById('page-analytics-path-filter');
+  if (!select) return;
+  
+  // Get unique paths
+  const paths = [...new Set(pageViews.map(pv => pv.path))].sort();
+  
+  // Clear existing options except "All Pages"
+  select.innerHTML = '<option value="">All Pages</option>';
+  
+  paths.forEach(path => {
+    const option = document.createElement('option');
+    option.value = path;
+    option.textContent = path;
+    select.appendChild(option);
+  });
+}
+
+// Render page analytics data
+function renderPageAnalyticsData() {
+  if (!pageAnalyticsData) return;
+  
+  const { pageViews, timeOnPageEvents } = pageAnalyticsData;
+  
+  // Calculate stats
+  const totalViews = pageViews.length;
+  const uniquePages = new Set(pageViews.map(pv => pv.path)).size;
+  const uniqueSessions = new Set(pageViews.map(pv => pv.sessionId)).size;
+  
+  // Calculate average time on page
+  const avgTime = timeOnPageEvents.length > 0
+    ? Math.round(timeOnPageEvents.reduce((sum, e) => sum + e.time, 0) / timeOnPageEvents.length)
+    : 0;
+  
+  // Update stats cards
+  document.getElementById('page-analytics-total-views').textContent = totalViews.toLocaleString();
+  document.getElementById('page-analytics-unique-pages').textContent = uniquePages;
+  document.getElementById('page-analytics-unique-sessions').textContent = uniqueSessions.toLocaleString();
+  document.getElementById('page-analytics-avg-time').textContent = avgTime > 0 ? `${avgTime}s` : '-';
+  
+  // Render top pages
+  renderTopPages(pageViews);
+  
+  // Render timeline
+  renderPageViewsTimeline(pageViews);
+  
+  // Render recent page views
+  renderRecentPageViews(pageViews);
+}
+
+// Render top pages by views
+function renderTopPages(pageViews) {
+  const container = document.getElementById('top-pages-list');
+  if (!container) return;
+  
+  // Count views per page
+  const pageCounts = {};
+  pageViews.forEach(pv => {
+    pageCounts[pv.path] = (pageCounts[pv.path] || 0) + 1;
+  });
+  
+  // Sort by count
+  const sortedPages = Object.entries(pageCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20);
+  
+  if (sortedPages.length === 0) {
+    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted);">No page views found</div>';
+    return;
+  }
+  
+  container.innerHTML = sortedPages.map(([path, count], index) => `
+    <div class="analytics-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--c-line);">
+      <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+        <span style="font-weight: 600; color: var(--c-muted); min-width: 30px;">#${index + 1}</span>
+        <span style="flex: 1; word-break: break-all;">${path}</span>
+      </div>
+      <div style="font-weight: 600; color: var(--c-primary); min-width: 80px; text-align: right;">
+        ${count.toLocaleString()} views
+      </div>
+    </div>
+  `).join('');
+}
+
+// Render page views timeline
+function renderPageViewsTimeline(pageViews) {
+  const container = document.getElementById('page-views-timeline');
+  if (!container) return;
+  
+  // Group by date
+  const dateCounts = {};
+  pageViews.forEach(pv => {
+    const date = pv.timestamp.toISOString().split('T')[0];
+    dateCounts[date] = (dateCounts[date] || 0) + 1;
+  });
+  
+  // Get last 30 days
+  const days = 30;
+  const today = new Date();
+  const timelineData = [];
+  
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0];
+    timelineData.push({
+      date: dateStr,
+      count: dateCounts[dateStr] || 0,
+      isToday: i === 0
+    });
+  }
+  
+  const maxCount = Math.max(...timelineData.map(d => d.count), 1);
+  
+  container.innerHTML = timelineData.map(({ date, count, isToday }) => {
+    const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
+    return `
+      <div 
+        style="
+          flex: 1; 
+          height: ${height}%; 
+          background: ${isToday ? 'var(--c-primary)' : '#e5e7eb'}; 
+          border-radius: 2px 2px 0 0;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          position: relative;
+        " 
+        title="${date}: ${count} views"
+        onmouseover="this.style.background='var(--c-primary)'"
+        onmouseout="this.style.background='${isToday ? 'var(--c-primary)' : '#e5e7eb'}'"
+      >
+      </div>
+    `;
+  }).join('');
+}
+
+// Render recent page views
+function renderRecentPageViews(pageViews) {
+  const container = document.getElementById('recent-page-views-list');
+  if (!container) return;
+  
+  // Sort by timestamp (most recent first)
+  const recent = [...pageViews]
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .slice(0, 50);
+  
+  if (recent.length === 0) {
+    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--c-muted);">No recent page views</div>';
+    return;
+  }
+  
+  container.innerHTML = recent.map(pv => {
+    const timeAgo = getTimeAgo(pv.timestamp);
+    return `
+      <div class="analytics-item" style="padding: 1rem; border-bottom: 1px solid var(--c-line);">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+          <div style="flex: 1;">
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">${pv.path}</div>
+            <div style="font-size: 0.85rem; color: var(--c-muted);">${pv.title || 'No title'}</div>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--c-muted); text-align: right; margin-left: 1rem;">
+            ${timeAgo}
+          </div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--c-muted);">
+          Session: ${pv.sessionId?.substring(0, 20)}... | 
+          ${pv.userId ? 'User: ' + pv.userId.substring(0, 8) + '...' : 'Anonymous'} |
+          ${pv.referrer ? 'From: ' + new URL(pv.referrer).hostname : 'Direct'}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Helper function to get time ago
+function getTimeAgo(date) {
+  const seconds = Math.floor((new Date() - date) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+// Setup page analytics event listeners
+function setupPageAnalyticsEventListeners() {
+  // Refresh button
+  const refreshBtn = document.getElementById('refresh-page-analytics');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', loadPageAnalyticsData);
+  }
+  
+  // Export CSV button
+  const exportBtn = document.getElementById('export-page-views-csv');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportPageViewsToCSV);
+  }
+  
+  // Time filter
+  const timeFilter = document.getElementById('page-analytics-time-filter');
+  if (timeFilter) {
+    timeFilter.addEventListener('change', loadPageAnalyticsData);
+  }
+  
+  // Path filter
+  const pathFilter = document.getElementById('page-analytics-path-filter');
+  if (pathFilter) {
+    pathFilter.addEventListener('change', loadPageAnalyticsData);
+  }
+}
+
+// Export page views to CSV
+function exportPageViewsToCSV() {
+  if (!pageAnalyticsData) {
+    alert('No page analytics data to export');
+    return;
+  }
+  
+  const { pageViews } = pageAnalyticsData;
+  
+  const csv = [
+    ['Date', 'Time', 'Path', 'Title', 'Session ID', 'User ID', 'Referrer', 'User Agent'],
+    ...pageViews.map(pv => [
+      pv.timestamp.toLocaleDateString(),
+      pv.timestamp.toLocaleTimeString(),
+      pv.path || '',
+      pv.title || '',
+      pv.sessionId || '',
+      pv.userId || 'Anonymous',
+      pv.referrer || 'Direct',
+      pv.userAgent || ''
+    ])
+  ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `page-views-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  window.URL.revokeObjectURL(url);
 }
 
 // Initialize when page loads

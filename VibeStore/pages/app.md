@@ -11,15 +11,13 @@ permalink: /pages/app
   padding: 2rem 1rem;
 }
 
+/* App Header - New Clean Design */
 .app-header {
-  background: white;
+  background: #000000;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  padding: 0;
+  padding: 3rem;
   margin-bottom: 1.5rem;
-  border: 1px solid var(--c-line);
-  overflow: hidden;
-  position: relative;
+  color: white;
   animation: fadeInUp 0.6s ease-out;
 }
 
@@ -34,241 +32,188 @@ permalink: /pages/app
   }
 }
 
-.app-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-  pointer-events: none;
-}
-
-.app-meta {
+.app-header-content {
   display: grid;
-  grid-template-columns: 140px 1fr auto;
-  gap: 2rem;
-  align-items: center;
-  padding: 2rem;
-  position: relative;
-  z-index: 1;
-  background: var(--c-primary);
-  color: white;
+  grid-template-columns: auto 1fr;
+  gap: 2.5rem;
+  align-items: start;
 }
 
-.app-icon-section {
+/* App Icon Section */
+.app-icon-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 1rem;
 }
 
 .app-icon {
-  width: 140px;
-  height: 140px;
-  background: rgba(255, 255, 255, 0.2);
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3.5rem;
+  font-size: 3rem;
   color: white;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
-  overflow: hidden;
-  border: 2px solid rgba(255,255,255,0.3);
-  transition: all 0.3s ease;
-  margin-bottom: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
 }
 
-.app-icon:hover {
-  transform: scale(1.05) translateY(-4px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.2);
-}
-
-.app-info {
-  flex: 1;
-  color: white;
-}
-
-.badges {
-  margin-bottom: 1rem;
-  animation: fadeInLeft 0.8s ease-out 0.2s both;
-}
-
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.badge {
-  background: rgba(255,255,255,0.2);
-  color: white;
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.75rem;
-  margin-bottom: 0.5rem;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.3);
-}
-
-.badge:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-}
-
-.app-title {
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin: 0 0 1rem 0;
-  color: white;
-  line-height: 1.2;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  animation: fadeInLeft 0.8s ease-out 0.4s both;
-}
-
-.app-description {
-  color: rgba(255,255,255,0.9);
-  font-size: 1.15rem;
-  line-height: 1.6;
-  margin: 0 0 1.5rem 0;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  animation: fadeInLeft 0.8s ease-out 0.6s both;
-}
-
-.app-tags {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  animation: fadeInLeft 0.8s ease-out 0.8s both;
-}
-
-.tag {
-  background: rgba(255,255,255,0.2);
-  color: white;
-  padding: 0.4rem 1rem;
-  border-radius: 16px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  border: 1px solid rgba(255,255,255,0.3);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.tag:hover {
-  background: rgba(255,255,255,0.3);
-  transform: translateY(-2px);
-}
-
-.rating {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 1.1rem;
-  animation: fadeInLeft 0.8s ease-out 1s both;
-}
-
-.rating-stars {
-  color: white;
-  font-size: 1.4rem;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.score {
-  font-weight: 700;
-  color: white;
-  font-size: 1.2rem;
-}
-
-.reviews {
-  color: rgba(255,255,255,0.8);
-  font-size: 1rem;
-}
-
-.app-actions-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
-  justify-content: center;
-  animation: fadeInRight 0.8s ease-out 1.2s both;
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.users-count-prominent {
-  background: rgba(255,255,255,0.95);
-  color: var(--c-primary);
-  padding: 0.75rem 1rem;
+.app-clicks {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.25rem;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   min-width: 80px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.8);
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-  animation: usersCountFloat 3s ease-in-out infinite;
 }
 
-@keyframes usersCountFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-4px); }
-}
-
-.users-count-prominent:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
-
-.users-number {
-  font-size: 1.4rem;
+.clicks-number {
+  font-size: 1.5rem;
   font-weight: 700;
   line-height: 1;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
 }
 
-.users-label {
+.clicks-label {
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   opacity: 0.8;
 }
 
-.app-actions {
+/* App Info Section */
+.app-info {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+  line-height: 1.2;
+}
+
+.app-description {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Rating Section */
+.app-rating {
+  display: flex;
   align-items: center;
-  min-width: 180px;
-  width: 100%;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.rating-stars {
+  color: #ffd700;
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+}
+
+.rating-score {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.rating-count {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+}
+
+/* Tags Section */
+.app-tags {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.app-tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.app-tag:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Action Buttons */
+.app-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.action-btn.primary {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.action-btn.primary:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Active/Saved States */
+.action-btn.saved,
+.action-btn.active {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60a5fa !important;
+}
+
+.action-btn.saved:hover,
+.action-btn.active:hover {
+  background: rgba(59, 130, 246, 0.3) !important;
+}
+
+.app-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+  min-width: auto;
+  width: auto;
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -304,50 +249,88 @@ permalink: /pages/app
   left: 100%;
 }
 
-/* Action buttons */
+/* Action buttons - styled like tag/chip buttons */
 .action-btn {
-  padding: 1rem 1.5rem;
-  min-width: 180px;
-  font-size: 0.95rem;
+  padding: 0.4rem 0.9rem;
+  min-width: auto;
+  width: auto;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 20px;
+}
+
+/* Remove shimmer effect for action buttons */
+.action-btn::before {
+  display: none;
+}
+
+/* Override primary/secondary styles for action buttons to be more subtle */
+.action-btn.btn.primary {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.action-btn.btn.primary:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+.action-btn.btn.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.action-btn.btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: none;
 }
 
 /* Pressed/Active states */
 .action-btn.pressed {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transform: translateY(1px);
   opacity: 0.9;
 }
 
-/* Save button active/saved state */
+/* Save button active/saved state - subtle like chip buttons */
 #save-btn.saved,
 #save-btn.active {
-  background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
-  border: none !important;
-  color: white !important;
-  box-shadow: 0 4px 16px rgba(107, 70, 193, 0.3);
-  font-weight: 600;
+  background: rgba(59, 130, 246, 0.15) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  color: rgba(59, 130, 246, 1) !important;
+  box-shadow: none;
+  font-weight: 500;
 }
 
 #save-btn.saved:hover,
 #save-btn.active:hover {
-  background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
-  transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(107, 70, 193, 0.3);
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  transform: translateY(-1px);
+  box-shadow: none;
 }
 
-/* Add to List button states */
+/* Add to List button states - subtle like chip buttons */
 #add-to-list-btn.added {
-  background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
-  border: none !important;
-  color: white !important;
-  box-shadow: 0 4px 16px rgba(107, 70, 193, 0.3);
-  font-weight: 600;
+  background: rgba(59, 130, 246, 0.15) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  color: rgba(59, 130, 246, 1) !important;
+  box-shadow: none;
+  font-weight: 500;
 }
 
 #add-to-list-btn.added:hover {
-  background: linear-gradient(135deg, var(--c-primary), var(--c-accent)) !important;
-  transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(107, 70, 193, 0.3);
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  transform: translateY(-1px);
+  box-shadow: none;
 }
 
 #add-to-list-btn.added span {
@@ -592,13 +575,16 @@ permalink: /pages/app
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0.5rem;
+  margin-top: 2rem;
   padding: 1rem;
   background: rgba(255,255,255,0.1);
   border-radius: 16px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.2);
   animation: fadeInRight 0.8s ease-out 1.4s both;
+  align-self: flex-end;
+  width: fit-content;
+  margin-left: auto;
 }
 
 .share-label {
@@ -1255,63 +1241,50 @@ permalink: /pages/app
   }
   
   .app-header {
-    border-radius: 20px;
-    margin-bottom: 1rem;
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
   }
   
-  .app-meta {
+  .app-header-content {
     grid-template-columns: 1fr;
+    gap: 2rem;
     text-align: center;
-    gap: 1.5rem;
-    padding: 1.5rem;
+  }
+  
+  .app-icon-container {
+    align-items: center;
   }
   
   .app-icon {
     width: 100px;
     height: 100px;
     font-size: 2.5rem;
-    margin: 0 auto;
-  }
-  
-  .app-icon-section {
-    align-items: center;
   }
   
   .app-title {
-    font-size: 1.8rem;
+    font-size: 2rem;
+    text-align: center;
   }
   
   .app-description {
     font-size: 1rem;
+    text-align: center;
   }
   
-  .app-actions-wrapper {
-    align-items: center;
-    gap: 1rem;
+  .app-rating {
+    justify-content: center;
+  }
+  
+  .app-tags {
+    justify-content: center;
   }
   
   .app-actions {
-    flex-direction: column;
-    align-items: stretch;
-    min-width: auto;
-    width: 100%;
+    justify-content: center;
   }
   
-  .btn {
-    width: 100%;
-    min-width: auto;
-    padding: 0.875rem 1rem;
-    font-size: 0.95rem;
-  }
-  
-  .users-count-prominent {
-    min-width: 80px;
-    padding: 0.75rem 1rem;
-    margin-top: 0.75rem;
-  }
-  
-  .users-number {
-    font-size: 1.2rem;
+  .clicks-number {
+    font-size: 1.3rem;
   }
   
   .details-grid {
@@ -1360,80 +1333,41 @@ permalink: /pages/app
     
     <!-- App Header -->
     <div class="app-header">
-      <div class="app-meta">
-        <div class="app-icon-section">
-          <div class="app-icon" id="app-icon">
-            📱
-          </div>
-          <!-- Users Count - Below Icon -->
-          <div class="users-count-prominent" id="users-count-prominent">
-            <div class="users-number" id="users-number">0</div>
-            <div class="users-label">clicks</div>
+      <div class="app-header-content">
+        <!-- Icon and Clicks -->
+        <div class="app-icon-container">
+          <div class="app-icon" id="app-icon">📱</div>
+          <div class="app-clicks" id="app-clicks">
+            <div class="clicks-number" id="clicks-number">0</div>
+            <div class="clicks-label">clicks</div>
           </div>
         </div>
         
+        <!-- App Info -->
         <div class="app-info">
-          <div class="badges" id="app-badges">
-            <!-- Badges will be populated by JS -->
-          </div>
           <h1 class="app-title" id="app-title">Loading...</h1>
+          
           <p class="app-description" id="app-description">Loading app description...</p>
           
+          <!-- Rating -->
+          <div class="app-rating" id="app-rating">
+            <span class="rating-stars" id="rating-stars">★★★★★</span>
+            <span class="rating-score" id="rating-score">0/5</span>
+            <span class="rating-count" id="rating-count">(0 reviews)</span>
+          </div>
+          
+          <!-- Tags -->
           <div class="app-tags" id="app-tags">
             <!-- Tags will be populated by JS -->
           </div>
           
-          <div class="rating" id="app-rating">
-            <span class="rating-stars" id="rating-stars">★★★★★</span>
-            <span class="score" id="rating-score">0/5</span>
-            <span class="reviews" id="rating-count">(0 reviews)</span>
-          </div>
-        </div>
-        
-        <div class="app-actions-wrapper">
+          <!-- Action Buttons -->
           <div class="app-actions">
-            <a id="app-cta" href="#" target="_blank" class="btn primary action-btn">
-              <span>Open App</span>
+            <a id="app-cta" href="#" target="_blank" class="action-btn primary">
+              Open App
             </a>
-            <button class="btn secondary action-btn" id="save-btn">
-              <span>Save</span>
-            </button>
-            <button class="btn secondary action-btn" id="add-to-list-btn">
-              <span>Add to List</span>
-            </button>
-          </div>
-          
-          <!-- Social Share Buttons - Below action buttons -->
-          <div class="social-share-inline">
-            <span class="share-label">Share:</span>
-            <button class="social-btn-flat facebook" id="share-facebook" title="Share on Facebook">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-              </svg>
-            </button>
-            <button class="social-btn-flat twitter" id="share-twitter" title="Share on Twitter/X">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-              </svg>
-            </button>
-            <button class="social-btn-flat linkedin" id="share-linkedin" title="Share on LinkedIn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                <rect x="2" y="9" width="4" height="12"></rect>
-                <circle cx="4" cy="4" r="2"></circle>
-              </svg>
-            </button>
-            <button class="social-btn-flat whatsapp" id="share-whatsapp" title="Share on WhatsApp">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-              </svg>
-            </button>
-            <button class="social-btn-flat copy-link" id="share-copy" title="Copy link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-            </button>
+            <button class="action-btn" id="save-btn">Save</button>
+            <button class="action-btn" id="add-to-list-btn">Add to List</button>
           </div>
         </div>
       </div>
@@ -1907,28 +1841,15 @@ function renderAppContent(app) {
   // Render image gallery if screenshots exist
   renderImageGallery(app.screenshots || app.images || []);
   
-  // Image with lazy loading
-  const appImage = document.getElementById('app-icon');
-  if (appImage) {
-    const imageUrl = app.imageUrl || app.image || '/img/placeholder.svg';
-    appImage.innerHTML = `
-      <div class="app-icon-container">
-        <img 
-          data-src="${imageUrl}" 
-          alt="${app.title} Icon" 
-          class="lazy-image app-icon-img"
-          loading="lazy"
-          onerror="this.src='/img/placeholder.svg'"
-          style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;"
-        >
-        <div class="image-placeholder">
-          <div class="loading-spinner"></div>
-        </div>
-      </div>
-    `;
-    
-    // Initialize lazy loading for app icon
-    initializeLazyLoading();
+  // App Icon
+  const appIconEl = document.getElementById('app-icon');
+  if (appIconEl) {
+    const imageUrl = app.imageUrl || app.image;
+    if (imageUrl) {
+      appIconEl.innerHTML = `<img src="${imageUrl}" alt="${app.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;" onerror="this.parentElement.textContent='${getNicheIcon(app.niche)}'">`;
+    } else {
+      appIconEl.textContent = getNicheIcon(app.niche);
+    }
   }
   
   // Created date
@@ -1941,52 +1862,48 @@ function renderAppContent(app) {
   const usersCountEl = document.getElementById('app-users-count');
   if (usersCountEl) usersCountEl.textContent = `${usersCount} clicks`;
   
-  // Badges
-  const badgesContainer = document.getElementById('app-badges');
-  if (badgesContainer) {
-    badgesContainer.innerHTML = '';
-    
-    // Niche badge
-    if (app.niche && typeof app.niche === 'string') {
-      const nicheBadge = document.createElement('span');
-      nicheBadge.className = `badge ${app.niche}`;
-      nicheBadge.textContent = `${getNicheIcon(app.niche)} ${app.niche.charAt(0).toUpperCase() + app.niche.slice(1)}`;
-      badgesContainer.appendChild(nicheBadge);
-    }
-    
-    // Featured badge
-    if (app.featured?.active) {
-      const featuredBadge = document.createElement('span');
-      featuredBadge.className = 'badge featured';
-      featuredBadge.textContent = 'Featured';
-      badgesContainer.appendChild(featuredBadge);
-    }
-    
-    // Editor's Choice badge
-    if (app.editor_pick) {
-      const editorBadge = document.createElement('span');
-      editorBadge.className = 'badge editor';
-      editorBadge.textContent = "Editor's Choice";
-      badgesContainer.appendChild(editorBadge);
-    }
-  }
-  
-  // Tags
+  // Tags (including badges as tags)
   const tagsContainer = document.getElementById('app-tags');
   if (tagsContainer) {
     tagsContainer.innerHTML = '';
+    
+    // Add niche as tag
+    if (app.niche && typeof app.niche === 'string') {
+      const nicheTag = document.createElement('span');
+      nicheTag.className = 'app-tag';
+      nicheTag.textContent = app.niche.charAt(0).toUpperCase() + app.niche.slice(1);
+      tagsContainer.appendChild(nicheTag);
+    }
+    
+    // Add featured tag
+    if (app.featured?.active) {
+      const featuredTag = document.createElement('span');
+      featuredTag.className = 'app-tag';
+      featuredTag.textContent = 'Featured';
+      tagsContainer.appendChild(featuredTag);
+    }
+    
+    // Add editor's choice tag
+    if (app.editor_pick) {
+      const editorTag = document.createElement('span');
+      editorTag.className = 'app-tag';
+      editorTag.textContent = "Editor's Choice";
+      tagsContainer.appendChild(editorTag);
+    }
+    
+    // Add app tags
     if (app.tags && app.tags.length > 0) {
       app.tags.forEach(tag => {
         const tagSpan = document.createElement('span');
-        tagSpan.className = 'chip';
+        tagSpan.className = 'app-tag';
         tagSpan.textContent = tag;
         tagsContainer.appendChild(tagSpan);
       });
-    } else {
-      const categoryChip = document.createElement('span');
-      categoryChip.className = 'chip';
-      categoryChip.textContent = app.category;
-      tagsContainer.appendChild(categoryChip);
+    } else if (app.category) {
+      const categoryTag = document.createElement('span');
+      categoryTag.className = 'app-tag';
+      categoryTag.textContent = app.category;
+      tagsContainer.appendChild(categoryTag);
     }
   }
   
@@ -2012,10 +1929,10 @@ function renderAppContent(app) {
     }
   }
   
-  // Update users count in prominent display
-  const usersNumberEl = document.getElementById('users-number');
-  if (usersNumberEl) {
-    usersNumberEl.textContent = usersCountInRating;
+  // Update clicks count
+  const clicksNumberEl = document.getElementById('clicks-number');
+  if (clicksNumberEl) {
+    clicksNumberEl.textContent = usersCountInRating;
   }
   
   // CTA Button
@@ -3016,7 +2933,9 @@ function initializeButtons() {
           return;
         }
 
-        if (!window.listsManager.initialized) {
+        // Only initialize if not already initialized or user changed
+        if (!window.listsManager.initialized || 
+            (currentUser && window.listsManager.currentUser?.uid !== currentUser.uid)) {
           await window.listsManager.initialize(currentUser);
         }
 
@@ -3073,7 +2992,7 @@ function showAddToListModal(appId) {
           }
         </div>
         <div style="text-align: center; margin-top: 1rem;">
-          <a href="/pages/profile" class="btn-create-new" style="display: inline-block; padding: 0.5rem 1rem; background: var(--c-primary); color: white; text-decoration: none; border-radius: 8px;">Create New List</a>
+          <button class="btn-create-new" id="create-new-list-in-modal-fallback" style="display: inline-block; padding: 0.5rem 1rem; background: var(--c-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">Create New List</button>
         </div>
       </div>
       <div class="modal-footer">
@@ -3093,6 +3012,36 @@ function showAddToListModal(appId) {
   modal.querySelector('.btn-cancel').addEventListener('click', () => {
     document.body.removeChild(modal);
   });
+  
+  // Create new list button - opens create list modal
+  const createNewListBtn = modal.querySelector('#create-new-list-in-modal-fallback');
+  if (createNewListBtn) {
+    createNewListBtn.addEventListener('click', () => {
+      // Close the add-to-list modal
+      document.body.removeChild(modal);
+      // Use ListUI if available, otherwise show simple prompt
+      if (window.ListUI && window.listsManager) {
+        const listUI = new window.ListUI(window.listsManager);
+        listUI.showCreateListModal(appId);
+      } else {
+        // Fallback: simple prompt
+        const listName = prompt('Enter list name:');
+        if (listName && listName.trim()) {
+          window.listsManager.createList(listName.trim(), '', false).then(listId => {
+            if (listId && appId) {
+              window.listsManager.addAppToList(listId, appId).then(() => {
+                updateAddToListButton(appId);
+                alert('✅ List created and app added!');
+              });
+            }
+          }).catch(error => {
+            console.error('Error creating list:', error);
+            alert('Error creating list. Please try again.');
+          });
+        }
+      }
+    });
+  }
   
   modal.querySelector('#confirm-add-to-list').addEventListener('click', async () => {
     const selectedList = modal.querySelector('input[name="selectedList"]:checked');

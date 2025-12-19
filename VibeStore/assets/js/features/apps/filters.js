@@ -28,3 +28,4 @@ function initFilters() {
 if (typeof window !== 'undefined') {
   window.initFilters = initFilters;
 }
+

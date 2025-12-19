@@ -17,7 +17,10 @@ function createAppCard(app) {
   const usersCount = app.usersCount || 0;
 
   // Generate stars based on rating
-  const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+  const maxStars = window.RATING?.STARS_COUNT || 5;
+  const filledStars = Math.floor(rating);
+  const emptyStars = maxStars - filledStars;
+  const stars = '★'.repeat(filledStars) + '☆'.repeat(emptyStars);
 
   // Get appropriate icon based on niche or user uploaded image - returns SVG with class for coloring
   let appIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="app-icon-svg" style="width: 100%; height: 100%;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
@@ -44,10 +47,15 @@ function createAppCard(app) {
 
   return `
     <article class="app-card" data-app-id="${appId}" data-niche="${app.niche || 'web'}" data-initialized="false">
-      <div class="card-header" onclick="trackAppCardClick('${appId}', 'home_card_header'); window.location.href='/pages/app?id=${appId}'" style="cursor: pointer;">
+      <div class="card-header" onclick="if(window.Analytics){window.Analytics.trackAppClick('${appId}', '${title}', 'home_card_header');} if(window.trackAppCardClick){window.trackAppCardClick('${appId}', 'home_card_header');} window.location.href='/pages/app?id=${appId}'" style="cursor: pointer;">
         <div class="app-icon">
           ${hasCustomImage
-            ? `<img src="${appImageUrl}" alt="${title} Icon" class="app-icon-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            ? `<img 
+                 data-src="${appImageUrl}" 
+                 src="/img/placeholder.svg" 
+                 alt="${title} Icon" 
+                 class="app-icon-image lazy-load" 
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                <div class="app-icon-fallback" style="display: none;">${appIcon}</div>`
             : appIcon
           }
@@ -72,7 +80,7 @@ function createAppCard(app) {
         </div>
       </div>
 
-      <div class="card-body" onclick="trackAppCardClick('${appId}', 'home_card_body'); window.location.href='/pages/app?id=${appId}'" style="cursor: pointer;">
+      <div class="card-body" onclick="if(window.Analytics){window.Analytics.trackAppClick('${appId}', '${title}', 'home_card_body');} if(window.trackAppCardClick){window.trackAppCardClick('${appId}', 'home_card_body');} window.location.href='/pages/app?id=${appId}'" style="cursor: pointer;">
         <p class="app-description">${description}</p>
       </div>
 
@@ -93,4 +101,5 @@ if (typeof window !== 'undefined') {
     return createAppCard(app);
   };
 }
+
 

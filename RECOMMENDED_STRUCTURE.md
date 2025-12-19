@@ -392,3 +392,4 @@ mv firestore-apps.js features/apps/firestore.js
 
 **נוצר:** ינואר 2025  
 **גרסה:** 1.0
+

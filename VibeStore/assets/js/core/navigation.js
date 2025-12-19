@@ -9,16 +9,6 @@ const SCROLL_THRESHOLD = 50;
  * Initialize navigation functionality
  */
 function initNavigation() {
-  // Mobile nav toggle
-  const nav = document.querySelector('[data-nav]');
-  const toggle = document.querySelector('.menu-toggle');
-  if (toggle && nav) {
-    toggle.addEventListener('click', () => {
-      const open = nav.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', String(open));
-    });
-  }
-
   // Header scroll effects
   const header = document.querySelector('.site-header');
   if (header) {
@@ -43,3 +33,4 @@ function initNavigation() {
 if (typeof window !== 'undefined') {
   window.initNavigation = initNavigation;
 }
+

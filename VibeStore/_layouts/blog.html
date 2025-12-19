@@ -18,10 +18,10 @@ layout: default
         type="text" 
         id="blog-search" 
         class="blog-search-input" 
-        placeholder="חפש כתבות, נושאים, תגיות..."
+        placeholder="Search articles, topics, tags..."
         autocomplete="off"
       />
-      <button class="search-clear" id="search-clear" style="display: none;" aria-label="נקה חיפוש">
+      <button class="search-clear" id="search-clear" style="display: none;" aria-label="Clear search">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -33,7 +33,7 @@ layout: default
   <!-- Categories Filter -->
   <div class="blog-categories-filter">
     <button class="category-filter-btn active" data-category="all">
-      <span>הכל</span>
+      <span>All</span>
     </button>
     <!-- Categories will be dynamically added here -->
   </div>
@@ -48,10 +48,10 @@ layout: default
         <circle cx="11" cy="11" r="8"></circle>
         <path d="m21 21-4.35-4.35"></path>
       </svg>
-      <h3>לא נמצאו תוצאות</h3>
-      <p>נסה לחפש משהו אחר או בחר קטגוריה אחרת</p>
+      <h3>No results found</h3>
+      <p>Try searching for something else or select a different category</p>
     </div>
   </div>
 </div>
 
-<script type="module" src="{{ '/assets/js/blog.js' | relative_url }}?v={{ site.data.site.cache_bust }}"></script>
+<script type="module" src="{{ '/assets/js/features/blog/main.js' | relative_url }}?v={{ site.data.site.cache_bust }}"></script>

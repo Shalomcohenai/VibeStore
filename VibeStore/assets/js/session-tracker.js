@@ -89,10 +89,27 @@ class SessionTracker {
       });
 
       if (response.ok) {
-        } else {
+        // Track in analytics
+        if (window.Analytics) {
+          window.Analytics.trackAppClick(appId, source);
         }
+      } else {
+        // Still track in analytics even if server call fails
+        if (window.Analytics) {
+          window.Analytics.trackAppClick(appId, source);
+        }
+      }
     } catch (error) {
-      console.error('❌ Error tracking click:', error);
+      if (window.ErrorHandler) {
+        window.ErrorHandler.handle(error, 'SessionTracker.sendClickToServer');
+      } else {
+        console.error('❌ Error tracking click:', error);
+      }
+      
+      // Still track in analytics
+      if (window.Analytics) {
+        window.Analytics.trackAppClick(appId, source);
+      }
     }
   }
 

@@ -102,7 +102,11 @@ async function fetchAppsFromFirestore(filters = {}) {
 
     return apps;
   } catch (error) {
-    console.error('Error fetching apps from Firestore:', error);
+    if (window.ErrorHandler) {
+      window.ErrorHandler.handle(error, 'fetchAppsFromFirestore', 'שגיאה בטעינת אפליקציות');
+    } else {
+      console.error('Error fetching apps from Firestore:', error);
+    }
     return [];
   }
 }
@@ -114,10 +118,13 @@ async function fetchFeaturedApps() {
     const { collection, query, where, orderBy, limit, getDocs } = storeMod;
 
     // Simplified query to avoid composite index requirement
+    const fetchBuffer = window.APP_LIMITS?.FETCH_BUFFER || 20;
+    const featuredLimit = window.APP_LIMITS?.FEATURED || 6;
+    
     let appsQuery = collection(db, 'apps');
     appsQuery = query(appsQuery, where('status', '==', 'approved'));
     appsQuery = query(appsQuery, orderBy('createdAt', 'desc'));
-    appsQuery = query(appsQuery, limit(20)); // Get more to filter client-side
+    appsQuery = query(appsQuery, limit(fetchBuffer)); // Get more to filter client-side
 
     const snapshot = await getDocs(appsQuery);
     const apps = [];
@@ -135,19 +142,24 @@ async function fetchFeaturedApps() {
       }
     });
 
-    // Return only first 6 featured apps
-    return apps.slice(0, 6);
+    // Return only first N featured apps
+    return apps.slice(0, featuredLimit);
   } catch (error) {
-    console.error('Error fetching featured apps:', error);
+    if (window.ErrorHandler) {
+      window.ErrorHandler.handle(error, 'fetchFeaturedApps', 'שגיאה בטעינת אפליקציות מומלצות');
+    } else {
+      console.error('Error fetching featured apps:', error);
+    }
     return [];
   }
 }
 
 // Fetch popular apps (high ratings)
 async function fetchPopularApps() {
+  const popularLimit = window.APP_LIMITS?.POPULAR || 6;
   return await fetchAppsFromFirestore({
     sortBy: 'rating',
-    limit: 6
+    limit: popularLimit
   });
 }
 
@@ -158,10 +170,13 @@ async function fetchEditorsChoice() {
     const { collection, query, where, orderBy, limit, getDocs } = storeMod;
 
     // Simplified query to avoid composite index requirement
+    const fetchBuffer = window.APP_LIMITS?.FETCH_BUFFER || 20;
+    const editorsChoiceLimit = window.APP_LIMITS?.EDITORS_CHOICE || 6;
+    
     let appsQuery = collection(db, 'apps');
     appsQuery = query(appsQuery, where('status', '==', 'approved'));
     appsQuery = query(appsQuery, orderBy('createdAt', 'desc'));
-    appsQuery = query(appsQuery, limit(20)); // Get more to filter client-side
+    appsQuery = query(appsQuery, limit(fetchBuffer)); // Get more to filter client-side
 
     const snapshot = await getDocs(appsQuery);
     const apps = [];
@@ -179,28 +194,50 @@ async function fetchEditorsChoice() {
       }
     });
 
-    // Return only first 6 editor's choice apps
-    return apps.slice(0, 6);
+    // Return only first N editor's choice apps
+    return apps.slice(0, editorsChoiceLimit);
   } catch (error) {
-    console.error('Error fetching editor\'s choice apps:', error);
+    if (window.ErrorHandler) {
+      window.ErrorHandler.handle(error, 'fetchEditorsChoice', 'שגיאה בטעינת אפליקציות בחירת העורך');
+    } else {
+      console.error('Error fetching editor\'s choice apps:', error);
+    }
     return [];
   }
 }
 
+// Search cache with TTL
+const searchCache = new Map();
+const getCacheTTL = () => window.TIME_WINDOWS?.CACHE_TTL_MS || (5 * 60 * 1000); // 5 minutes default
+
 // Search apps by text query
 async function searchApps(searchQuery, filters = {}) {
   try {
+    // Create cache key
+    const cacheKey = JSON.stringify({ searchQuery: searchQuery?.toLowerCase().trim(), filters });
+    const cached = searchCache.get(cacheKey);
+    
+    // Check if cached result is still valid
+    if (cached && Date.now() - cached.timestamp < getCacheTTL()) {
+      return cached.data;
+    }
+
     // For now, we'll fetch all apps and filter client-side
     // In production, you'd want to use Algolia or full-text search
     const allApps = await fetchAppsFromFirestore(filters);
 
     if (!searchQuery || searchQuery.trim() === '') {
+      // Cache empty query results too
+      searchCache.set(cacheKey, {
+        data: allApps,
+        timestamp: Date.now()
+      });
       return allApps;
     }
 
     const query = searchQuery.toLowerCase().trim();
 
-    return allApps.filter(app => {
+    const filteredApps = allApps.filter(app => {
       const title = (app.title || '').toLowerCase();
       const description = (app.description || '').toLowerCase();
       const category = (app.category || '').toLowerCase();
@@ -211,8 +248,30 @@ async function searchApps(searchQuery, filters = {}) {
              category.includes(query) ||
              tags.includes(query);
     });
+
+    // Cache the results
+    searchCache.set(cacheKey, {
+      data: filteredApps,
+      timestamp: Date.now()
+    });
+
+    // Clean old cache entries (keep only last 50 entries)
+    if (searchCache.size > 50) {
+      const entries = Array.from(searchCache.entries());
+      entries.sort((a, b) => b[1].timestamp - a[1].timestamp);
+      searchCache.clear();
+      entries.slice(0, 50).forEach(([key, value]) => {
+        searchCache.set(key, value);
+      });
+    }
+
+    return filteredApps;
   } catch (error) {
-    console.error('Error searching apps:', error);
+    if (window.ErrorHandler) {
+      window.ErrorHandler.handle(error, 'searchApps', 'שגיאה בחיפוש אפליקציות');
+    } else {
+      console.error('Error searching apps:', error);
+    }
     return [];
   }
 }
@@ -236,7 +295,11 @@ async function fetchAppById(appId) {
       return null;
     }
   } catch (error) {
-    console.error('Error fetching app:', error);
+    if (window.ErrorHandler) {
+      window.ErrorHandler.handle(error, 'fetchAppById', 'שגיאה בטעינת פרטי האפליקציה');
+    } else {
+      console.error('Error fetching app:', error);
+    }
     return null;
   }
 }
@@ -265,7 +328,11 @@ async function fetchAppReviews(appId) {
 
     return reviews;
   } catch (error) {
-    console.error('Error fetching reviews:', error);
+    if (window.ErrorHandler) {
+      window.ErrorHandler.handle(error, 'fetchAppReviews', 'שגיאה בטעינת ביקורות');
+    } else {
+      console.error('Error fetching reviews:', error);
+    }
     return [];
   }
 }
@@ -277,10 +344,12 @@ async function fetchAllAppsForSearch() {
     const { collection, query, where, orderBy, limit, getDocs } = storeMod;
 
     // Get all approved apps without any filters
+    const maxSearchResults = window.APP_LIMITS?.MAX_SEARCH_RESULTS || 1000;
+    
     let appsQuery = collection(db, 'apps');
     appsQuery = query(appsQuery, where('status', '==', 'approved'));
     appsQuery = query(appsQuery, orderBy('createdAt', 'desc'));
-    appsQuery = query(appsQuery, limit(1000)); // Higher limit for search
+    appsQuery = query(appsQuery, limit(maxSearchResults)); // Higher limit for search
 
     const snapshot = await getDocs(appsQuery);
     const apps = [];
@@ -297,7 +366,11 @@ async function fetchAllAppsForSearch() {
 
     return apps;
   } catch (error) {
-    console.error('Error fetching all apps for search:', error);
+    if (window.ErrorHandler) {
+      window.ErrorHandler.handle(error, 'fetchAllAppsForSearch', 'שגיאה בטעינת אפליקציות לחיפוש');
+    } else {
+      console.error('Error fetching all apps for search:', error);
+    }
     return [];
   }
 }

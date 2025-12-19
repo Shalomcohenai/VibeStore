@@ -34,7 +34,7 @@ class LazyImageLoader {
   }
 
   observeImages() {
-    const lazyImages = document.querySelectorAll('img[data-src], img[loading="lazy"]');
+    const lazyImages = document.querySelectorAll('img[data-src], img[loading="lazy"], img.lazy-load');
     lazyImages.forEach(img => {
       this.imageObserver.observe(img);
     });
@@ -44,6 +44,11 @@ class LazyImageLoader {
     const src = img.dataset.src || img.src;
     const webpSrc = img.dataset.webp;
 
+    // If no data-src, skip
+    if (!img.dataset.src) {
+      return;
+    }
+
     // Create new image to test loading
     const newImg = new Image();
 
@@ -51,7 +56,7 @@ class LazyImageLoader {
       // Image loaded successfully
       img.src = src;
       img.classList.add('loaded');
-      img.classList.remove('loading');
+      img.classList.remove('loading', 'lazy-load');
     };
 
     newImg.onerror = () => {

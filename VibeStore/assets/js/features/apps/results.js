@@ -4,14 +4,17 @@
  */
 
 // Get IntersectionObserver from animations (we'll need to re-observe cards)
-let ioInstance = null;
+// Use shared global instance to avoid conflicts with renderer.js
+if (typeof window.ioInstance === 'undefined') {
+  window.ioInstance = null;
+}
 
 /**
  * Set IntersectionObserver instance for reveal animations
  * @param {IntersectionObserver} io - IntersectionObserver instance
  */
 function setIntersectionObserver(io) {
-  ioInstance = io;
+  window.ioInstance = io;
 }
 
 // Export for backward compatibility
@@ -116,9 +119,9 @@ async function loadResultsPage(niche = 'all', sort = 'trending', query = '') {
     });
 
     // Re-observe new cards for reveal animation
-    if (ioInstance) {
+    if (window.ioInstance) {
       const newCards = resultsGrid.querySelectorAll('.reveal');
-      newCards.forEach(card => ioInstance.observe(card));
+      newCards.forEach(card => window.ioInstance.observe(card));
     }
 
     // Add click handlers for card interactions
