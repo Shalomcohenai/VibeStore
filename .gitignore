@@ -1,0 +1,26 @@
+# API Keys and sensitive configuration
+VibeStore/assets/js/config.js
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata/
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

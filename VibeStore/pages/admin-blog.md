@@ -31,22 +31,22 @@ permalink: /admin/blog-editor/
   <!-- Editor Form -->
   <div id="editorForm" style="display: none;">
     
-    <!-- AI Content Generator -->
+    <!-- AI Content Generator - Quick Create -->
     <section class="editor-section ai-generator-section" style="background: linear-gradient(135deg, #1a1a1a 0%, #4b5563 100%); color: white; margin-bottom: 2rem;">
-      <h2 style="color: white; margin-top: 0;">🤖 יצירת כתבה עם AI</h2>
-      <p style="opacity: 0.9; margin-bottom: 1.5rem;">הכנס נושא והנח את ה-AI ליצור כתבה מנועת SEO עבורך</p>
+      <h2 style="color: white; margin-top: 0;">🚀 Quick AI Article Generator</h2>
+      <p style="opacity: 0.9; margin-bottom: 1.5rem;">Enter only the article title - the system will write a complete, long-form, SEO-optimized article for you (English only)</p>
       
       <div class="form-group">
-        <label for="aiTopic" style="color: white;">נושא הכתבה *</label>
-        <input type="text" id="aiTopic" name="aiTopic" 
-               placeholder="לדוגמה: מדריך מקיף ל-Cursor AI בשנת 2025"
-               style="background: rgba(255,255,255,0.95); color: #111827;">
-        <small style="color: rgba(255,255,255,0.8);">תאר את הנושא שברצונך לכתוב עליו</small>
+        <label for="aiTitle" style="color: white; font-size: 1.1rem; font-weight: 600;">Article Title *</label>
+        <input type="text" id="aiTitle" name="aiTitle" 
+               placeholder="e.g., Complete Guide to Cursor AI: Everything You Need to Know in 2025"
+               style="background: rgba(255,255,255,0.95); color: #111827; font-size: 1.1rem; padding: 1rem;">
+        <small style="color: rgba(255,255,255,0.8);">The title will be used as the article headline and SEO foundation</small>
       </div>
 
       <div class="form-group">
-        <label for="aiCategory" style="color: white;">קטגוריה</label>
-        <select id="aiCategory" name="aiCategory" style="background: rgba(255,255,255,0.95); color: #111827;">
+        <label for="aiCategory" style="color: white;">Category</label>
+        <select id="aiCategory" name="aiCategory" style="background: rgba(255,255,255,0.95); color: #111827; padding: 0.75rem;">
           <option value="tools-platforms">🛠️ Tools & Platforms</option>
           <option value="use-cases-examples">💡 Use Cases & Real-World Examples</option>
           <option value="best-practices">✅ Best Practices & Methodology</option>
@@ -55,30 +55,66 @@ permalink: /admin/blog-editor/
         </select>
       </div>
 
-      <div class="form-group">
-        <label for="aiKeywords" style="color: white;">מילות מפתח SEO (אופציונלי)</label>
-        <input type="text" id="aiKeywords" name="aiKeywords" 
-               placeholder="cursor ai, ai coding, ide review"
-               style="background: rgba(255,255,255,0.95); color: #111827;">
-        <small style="color: rgba(255,255,255,0.8);">מילות מפתח שצריכות להופיע בכתבה (מופרדות בפסיקים)</small>
+      <div class="form-group" id="advancedOptions">
+        <details style="color: rgba(255,255,255,0.9);">
+          <summary style="cursor: pointer; padding: 0.5rem 0;">⚙️ Advanced Options (Optional)</summary>
+          <div style="margin-top: 1rem;">
+            <div class="form-group">
+              <label for="aiKeywords" style="color: white;">Additional SEO Keywords</label>
+              <input type="text" id="aiKeywords" name="aiKeywords" 
+                     placeholder="cursor ai, ai coding, ide review"
+                     style="background: rgba(255,255,255,0.95); color: #111827;">
+              <small style="color: rgba(255,255,255,0.8);">Keywords that should appear in the article (comma-separated)</small>
+            </div>
+            <div class="form-group">
+              <label for="aiTone" style="color: white;">Writing Tone</label>
+              <select id="aiTone" name="aiTone" style="background: rgba(255,255,255,0.95); color: #111827;">
+                <option value="professional">Professional & Formal</option>
+                <option value="friendly" selected>Friendly & Accessible</option>
+                <option value="technical">Technical & Detailed</option>
+                <option value="casual">Casual & Relaxed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="aiLength" style="color: white;">Article Length</label>
+              <select id="aiLength" name="aiLength" style="background: rgba(255,255,255,0.95); color: #111827;">
+                <option value="long" selected>Long (2500+ words) - Recommended for SEO</option>
+                <option value="medium">Medium (1500-2500 words)</option>
+                <option value="short">Short (1000-1500 words)</option>
+              </select>
+            </div>
+          </div>
+        </details>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="apiKeyGroup" style="display: none;">
         <label for="openaiApiKey" style="color: white;">OpenAI API Key *</label>
         <input type="password" id="openaiApiKey" name="openaiApiKey" 
                placeholder="sk-..."
                style="background: rgba(255,255,255,0.95); color: #111827;">
-        <small style="color: rgba(255,255,255,0.8);">המפתח שלך נשמר רק בזיכרון הדפדפן ולא נשלח לשרת</small>
+        <small style="color: rgba(255,255,255,0.8);">Your key is stored only in browser memory and not sent to server</small>
+      </div>
+      <div id="apiKeyInfo" style="padding: 0.75rem; background: rgba(16, 185, 129, 0.2); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.5); margin-bottom: 1rem; display: none;">
+        <small style="color: rgba(255,255,255,0.9);">✅ API Key loaded from config.js</small>
       </div>
 
-      <button type="button" id="generateWithAI" class="btn btn-ai" style="background: white; color: #1a1a1a; font-weight: 600; width: 100%; padding: 1rem; font-size: 1.1rem;">
-        <span id="generateBtnText">✨ צור כתבה עם AI</span>
+      <button type="button" id="generateWithAI" class="btn btn-ai" style="background: linear-gradient(135deg, #10b981, #059669); color: white; font-weight: 600; width: 100%; padding: 1.25rem; font-size: 1.2rem; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s;">
+        <span id="generateBtnText">✨ Generate Complete Article Automatically</span>
         <span id="generateBtnLoading" style="display: none;">
-          <span class="spinner-small"></span> יוצר כתבה...
+          <span class="spinner-small"></span> Generating professional article... This may take a minute or two
         </span>
       </button>
 
       <div id="aiError" class="ai-error" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.2); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.5);"></div>
+      
+      <div id="generationProgress" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(59, 130, 246, 0.2); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.5);">
+        <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 0.9rem;">
+          <span id="progressText">Preparing article...</span>
+        </p>
+        <div style="width: 100%; background: rgba(255,255,255,0.1); border-radius: 4px; height: 8px; margin-top: 0.5rem; overflow: hidden;">
+          <div id="progressBar" style="width: 0%; background: linear-gradient(90deg, #10b981, #059669); height: 100%; transition: width 0.3s;"></div>
+        </div>
+      </div>
     </section>
 
     <form id="blogPostForm">
@@ -652,5 +688,8 @@ Your content here...
 }
 </style>
 
-<script type="module" src="/assets/js/admin-blog.js"></script>
+<!-- Load config.js first (if exists) - non-module script -->
+<script src="/assets/js/config.js"></script>
+<!-- Load admin-blog.js as module with cache busting -->
+<script type="module" src="/assets/js/admin-blog.js?v=20250127-5"></script>
 

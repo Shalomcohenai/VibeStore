@@ -133,7 +133,7 @@
   {% else %}
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "{{ '/pages/results?q={search_term_string}' | absolute_url }}",
+    "target": "{{ '/pages/results?q=' | absolute_url }}{{ '{{' }}search_term_string{{ '}}' }}",
     "query-input": "required name=search_term_string"
   },
   {% endif %}

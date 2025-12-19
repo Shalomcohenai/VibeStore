@@ -3,8 +3,19 @@
  * Displays individual blog post from Firestore
  */
 
-import { db } from './firebaseConfig.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js';
+
+// Wait for Firebase to initialize (loaded globally via firebaseConfig.js)
+const waitForFirebase = () => new Promise(resolve => {
+  const check = () => {
+    if (window.$fb && window.$fb.auth && window.$fb.db) {
+      resolve(window.$fb);
+    } else {
+      setTimeout(check, 100);
+    }
+  };
+  check();
+});
 
 // Get post ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -51,6 +62,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // Wait for Firebase to be ready
+  await waitForFirebase();
+  
   await loadPost(postId);
   setupShareButtons();
 });
@@ -60,6 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 async function loadPost(id) {
   try {
+    const { db } = window.$fb;
     const docRef = doc(db, 'blog_posts', id);
     const docSnap = await getDoc(docRef);
 

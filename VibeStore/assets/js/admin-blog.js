@@ -63,6 +63,18 @@ let currentUser = null;
 let isAdmin = false;
 let currentPostId = null;
 
+// Utility function: Create URL-friendly slug from title
+function createBlogPostSlug(title) {
+  if (!title) return '';
+  return String(title)
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .trim();
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
   await checkAdminAccess();
@@ -103,7 +115,6 @@ async function checkAdminAccess() {
  */
 async function checkIfAdmin(userId) {
   try {
-    // Simple email-based admin check
     const user = auth.currentUser;
     if (user) {
       try {
@@ -126,44 +137,52 @@ async function checkIfAdmin(userId) {
  */
 function setupEventListeners() {
   // Auto-generate slug from title
-  titleInput.addEventListener('input', () => {
-    if (!slugInput.dataset.manuallyEdited) {
-      slugInput.value = generateSlug(titleInput.value);
-    }
-  });
+  if (titleInput && slugInput) {
+    titleInput.addEventListener('input', () => {
+      if (!slugInput.dataset.manuallyEdited) {
+        slugInput.value = createBlogPostSlug(titleInput.value);
+      }
+    });
 
-  // Mark slug as manually edited
-  slugInput.addEventListener('input', () => {
-    slugInput.dataset.manuallyEdited = 'true';
-  });
+    // Mark slug as manually edited
+    slugInput.addEventListener('input', () => {
+      slugInput.dataset.manuallyEdited = 'true';
+    });
+  }
 
   // Meta description character counter
-  metaDescInput.addEventListener('input', () => {
-    const counter = document.getElementById('metaDescCounter');
-    counter.textContent = metaDescInput.value.length;
+  if (metaDescInput) {
+    metaDescInput.addEventListener('input', () => {
+      const counter = document.getElementById('metaDescCounter');
+      if (counter) {
+        counter.textContent = metaDescInput.value.length;
 
-    if (metaDescInput.value.length > 160) {
-      counter.style.color = '#ef4444';
-    } else if (metaDescInput.value.length > 150) {
-      counter.style.color = '#f59e0b';
-    } else {
-      counter.style.color = '#6b7280';
-    }
-  });
+        if (metaDescInput.value.length > 160) {
+          counter.style.color = '#ef4444';
+        } else if (metaDescInput.value.length > 150) {
+          counter.style.color = '#f59e0b';
+        } else {
+          counter.style.color = '#6b7280';
+        }
+      }
+    });
+  }
 
   // Featured image preview
-  featuredImageInput.addEventListener('input', () => {
-    const imageUrl = featuredImageInput.value;
-    const preview = document.getElementById('imagePreview');
-    const container = document.getElementById('imagePreviewContainer');
+  if (featuredImageInput) {
+    featuredImageInput.addEventListener('input', () => {
+      const imageUrl = featuredImageInput.value;
+      const preview = document.getElementById('imagePreview');
+      const container = document.getElementById('imagePreviewContainer');
 
-    if (imageUrl) {
-      preview.src = imageUrl;
-      container.style.display = 'block';
-    } else {
-      container.style.display = 'none';
-    }
-  });
+      if (imageUrl && preview && container) {
+        preview.src = imageUrl;
+        container.style.display = 'block';
+      } else if (container) {
+        container.style.display = 'none';
+      }
+    });
+  }
 
   // Toolbar buttons
   document.querySelectorAll('.toolbar-btn').forEach(btn => {
@@ -175,68 +194,79 @@ function setupEventListeners() {
   });
 
   // Save Draft button
-  saveDraftBtn.addEventListener('click', async (e) => {
-    e.preventDefault();
-    await savePost(false);
-  });
+  if (saveDraftBtn) {
+    saveDraftBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await savePost(false);
+    });
+  }
 
   // Preview button
-  previewBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    showPreview();
-  });
+  if (previewBtn) {
+    previewBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showPreview();
+    });
+  }
 
   // Publish button
-  publishBtn.addEventListener('click', async (e) => {
-    e.preventDefault();
-    await savePost(true);
-  });
+  if (publishBtn) {
+    publishBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await savePost(true);
+    });
+  }
 
   // Preview modal controls
-  document.getElementById('closePreview').addEventListener('click', closePreview);
-  document.getElementById('closePreviewBtn').addEventListener('click', closePreview);
-  document.getElementById('publishFromPreview').addEventListener('click', async () => {
-    closePreview();
-    await savePost(true);
-  });
+  const closePreview = document.getElementById('closePreview');
+  const closePreviewBtn = document.getElementById('closePreviewBtn');
+  const publishFromPreview = document.getElementById('publishFromPreview');
+  
+  if (closePreview) closePreview.addEventListener('click', closePreviewModal);
+  if (closePreviewBtn) closePreviewBtn.addEventListener('click', closePreviewModal);
+  if (publishFromPreview) {
+    publishFromPreview.addEventListener('click', async () => {
+      closePreviewModal();
+      await savePost(true);
+    });
+  }
 
   // Success modal controls
-  document.getElementById('viewPost').addEventListener('click', () => {
-    if (currentPostId) {
-      window.location.href = `/blog/post/${currentPostId}`;
-    }
-  });
+  const viewPost = document.getElementById('viewPost');
+  const createAnother = document.getElementById('createAnother');
+  
+  if (viewPost) {
+    viewPost.addEventListener('click', () => {
+      if (currentPostId) {
+        window.location.href = `/blog/post/?id=${currentPostId}`;
+      }
+    });
+  }
 
-  document.getElementById('createAnother').addEventListener('click', () => {
-    successModal.style.display = 'none';
-    resetForm();
-  });
-}
-
-/**
- * Generate URL-friendly slug from title
- */
-function generateSlug(text) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-')      // Replace spaces with hyphens
-    .replace(/-+/g, '-');      // Replace multiple hyphens with single
+  if (createAnother) {
+    createAnother.addEventListener('click', () => {
+      if (successModal) successModal.style.display = 'none';
+      resetForm();
+    });
+  }
 }
 
 /**
  * Set default publish date to today
  */
 function setDefaultPublishDate() {
-  const today = new Date().toISOString().split('T')[0];
-  publishDateInput.value = today;
+  if (publishDateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    publishDateInput.value = today;
+  }
 }
 
 /**
  * Insert markdown syntax at cursor position
  */
 function insertMarkdown(action) {
+  if (!contentInput) return;
+  
   const textarea = contentInput;
   const start = textarea.selectionStart;
   const end = textarea.selectionEnd;
@@ -281,31 +311,31 @@ function insertMarkdown(action) {
 function validateForm() {
   const errors = [];
 
-  if (!titleInput.value.trim()) {
+  if (!titleInput || !titleInput.value.trim()) {
     errors.push('Title is required');
   }
 
-  if (!slugInput.value.trim()) {
+  if (!slugInput || !slugInput.value.trim()) {
     errors.push('Slug is required');
   }
 
-  if (!excerptInput.value.trim()) {
+  if (!excerptInput || !excerptInput.value.trim()) {
     errors.push('Excerpt is required');
   }
 
-  if (!categorySelect.value) {
+  if (!categorySelect || !categorySelect.value) {
     errors.push('Category is required');
   }
 
-  if (!contentInput.value.trim()) {
+  if (!contentInput || !contentInput.value.trim()) {
     errors.push('Content is required');
   }
 
-  if (!metaDescInput.value.trim()) {
+  if (!metaDescInput || !metaDescInput.value.trim()) {
     errors.push('Meta description is required');
   }
 
-  if (metaDescInput.value.length > 160) {
+  if (metaDescInput && metaDescInput.value.length > 160) {
     errors.push('Meta description should be 160 characters or less');
   }
 
@@ -322,35 +352,39 @@ function validateForm() {
  */
 function getFormData(isPublished) {
   // Parse tags
-  const tagsArray = tagsInput.value
-    .split(',')
-    .map(tag => tag.trim())
-    .filter(tag => tag.length > 0);
+  const tagsArray = tagsInput && tagsInput.value
+    ? tagsInput.value
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0)
+    : [];
 
   // Parse keywords
-  const keywordsArray = metaKeywordsInput.value
-    .split(',')
-    .map(kw => kw.trim())
-    .filter(kw => kw.length > 0);
+  const keywordsArray = metaKeywordsInput && metaKeywordsInput.value
+    ? metaKeywordsInput.value
+        .split(',')
+        .map(kw => kw.trim())
+        .filter(kw => kw.length > 0)
+    : [];
 
   return {
-    title: titleInput.value.trim(),
-    slug: slugInput.value.trim(),
-    excerpt: excerptInput.value.trim(),
-    author: authorInput.value.trim(),
-    category: categorySelect.value,
+    title: titleInput ? titleInput.value.trim() : '',
+    slug: slugInput ? slugInput.value.trim() : '',
+    excerpt: excerptInput ? excerptInput.value.trim() : '',
+    author: authorInput ? authorInput.value.trim() : '',
+    category: categorySelect ? categorySelect.value : '',
     tags: tagsArray,
-    metaDescription: metaDescInput.value.trim(),
+    metaDescription: metaDescInput ? metaDescInput.value.trim() : '',
     metaKeywords: keywordsArray,
-    featuredImage: featuredImageInput.value.trim() || null,
-    content: contentInput.value.trim(),
-    publishDate: publishDateInput.value,
+    featuredImage: featuredImageInput ? (featuredImageInput.value.trim() || null) : null,
+    content: contentInput ? contentInput.value.trim() : '',
+    publishDate: publishDateInput ? publishDateInput.value : '',
     published: isPublished,
-    featured: featuredCheckbox.checked,
+    featured: featuredCheckbox ? featuredCheckbox.checked : false,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    authorId: currentUser.uid,
-    authorEmail: currentUser.email
+    authorId: currentUser ? currentUser.uid : '',
+    authorEmail: currentUser ? currentUser.email : ''
   };
 }
 
@@ -364,6 +398,8 @@ async function savePost(publish) {
 
   try {
     const button = publish ? publishBtn : saveDraftBtn;
+    if (!button) return;
+    
     const originalText = button.textContent;
     button.disabled = true;
     button.textContent = publish ? '🚀 Publishing...' : '💾 Saving...';
@@ -382,16 +418,23 @@ async function savePost(publish) {
       ? '✅ Blog post published successfully!'
       : '💾 Blog post saved as draft!';
 
-    document.getElementById('successMessage').textContent = message;
-    successModal.style.display = 'flex';
+    const successMessage = document.getElementById('successMessage');
+    if (successMessage) {
+      successMessage.textContent = message;
+    }
+    if (successModal) {
+      successModal.style.display = 'flex';
+    }
 
   } catch (error) {
     console.error('Error saving blog post:', error);
     alert('Error saving blog post: ' + error.message);
 
     const button = publish ? publishBtn : saveDraftBtn;
-    button.disabled = false;
-    button.textContent = publish ? '🚀 Publish' : '💾 Save Draft';
+    if (button) {
+      button.disabled = false;
+      button.textContent = publish ? '🚀 Publish' : '💾 Save Draft';
+    }
   }
 }
 
@@ -404,6 +447,8 @@ function showPreview() {
   }
 
   const previewContent = document.getElementById('previewContent');
+  if (!previewContent) return;
+  
   const postData = getFormData(false);
 
   // Build preview HTML
@@ -433,14 +478,18 @@ function showPreview() {
   html += `<div class="markdown-content">${convertMarkdownToHTML(postData.content)}</div>`;
 
   previewContent.innerHTML = html;
-  previewModal.style.display = 'flex';
+  if (previewModal) {
+    previewModal.style.display = 'flex';
+  }
 }
 
 /**
  * Close preview modal
  */
-function closePreview() {
-  previewModal.style.display = 'none';
+function closePreviewModal() {
+  if (previewModal) {
+    previewModal.style.display = 'none';
+  }
 }
 
 /**
@@ -461,6 +510,8 @@ function getCategoryName(categoryId) {
  * Basic Markdown to HTML converter
  */
 function convertMarkdownToHTML(markdown) {
+  if (!markdown) return '';
+  
   let html = markdown;
 
   // Headers
@@ -505,11 +556,21 @@ function convertMarkdownToHTML(markdown) {
  * Reset form to initial state
  */
 function resetForm() {
-  blogPostForm.reset();
+  if (blogPostForm) {
+    blogPostForm.reset();
+  }
   setDefaultPublishDate();
-  slugInput.dataset.manuallyEdited = '';
-  document.getElementById('imagePreviewContainer').style.display = 'none';
-  document.getElementById('metaDescCounter').textContent = '0';
+  if (slugInput) {
+    slugInput.dataset.manuallyEdited = '';
+  }
+  const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+  if (imagePreviewContainer) {
+    imagePreviewContainer.style.display = 'none';
+  }
+  const metaDescCounter = document.getElementById('metaDescCounter');
+  if (metaDescCounter) {
+    metaDescCounter.textContent = '0';
+  }
   currentPostId = null;
 }
 
@@ -521,59 +582,121 @@ function setupAIEventListeners() {
   if (generateBtn) {
     generateBtn.addEventListener('click', generateBlogPostWithAI);
   }
+  
+  // Check if API key is available from config.js
+  checkAPIKeyFromConfig();
 }
 
 /**
- * Generate blog post with OpenAI
+ * Check if API key is available from config.js and update UI
+ */
+function checkAPIKeyFromConfig() {
+  const apiKeyInput = document.getElementById('openaiApiKey');
+  const apiKeyGroup = document.getElementById('apiKeyGroup');
+  const apiKeyInfo = document.getElementById('apiKeyInfo');
+  
+  // Check if API key is available from config.js
+  if (window.OPENAI_API_KEY && window.OPENAI_API_KEY !== 'your-openai-api-key-here') {
+    // API key is loaded from config.js
+    if (apiKeyGroup) apiKeyGroup.style.display = 'none';
+    if (apiKeyInfo) {
+      apiKeyInfo.style.display = 'block';
+      const infoText = apiKeyInfo.querySelector('small');
+      if (infoText) infoText.textContent = '✅ API Key loaded from config.js';
+    }
+    if (apiKeyInput) {
+      // Set the value but keep it hidden
+      apiKeyInput.value = window.OPENAI_API_KEY;
+    }
+  } else {
+    // API key not found in config, show input field
+    if (apiKeyGroup) apiKeyGroup.style.display = 'block';
+    if (apiKeyInfo) apiKeyInfo.style.display = 'none';
+  }
+}
+
+/**
+ * Generate blog post with OpenAI - Advanced version
  */
 async function generateBlogPostWithAI() {
-  const topicInput = document.getElementById('aiTopic');
+  const titleInput = document.getElementById('aiTitle') || document.getElementById('aiTopic');
   const categoryInput = document.getElementById('aiCategory');
   const keywordsInput = document.getElementById('aiKeywords');
+  const toneInput = document.getElementById('aiTone');
+  const lengthInput = document.getElementById('aiLength');
   const apiKeyInput = document.getElementById('openaiApiKey');
   const generateBtn = document.getElementById('generateWithAI');
   const generateBtnText = document.getElementById('generateBtnText');
   const generateBtnLoading = document.getElementById('generateBtnLoading');
   const aiError = document.getElementById('aiError');
+  const progressDiv = document.getElementById('generationProgress');
+  const progressText = document.getElementById('progressText');
+  const progressBar = document.getElementById('progressBar');
 
   // Validate inputs
-  if (!topicInput.value.trim()) {
-    showAIError('אנא הכנס נושא לכתבה');
+  if (!titleInput || !titleInput.value.trim()) {
+    showAIError('Please enter a title for the blog post');
     return;
   }
 
-  if (!apiKeyInput.value.trim()) {
-    showAIError('אנא הכנס את OpenAI API Key שלך');
+  // Get API key from config.js or input field
+  let apiKey = window.OPENAI_API_KEY && window.OPENAI_API_KEY !== 'your-openai-api-key-here' 
+    ? window.OPENAI_API_KEY 
+    : (apiKeyInput ? apiKeyInput.value.trim() : '');
+  
+  if (!apiKey) {
+    showAIError('Please enter your OpenAI API Key or add it to config.js file');
     return;
   }
 
   // Show loading state
-  generateBtn.disabled = true;
-  generateBtnText.style.display = 'none';
-  generateBtnLoading.style.display = 'inline';
-  aiError.style.display = 'none';
+  if (generateBtn) {
+    generateBtn.disabled = true;
+  }
+  if (generateBtnText) generateBtnText.style.display = 'none';
+  if (generateBtnLoading) generateBtnLoading.style.display = 'inline';
+  if (aiError) aiError.style.display = 'none';
+  if (progressDiv) progressDiv.style.display = 'block';
+  if (progressBar) progressBar.style.width = '10%';
+  if (progressText) progressText.textContent = 'Preparing advanced prompt...';
 
   try {
-    // Build SEO-optimized prompt
-    const prompt = buildSEOPrompt(
-      topicInput.value.trim(),
-      categoryInput.value,
-      keywordsInput.value.trim()
-    );
+    // Get options
+    const title = titleInput.value.trim();
+    const category = categoryInput ? categoryInput.value : 'general';
+    const keywords = keywordsInput ? keywordsInput.value.trim() : '';
+    const tone = toneInput ? toneInput.value : 'friendly';
+    const length = lengthInput ? lengthInput.value : 'long';
 
-    // Call OpenAI API
+    // Update progress
+    if (progressBar) progressBar.style.width = '30%';
+    if (progressText) progressText.textContent = 'Building professional SEO-optimized prompt...';
+
+    // Build advanced SEO-optimized prompt
+    const prompt = buildAdvancedSEOPrompt(title, category, keywords, tone, length);
+
+    // Update progress
+    if (progressBar) progressBar.style.width = '50%';
+    if (progressText) progressText.textContent = 'Sending request to OpenAI...';
+
+    // Call OpenAI API with token limit (model supports max 4096 completion tokens)
+    const maxTokens = length === 'long' ? 4000 : length === 'medium' ? 3000 : 2000;
+    
+    if (progressBar) progressBar.style.width = '60%';
+    if (progressText) progressText.textContent = 'Generating comprehensive article... This may take a minute or two...';
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKeyInput.value.trim()}`
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
-            content: 'אתה כותב בלוג מקצועי ומנוסה המתמחה ביצירת תוכן מנוע SEO. אתה יוצר כתבות מעמיקות, מעניינות וממוקדות SEO.'
+            content: getSystemPrompt(tone)
           },
           {
             role: 'user',
@@ -581,89 +704,120 @@ async function generateBlogPostWithAI() {
           }
         ],
         temperature: 0.7,
-        max_tokens: 4000
+        max_tokens: maxTokens
       })
     });
 
+    if (progressBar) progressBar.style.width = '80%';
+    if (progressText) progressText.textContent = 'Processing response...';
+
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error?.message || 'שגיאה ב-OpenAI API');
+      throw new Error(errorData.error?.message || 'OpenAI API Error');
     }
 
     const data = await response.json();
     const generatedContent = data.choices[0].message.content;
 
+    if (progressBar) progressBar.style.width = '90%';
+    if (progressText) progressText.textContent = 'Parsing content...';
+
     // Parse the generated content
     const parsedContent = parseGeneratedContent(generatedContent);
 
+    if (progressBar) progressBar.style.width = '95%';
+    if (progressText) progressText.textContent = 'Filling form...';
+
     // Fill form with generated content
-    fillFormWithGeneratedContent(parsedContent, categoryInput.value);
+    fillFormWithGeneratedContent(parsedContent, category);
+
+    if (progressBar) progressBar.style.width = '100%';
+    if (progressText) progressText.textContent = 'Article created successfully!';
 
     // Show success message
-    showAISuccess('הכתבה נוצרה בהצלחה! אנא בדוק וערוך לפי הצורך.');
+    showAISuccess('Article created successfully! Please review and edit before publishing.');
+
+    // Hide progress after 2 seconds
+    setTimeout(() => {
+      if (progressDiv) progressDiv.style.display = 'none';
+    }, 2000);
 
   } catch (error) {
     console.error('Error generating blog post:', error);
-    showAIError(`שגיאה ביצירת הכתבה: ${error.message}`);
+    showAIError(`Error creating article: ${error.message}`);
+    if (progressDiv) progressDiv.style.display = 'none';
   } finally {
     // Reset button state
-    generateBtn.disabled = false;
-    generateBtnText.style.display = 'inline';
-    generateBtnLoading.style.display = 'none';
+    if (generateBtn) {
+      generateBtn.disabled = false;
+    }
+    if (generateBtnText) generateBtnText.style.display = 'inline';
+    if (generateBtnLoading) generateBtnLoading.style.display = 'none';
   }
 }
 
 /**
- * Build SEO-optimized prompt for OpenAI
+ * Get system prompt based on tone
  */
-function buildSEOPrompt(topic, category, keywords) {
+function getSystemPrompt(tone) {
+  const tonePrompts = {
+    'professional': 'You are an expert professional blog writer specializing in creating SEO-optimized, high-quality content. You write in a formal, authoritative, and professional tone. Your articles are well-researched, comprehensive, and provide valuable insights.',
+    'friendly': 'You are an expert blog writer specializing in creating SEO-optimized, engaging content. You write in a friendly, accessible, and conversational tone that makes complex topics easy to understand. Your articles are engaging, well-structured, and reader-friendly.',
+    'technical': 'You are an expert technical blog writer specializing in creating detailed, SEO-optimized technical content. You write in a precise, technical, and comprehensive tone. Your articles are thorough, well-documented, and provide in-depth technical insights.',
+    'casual': 'You are an expert blog writer specializing in creating SEO-optimized, engaging content. You write in a casual, relaxed, and approachable tone. Your articles are easy to read, entertaining, and maintain high quality while being accessible.'
+  };
+  
+  return tonePrompts[tone] || tonePrompts['friendly'];
+}
+
+/**
+ * Build advanced SEO-optimized prompt for OpenAI (English only)
+ */
+function buildAdvancedSEOPrompt(title, category, keywords, tone, length) {
   const categoryNames = {
-    'tools-platforms': 'כלי פיתוח ופלטפורמות',
-    'use-cases-examples': 'שימושיים ודוגמאות מהעולם האמיתי',
-    'best-practices': 'שיטות עבודה מומלצות ומתודולוגיה',
-    'challenges-risks': 'אתגרים וסיכונים',
-    'general': 'כללי'
+    'tools-platforms': 'Tools & Platforms',
+    'use-cases-examples': 'Use Cases & Real-World Examples',
+    'best-practices': 'Best Practices & Methodology',
+    'challenges-risks': 'Challenges & Risks',
+    'general': 'General'
   };
 
-  let prompt = `צור כתבת בלוג מנועת SEO בנושא: "${topic}"
+  const wordCounts = {
+    'long': '2500-3500 words',
+    'medium': '1500-2500 words',
+    'short': '1000-1500 words'
+  };
 
-קטגוריה: ${categoryNames[category] || 'כללי'}
+  const wordCount = wordCounts[length] || wordCounts['long'];
 
-דרישות:
-1. הכתבה חייבת להיות באורך של לפחות 1500 מילים
-2. הכתבה חייבת להיות מנועת SEO עם:
-   - כותרת ראשית (H1) ממוקדת SEO
-   - כותרות משנה (H2, H3) רלוונטיות
-   - שימוש במילות מפתח בצורה טבעית
-   - פסקאות קצרות וקריאות (3-4 משפטים)
-   - רשימות עם bullet points
-   - קישורים פנימיים וחיצוניים רלוונטיים
-   - Meta description אופטימלי (150-160 תווים)
-   - מילות מפתח רלוונטיות
+  let prompt = `Create a comprehensive SEO-optimized blog post.
 
-3. מבנה הכתבה:
-   - מבוא מעניין (2-3 פסקאות)
-   - 4-6 סעיפים עיקריים עם כותרות H2
-   - כל סעיף צריך לכלול 2-3 תת-סעיפים עם H3
-   - סיכום ומסקנות
-   - Call-to-action בסוף
+Title: "${title}"
+Category: ${categoryNames[category] || 'General'}
+Length: ${wordCount}
 
-4. פורמט התשובה (JSON):
+REQUIREMENTS:
+1. Length: Minimum ${wordCount}, substantial and valuable
+2. SEO: Primary keyword in title, semantic keywords throughout, proper H2/H3 hierarchy, meta description 150-160 chars
+3. Structure: Introduction (2-3 paragraphs), Main Body (6-8 H2 sections with 2-4 H3 each), Conclusion (2-3 paragraphs with CTA)
+4. Quality: Clear English, active voice, examples, actionable insights, short paragraphs, proper Markdown formatting
+
+RESPONSE FORMAT (JSON only):
 {
-  "title": "כותרת הכתבה (ממוקדת SEO)",
+  "title": "SEO-optimized title",
   "slug": "url-friendly-slug",
-  "excerpt": "תקציר קצר של 1-2 משפטים",
-  "metaDescription": "Meta description של 150-160 תווים",
-  "metaKeywords": "מילת מפתח 1, מילת מפתח 2, מילת מפתח 3",
-  "tags": ["תגית1", "תגית2", "תגית3", "תגית4"],
-  "content": "תוכן הכתבה המלא בפורמט Markdown"
+  "excerpt": "Compelling 1-2 sentence summary",
+  "metaDescription": "150-160 character SEO description",
+  "metaKeywords": "keyword1, keyword2, keyword3, keyword4, keyword5",
+  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "content": "Full article in Markdown with headings, formatting, lists"
 }`;
 
   if (keywords && keywords.trim()) {
-    prompt += `\n\nמילות מפתח שצריכות להופיע בכתבה: ${keywords}`;
+    prompt += `\nKeywords to include: ${keywords}`;
   }
 
-  prompt += `\n\nהחזר רק את ה-JSON, ללא טקסט נוסף לפני או אחרי.`;
+  prompt += `\n\nWrite ONLY in English. Use Markdown. Return ONLY valid JSON, no additional text.`;
 
   return prompt;
 }
@@ -693,7 +847,7 @@ function parseGeneratedContent(content) {
     // Fallback: try to extract information manually
     return {
       title: extractTitle(content),
-      slug: generateSlug(extractTitle(content)),
+      slug: createBlogPostSlug(extractTitle(content)),
       excerpt: extractExcerpt(content),
       metaDescription: extractMetaDescription(content),
       metaKeywords: extractKeywords(content),
@@ -713,7 +867,7 @@ function extractTitle(content) {
   const h1Match = content.match(/^#\s+(.+)$/m);
   if (h1Match) return h1Match[1];
   
-  return 'כותרת הכתבה';
+  return 'Article Title';
 }
 
 /**
@@ -729,7 +883,7 @@ function extractExcerpt(content) {
     return firstPara.substring(0, 150).trim() + '...';
   }
   
-  return 'תקציר הכתבה';
+  return 'Article excerpt';
 }
 
 /**
@@ -767,56 +921,47 @@ function extractTags(content) {
 }
 
 /**
- * Generate slug from title
- */
-function generateSlug(title) {
-  return title
-    .toLowerCase()
-    .replace(/[^\u0590-\u05FF\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
-}
-
-/**
  * Fill form with generated content
  */
 function fillFormWithGeneratedContent(parsedContent, category) {
-  if (parsedContent.title) {
+  if (parsedContent.title && titleInput) {
     titleInput.value = parsedContent.title;
     // Auto-generate slug if not manually edited
-    if (!slugInput.dataset.manuallyEdited) {
-      slugInput.value = parsedContent.slug || generateSlug(parsedContent.title);
+    if (slugInput && !slugInput.dataset.manuallyEdited) {
+      slugInput.value = parsedContent.slug || createBlogPostSlug(parsedContent.title);
     }
   }
   
-  if (parsedContent.excerpt) {
+  if (parsedContent.excerpt && excerptInput) {
     excerptInput.value = parsedContent.excerpt;
   }
   
-  if (parsedContent.metaDescription) {
+  if (parsedContent.metaDescription && metaDescInput) {
     metaDescInput.value = parsedContent.metaDescription;
     updateCharCounter();
   }
   
-  if (parsedContent.metaKeywords) {
+  if (parsedContent.metaKeywords && metaKeywordsInput) {
     metaKeywordsInput.value = parsedContent.metaKeywords;
   }
   
-  if (parsedContent.tags) {
+  if (parsedContent.tags && tagsInput) {
     tagsInput.value = parsedContent.tags;
   }
   
-  if (category) {
+  if (category && categorySelect) {
     categorySelect.value = category;
   }
   
-  if (parsedContent.content) {
+  if (parsedContent.content && contentInput) {
     contentInput.value = parsedContent.content;
   }
   
   // Scroll to form
-  document.querySelector('.editor-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const editorSection = document.querySelector('.editor-section');
+  if (editorSection) {
+    editorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 /**
@@ -829,7 +974,7 @@ function showAIError(message) {
     aiError.style.display = 'block';
     setTimeout(() => {
       aiError.style.display = 'none';
-    }, 5000);
+    }, 8000);
   }
 }
 
@@ -871,4 +1016,3 @@ function updateCharCounter() {
 
 // Export for use in other modules
 export { checkIfAdmin };
-

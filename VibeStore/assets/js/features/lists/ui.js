@@ -178,13 +178,15 @@ class ListUI {
     if (!addToListButton || !this.listsManager || !this.listsManager.initialized) return;
 
     const listIds = this.listsManager.isAppInLists(appId);
+    const spanElement = addToListButton.querySelector('span');
+    const textElement = spanElement || addToListButton;
 
     if (listIds.length > 0) {
       addToListButton.classList.add('added');
-      addToListButton.querySelector('span').textContent = 'Added to List';
+      textElement.textContent = 'Added to List';
     } else {
       addToListButton.classList.remove('added');
-      addToListButton.querySelector('span').textContent = 'Add to List';
+      textElement.textContent = 'Add to List';
     }
   }
 

@@ -19,6 +19,8 @@ permalink: /pages/app
   margin-bottom: 1.5rem;
   color: white;
   animation: fadeInUp 0.6s ease-out;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @keyframes fadeInUp {
@@ -34,9 +36,17 @@ permalink: /pages/app
 
 .app-header-content {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: max-content 1fr;
   gap: 2.5rem;
   align-items: start;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.app-header-content > .app-info {
+  min-width: 0;
+  overflow: visible;
+  width: 100%;
 }
 
 /* App Icon Section */
@@ -91,6 +101,9 @@ permalink: /pages/app
   flex-direction: column;
   gap: 1.5rem;
   min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
 }
 
 .app-title {
@@ -106,6 +119,9 @@ permalink: /pages/app
   font-size: 1.1rem;
   line-height: 1.7;
   margin: 0;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
 }
 
 /* Rating Section */
@@ -158,39 +174,47 @@ permalink: /pages/app
 /* Action Buttons */
 .app-actions {
   display: flex;
+  flex-direction: row;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .action-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.85rem 1.5rem;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #000000;
+  background: #000000;
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  min-width: auto;
+  width: auto;
 }
 
 .action-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #1a1a1a;
   transform: translateY(-1px);
 }
 
 .action-btn.primary {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: #000000;
+  border-color: #000000;
 }
 
 .action-btn.primary:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #1a1a1a;
 }
 
 /* Active/Saved States */
@@ -204,16 +228,6 @@ permalink: /pages/app
 .action-btn.saved:hover,
 .action-btn.active:hover {
   background: rgba(59, 130, 246, 0.3) !important;
-}
-
-.app-actions {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  align-items: center;
-  min-width: auto;
-  width: auto;
-  flex-wrap: wrap;
 }
 
 .btn {
@@ -251,10 +265,10 @@ permalink: /pages/app
 
 /* Action buttons - styled like tag/chip buttons */
 .action-btn {
-  padding: 0.4rem 0.9rem;
+  padding: 0.85rem 1.5rem;
   min-width: auto;
   width: auto;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 500;
   border-radius: 20px;
 }
@@ -266,29 +280,29 @@ permalink: /pages/app
 
 /* Override primary/secondary styles for action buttons to be more subtle */
 .action-btn.btn.primary {
-  background: rgba(255, 255, 255, 0.15);
+  background: #000000;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid #000000;
   box-shadow: none;
   font-weight: 500;
 }
 
 .action-btn.btn.primary:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #1a1a1a;
   transform: translateY(-1px);
   box-shadow: none;
 }
 
 .action-btn.btn.secondary {
-  background: rgba(255, 255, 255, 0.1);
+  background: #000000;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid #000000;
   box-shadow: none;
   font-weight: 500;
 }
 
 .action-btn.btn.secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #1a1a1a;
   transform: translateY(-1px);
   box-shadow: none;
 }
@@ -1360,17 +1374,17 @@ permalink: /pages/app
           <div class="app-tags" id="app-tags">
             <!-- Tags will be populated by JS -->
           </div>
-          
-          <!-- Action Buttons -->
-          <div class="app-actions">
-            <a id="app-cta" href="#" target="_blank" class="action-btn primary">
-              Open App
-            </a>
-            <button class="action-btn" id="save-btn">Save</button>
-            <button class="action-btn" id="add-to-list-btn">Add to List</button>
-          </div>
         </div>
       </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="app-actions">
+      <a id="app-cta" href="#" target="_blank" class="action-btn primary">
+        Open App
+      </a>
+      <button class="action-btn" id="save-btn">Save</button>
+      <button class="action-btn" id="add-to-list-btn">Add to List</button>
     </div>
 
     <!-- App Description -->
@@ -1586,8 +1600,14 @@ permalink: /pages/app
   
   .app-actions {
     flex-direction: column !important;
-    align-items: stretch;
+    align-items: center;
+    justify-content: center;
     gap: 0.75rem;
+  }
+  
+  .app-actions .action-btn {
+    width: auto;
+    min-width: 150px;
   }
   
   .users-count-prominent {
@@ -3064,13 +3084,15 @@ function updateAddToListButton(appId) {
   if (!addToListButton || !window.listsManager || !window.listsManager.initialized) return;
   
   const listIds = window.listsManager.isAppInLists(appId);
+  const spanElement = addToListButton.querySelector('span');
+  const textElement = spanElement || addToListButton;
   
   if (listIds.length > 0) {
     addToListButton.classList.add('added');
-    addToListButton.querySelector('span').textContent = 'Added to List';
+    textElement.textContent = 'Added to List';
   } else {
     addToListButton.classList.remove('added');
-    addToListButton.querySelector('span').textContent = 'Add to List';
+    textElement.textContent = 'Add to List';
   }
 }
 
