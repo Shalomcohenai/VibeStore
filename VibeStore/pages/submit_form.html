@@ -802,15 +802,23 @@ async function handleSubmit(e) {
       hideUploadProgress();
     }
 
+    // Double-check authentication before submitting
+    const { auth, db } = await waitForFb();
+    const user = auth.currentUser;
+    
+    if (!user) {
+      throw new Error('User not authenticated. Please sign in and try again.');
+    }
+
     // Prepare submission payload
     const payload = {
       ...formData,
-      imageUrl: iconUrl,
-      screenshots: screenshotUrls,
+      imageUrl: iconUrl || '',
+      screenshots: screenshotUrls || [],
       niche: getSelectedAppTypes(), // Get array of selected types
       status: 'pending',
-      submittedBy: currentUser.uid,
-      submitterEmail: currentUser.email,
+      submittedBy: user.uid,
+      submitterEmail: user.email || '',
       rating_sum: 0,
       rating_count: 0,
       rating_avg: 0,
@@ -820,8 +828,29 @@ async function handleSubmit(e) {
       updatedAt: serverTimestamp()
     };
 
+    // Validate required fields before submission
+    if (!payload.title || payload.title.trim().length === 0) {
+      throw new Error('Title is required');
+    }
+
+    // Ensure niche is an array (required by Firestore indexes)
+    if (!Array.isArray(payload.niche) || payload.niche.length === 0) {
+      throw new Error('Please select at least one app type (niche)');
+    }
+
+    // Log payload for debugging (remove in production)
+    console.log('Submitting app with payload:', {
+      ...payload,
+      createdAt: '[Timestamp]',
+      updatedAt: '[Timestamp]'
+    });
+    console.log('Current user:', {
+      uid: user.uid,
+      email: user.email,
+      emailVerified: user.emailVerified
+    });
+
     // Submit to Firestore
-    const { db } = await waitForFb();
     const docRef = await addDoc(collection(db, 'apps'), payload);
 
     // Success - show modal instead of inline message
@@ -830,7 +859,21 @@ async function handleSubmit(e) {
 
   } catch (error) {
     console.error('Submission error:', error);
-    showError('Failed to submit app. Please try again or contact support if the problem persists.');
+    console.error('Error details:', {
+      code: error.code,
+      message: error.message,
+      stack: error.stack
+    });
+    
+    // Show more specific error message
+    let errorMessage = 'Failed to submit app. Please try again or contact support if the problem persists.';
+    if (error.code === 'permission-denied') {
+      errorMessage = 'Permission denied. Please make sure you are signed in and try again.';
+    } else if (error.message) {
+      errorMessage = `Error: ${error.message}`;
+    }
+    
+    showError(errorMessage);
   } finally {
     // Reset loading state
     submitBtn.disabled = false;

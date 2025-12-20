@@ -21,11 +21,13 @@ service cloud.firestore {
       allow read: if resource.data.status == 'approved' || isAdmin() || !resource.exists;
 
       // Create new app as 'pending' by registered users only
-      // DEV MODE: Relaxed validation - only title required
+      // Relaxed validation - only title required, user must be authenticated
       allow create: if isAuthed()
         && request.resource.data.status == 'pending'
         && request.resource.data.title is string
-        && request.resource.data.title.size() > 0;
+        && request.resource.data.title.size() > 0
+        && request.resource.data.submittedBy == request.auth.uid
+        && request.resource.data.submitterEmail is string;
 
       // Only admin can update/delete apps, but allow users to update likes counter, rating aggregates, and users count
       allow update: if isAdmin() || 
